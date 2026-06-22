@@ -1,0 +1,1538 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trabalho Dieta e Treino - Dashboard Interativo</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-soft: #edf3f4;
+      --text: #17212b;
+      --muted: #5e6a75;
+      --line: #dbe4e8;
+      --shadow: 0 18px 45px rgba(20, 35, 50, .10);
+      --teal: #0f9f96;
+      --teal-dark: #086972;
+      --coral: #ef5f55;
+      --amber: #f4b942;
+      --violet: #6f56c9;
+      --green: #29a66a;
+      --red: #d94b4b;
+      --radius: 8px;
+    }
+
+    body.dark {
+      color-scheme: dark;
+      --bg: #101820;
+      --surface: #17222d;
+      --surface-soft: #1f2d39;
+      --text: #edf7f8;
+      --muted: #a9bbc2;
+      --line: #2d4350;
+      --shadow: 0 20px 50px rgba(0, 0, 0, .28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--coral));
+      z-index: 30;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-shell,
+    .shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .nav-shell {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand {
+      min-width: max-content;
+      font-size: .92rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--teal-dark);
+    }
+
+    body.dark .brand {
+      color: #8ce5dc;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .nav-links a,
+    .theme-toggle {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      text-decoration: none;
+      padding: 8px 12px;
+      white-space: nowrap;
+      transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+      cursor: pointer;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active,
+    .theme-toggle:hover {
+      color: var(--text);
+      background: var(--surface-soft);
+      border-color: var(--line);
+      transform: translateY(-1px);
+    }
+
+    .hero {
+      padding: 54px 0 34px;
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--teal) 14%, transparent), transparent 42%),
+        linear-gradient(45deg, color-mix(in srgb, var(--amber) 16%, transparent), transparent 46%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(330px, .9fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--teal-dark);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: .84rem;
+    }
+
+    body.dark .eyebrow {
+      color: #8ce5dc;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 700px;
+      font-size: clamp(2.2rem, 6vw, 5.2rem);
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 3vw, 3rem);
+    }
+
+    h3 {
+      font-size: 1.08rem;
+    }
+
+    .lead {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 1.12rem;
+      margin: 18px 0 0;
+    }
+
+    .variable-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0;
+      margin: 28px 0 0;
+      list-style: none;
+    }
+
+    .variable-list li {
+      min-height: 76px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 86%, transparent);
+      border-radius: var(--radius);
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+
+    .variable-list li:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: color-mix(in srgb, var(--teal) 42%, var(--line));
+    }
+
+    .variable-list strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .variable-list span {
+      color: var(--muted);
+      font-size: .93rem;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .kpi-card,
+    .panel,
+    .chart-card,
+    .mini-card {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .4) inset;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+
+    .kpi-card:hover,
+    .panel:hover,
+    .chart-card:hover,
+    .mini-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: color-mix(in srgb, var(--teal) 40%, var(--line));
+    }
+
+    .kpi-card {
+      min-height: 150px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .kpi-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -20px -44px auto;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), var(--amber));
+      opacity: .16;
+      pointer-events: none;
+    }
+
+    .kpi-label {
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .kpi-value {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1;
+      font-weight: 850;
+      margin: 12px 0 6px;
+    }
+
+    .kpi-note,
+    .muted {
+      color: var(--muted);
+    }
+
+    main {
+      padding: 18px 0 60px;
+    }
+
+    .page {
+      scroll-margin-top: 86px;
+      padding: 44px 0 28px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+
+    .section-head p {
+      max-width: 620px;
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(260px, .36fr) minmax(0, .64fr);
+      gap: 18px;
+      align-items: stretch;
+      margin: 18px 0;
+    }
+
+    .row > * {
+      min-width: 0;
+    }
+
+    .row.reverse {
+      grid-template-columns: minmax(0, .64fr) minmax(260px, .36fr);
+    }
+
+    .row.equal {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .row.single {
+      grid-template-columns: 1fr;
+    }
+
+    .panel,
+    .chart-card {
+      padding: 22px;
+      min-width: 0;
+    }
+
+    .panel p:first-child {
+      margin-top: 0;
+    }
+
+    .panel p:last-child,
+    .panel ul:last-child {
+      margin-bottom: 0;
+    }
+
+    .panel ul {
+      padding-left: 20px;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 14px;
+      border-left: 4px solid var(--teal);
+      background: var(--surface-soft);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      color: var(--muted);
+    }
+
+    .chart-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .chart-title p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: .94rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 70px;
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: var(--teal-dark);
+      background: color-mix(in srgb, var(--teal) 15%, transparent);
+      font-size: .84rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    body.dark .badge {
+      color: #9eece5;
+    }
+
+    .bar-chart {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(118px, 180px) minmax(160px, 1fr) minmax(52px, auto);
+      gap: 12px;
+      align-items: center;
+      min-height: 48px;
+      padding: 8px 8px 8px 0;
+      border-radius: var(--radius);
+    }
+
+    .bar-row:hover {
+      background: var(--surface-soft);
+    }
+
+    .bar-text strong,
+    .stack-label strong {
+      display: block;
+      font-size: .95rem;
+    }
+
+    .bar-text small,
+    .stack-label small {
+      display: block;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .bar-track,
+    .stack-track {
+      position: relative;
+      height: 30px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      width: var(--w);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--start), var(--end));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .26);
+      transform-origin: left center;
+      transition: filter .2s ease, transform .2s ease;
+    }
+
+    .bar-row:hover .bar-fill,
+    .hist-column:hover .hist-fill,
+    .segment:hover {
+      filter: saturate(1.22) brightness(1.04);
+      transform: scaleY(1.06);
+    }
+
+    .bar-number {
+      min-width: 52px;
+      font-weight: 850;
+      text-align: right;
+    }
+
+    .tabs {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      max-width: 100%;
+      overflow-x: auto;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+    }
+
+    .tab-btn {
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: background .2s ease, color .2s ease;
+    }
+
+    .tab-btn.active {
+      color: white;
+      background: linear-gradient(90deg, var(--teal), var(--violet));
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .histogram {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      min-height: 270px;
+      align-items: end;
+      padding-top: 16px;
+    }
+
+    .hist-column {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: 1fr auto auto;
+      align-items: end;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .hist-shell {
+      height: 210px;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+    }
+
+    .hist-fill {
+      width: min(64px, 70%);
+      height: var(--h);
+      min-height: 6px;
+      border-radius: 999px 999px 4px 4px;
+      background: linear-gradient(180deg, var(--start), var(--end));
+      transition: height .4s ease, transform .2s ease, filter .2s ease;
+    }
+
+    .hist-count {
+      font-weight: 850;
+    }
+
+    .hist-label {
+      color: var(--muted);
+      font-size: .78rem;
+      min-height: 34px;
+      overflow-wrap: anywhere;
+    }
+
+    .stack-chart {
+      display: grid;
+      gap: 16px;
+    }
+
+    .stack-row {
+      display: grid;
+      grid-template-columns: minmax(120px, 170px) minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+    }
+
+    .stack-track {
+      display: flex;
+      height: 38px;
+    }
+
+    .segment {
+      min-width: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: .82rem;
+      font-weight: 850;
+      background: linear-gradient(90deg, var(--start), var(--end));
+      transition: filter .2s ease, transform .2s ease;
+    }
+
+    .segment:first-child {
+      border-radius: 999px 0 0 999px;
+    }
+
+    .segment:last-child {
+      border-radius: 0 999px 999px 0;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .mini-card {
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .mini-card .stack-chart {
+      margin-top: 14px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius);
+      table-layout: fixed;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      overflow-wrap: anywhere;
+    }
+
+    .data-table th {
+      color: var(--muted);
+      font-size: .82rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      background: var(--surface-soft);
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .footer-note {
+      margin-top: 28px;
+      padding: 18px 0 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .tooltip {
+      position: fixed;
+      z-index: 40;
+      pointer-events: none;
+      max-width: min(340px, calc(100vw - 28px));
+      padding: 10px 12px;
+      border: 1px solid color-mix(in srgb, var(--teal) 35%, var(--line));
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      color: var(--text);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translate(12px, 12px);
+      transition: opacity .14s ease;
+      backdrop-filter: blur(12px);
+      font-size: .9rem;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+    }
+
+    @media (max-width: 940px) {
+      .hero-grid,
+      .row,
+      .row.reverse,
+      .row.equal {
+        grid-template-columns: 1fr;
+      }
+
+      .row.reverse .panel {
+        order: -1;
+      }
+
+      .mini-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav-shell,
+      .shell {
+        width: min(100% - 24px, 1180px);
+      }
+
+      .nav-shell {
+        align-items: start;
+        flex-direction: column;
+        padding: 12px 0;
+      }
+
+      .nav-links {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .variable-list,
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row,
+      .stack-row {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-number {
+        text-align: left;
+      }
+
+      .histogram {
+        gap: 6px;
+      }
+
+      .hist-label {
+        font-size: .7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <nav class="topbar">
+    <div class="nav-shell">
+      <div class="brand">Dieta e Treino</div>
+      <div class="nav-links" aria-label="Navegação principal">
+        <a href="#pagina-inicial" class="active">Página inicial</a>
+        <a href="#alimentacao">Alimentação</a>
+        <a href="#exercicios">Exercícios</a>
+        <a href="#idade">Idade</a>
+        <a href="#sono">Sono</a>
+        <button class="theme-toggle" id="themeToggle" type="button">Tema</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero page" id="pagina-inicial">
+    <div class="shell hero-grid">
+      <div>
+        <p class="eyebrow">Pesquisa com estudantes</p>
+        <h1>Trabalho Dieta e Treino</h1>
+        <p class="lead">Um dashboard interativo sobre como exercício físico, alimentação, dieta, sono e idade aparecem associados ao bem-estar dos estudantes.</p>
+        <ul class="variable-list">
+          <li><strong>Exercício</strong><span>Prática de atividades físicas a partir dos dias de treino por semana.</span></li>
+          <li><strong>Alimentação</strong><span>Autoavaliação da qualidade alimentar em escala de 0 a 5.</span></li>
+          <li><strong>Dieta</strong><span>Grau de adesão a um plano alimentar fixo, também em escala de 0 a 5.</span></li>
+          <li><strong>Sono</strong><span>Faixa média de horas dormidas por noite.</span></li>
+          <li><strong>Bem-estar</strong><span>Autoavaliação física e mental dos estudantes.</span></li>
+          <li><strong>Melhora percebida</strong><span>Percepção de ganho de qualidade de vida ao unir treino e alimentação equilibrada.</span></li>
+        </ul>
+      </div>
+      <div class="kpi-grid" id="kpis"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page" id="alimentacao">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Alimentação</p>
+            <h2>Qualidade alimentar e bem-estar caminham juntos?</h2>
+          </div>
+          <p>As médias são calculadas por grupo e as categorias com poucos respondentes são interpretadas com cautela para evitar conclusões exageradas.</p>
+        </div>
+
+        <div class="row">
+          <article class="panel">
+            <p>A primeira análise mantém a pergunta central do trabalho: estudantes que avaliam melhor a própria alimentação também relatam maior bem-estar?</p>
+            <p>Nos dados, a tendência geral é positiva. Os maiores níveis de alimentação aparecem com médias superiores de bem-estar, enquanto níveis baixos ficam mais próximos das menores médias.</p>
+            <div class="callout">A categoria 0 teve apenas uma resposta e foi preservada nos histogramas, mas a leitura principal do gráfico de médias considera os níveis 1 a 5.</div>
+          </article>
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Bem-estar segundo a qualidade da alimentação</h3>
+                <p>Média do bem-estar por nota de alimentação</p>
+              </div>
+              <span class="badge">0 a 5</span>
+            </div>
+            <div class="bar-chart" id="barAlimBem"></div>
+          </figure>
+        </div>
+
+        <div class="row reverse">
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Distribuição das respostas</h3>
+                <p>Comparação entre alimentação e bem-estar</p>
+              </div>
+              <div class="tabs" role="tablist">
+                <button class="tab-btn active" type="button" data-tab="tabAlim">Alimentação</button>
+                <button class="tab-btn" type="button" data-tab="tabBem">Bem-estar</button>
+              </div>
+            </div>
+            <div class="tab-panel active" id="tabAlim">
+              <div class="histogram" id="histAlim"></div>
+            </div>
+            <div class="tab-panel" id="tabBem">
+              <div class="histogram" id="histBem"></div>
+            </div>
+          </figure>
+          <article class="panel">
+            <p>A semelhança entre as distribuições ajuda a sustentar a leitura de associação: as notas intermediárias e altas concentram boa parte das respostas nos dois indicadores.</p>
+            <p>O ponto mais importante para a análise é que o gráfico não mostra causa direta. Ele mostra um padrão de associação dentro da amostra coletada.</p>
+          </article>
+        </div>
+
+        <div class="row">
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Bem-estar segundo adesão à dieta</h3>
+                <p>Média por nível de dedicação ao plano alimentar</p>
+              </div>
+              <span class="badge">dieta</span>
+            </div>
+            <div class="bar-chart" id="barDietaBem"></div>
+          </figure>
+          <article class="panel">
+            <p>A dieta rígida não aparece automaticamente como o melhor cenário. O melhor resultado está nos níveis intermediários de adesão, especialmente em quem segue parcialmente ou quase sempre.</p>
+            <p>Esse ponto deixa a interpretação mais madura: o bem-estar pode estar ligado a constância, mas também a equilíbrio. A adesão total tem apenas uma resposta, então não deve ser tratada como conclusão forte.</p>
+          </article>
+        </div>
+
+        <div class="row equal">
+          <article class="panel">
+            <h3>Quem come bem segue dieta?</h3>
+            <p>Entre estudantes que marcaram alimentação boa ou muito boa, a maioria não depende de uma dieta rígida para avaliar positivamente a própria alimentação.</p>
+            <div id="tableDietaBoa"></div>
+          </article>
+          <article class="panel">
+            <h3>Leitura analítica</h3>
+            <p>O resultado ajuda a separar dois conceitos: comer bem e seguir um plano alimentar fixo. Eles podem se relacionar, mas não são a mesma coisa dentro da amostra.</p>
+            <p>Essa distinção fortalece o trabalho porque evita uma conclusão simplista sobre dieta.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="exercicios">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Exercícios</p>
+            <h2>Rotina ativa, dieta e percepção de melhora</h2>
+          </div>
+          <p>A página mantém a estrutura original, mas troca tabelas fixas por contagens e proporções calculadas automaticamente.</p>
+        </div>
+
+        <div class="row single">
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Grande maioria dos estudantes tem rotina ativa</h3>
+                <p>Contagem a partir dos dias de exercício informados</p>
+              </div>
+              <span class="badge" id="badgeAtivos"></span>
+            </div>
+            <div class="bar-chart" id="barExercicio"></div>
+          </figure>
+        </div>
+
+        <div class="row">
+          <article class="panel">
+            <p>Quando a prática de exercícios é combinada com a variável dieta, a leitura fica mais completa.</p>
+            <p>Mais da metade dos estudantes pratica exercício e segue algum nível de plano alimentar. Uma parcela pequena não pratica exercício e também não segue dieta.</p>
+          </article>
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Estilo de vida disciplinado ainda é maioria</h3>
+                <p>Treino e dieta analisados em conjunto</p>
+              </div>
+              <span class="badge">%</span>
+            </div>
+            <div class="stack-chart" id="stackTreinoDieta"></div>
+          </figure>
+        </div>
+
+        <div class="row equal">
+          <article class="panel">
+            <h3>Exercício e bem-estar</h3>
+            <p>A média de bem-estar é maior entre estudantes com rotina ativa. A diferença não é enorme, mas aparece de forma consistente nos dados.</p>
+            <div id="tableBemExercicio"></div>
+          </article>
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Disciplina no dia a dia: vale a pena?</h3>
+                <p>Comparação entre dois conjuntos de hábitos</p>
+              </div>
+              <span class="badge">média</span>
+            </div>
+            <div class="bar-chart" id="barCombo"></div>
+          </figure>
+        </div>
+
+        <div class="row single">
+          <article class="panel">
+            <h3>Quem percebe grande melhora realmente segue os hábitos?</h3>
+            <p>Entre quem marcou melhora alta, a maioria pratica exercícios. Ainda assim, muitos treinam poucos dias por semana e parte relevante não avalia a alimentação como boa.</p>
+            <div class="mini-grid">
+              <div class="mini-card">
+                <h3>Exercício</h3>
+                <div class="stack-chart" id="stackMelhoraEx"></div>
+              </div>
+              <div class="mini-card">
+                <h3>Dias por semana</h3>
+                <div class="stack-chart" id="stackMelhoraDias"></div>
+              </div>
+              <div class="mini-card">
+                <h3>Alimentação</h3>
+                <div class="stack-chart" id="stackMelhoraAlim"></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="idade">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Idade</p>
+            <h2>Diferenças entre grupos etários</h2>
+          </div>
+          <p>As idades foram agrupadas em 14 a 21 e 22 ou mais para reduzir categorias com poucos respondentes e tornar a comparação mais estável.</p>
+        </div>
+
+        <div class="row">
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Dias de exercício por semana de acordo com a idade</h3>
+                <p>Média entre estudantes que praticam exercícios</p>
+              </div>
+              <span class="badge">dias</span>
+            </div>
+            <div class="bar-chart" id="barIdadeDias"></div>
+          </figure>
+          <article class="panel">
+            <p>Os estudantes de 14 a 21 anos aparecem com média ligeiramente maior de dias de exercício por semana.</p>
+            <p>Como os grupos não têm o mesmo tamanho, o painel usa proporções e médias para deixar a comparação mais justa.</p>
+          </article>
+        </div>
+
+        <div class="row reverse">
+          <article class="panel">
+            <p>A proporção de estudantes ativos é parecida nos dois grupos, com pequena vantagem para os mais jovens.</p>
+            <p>Esse resultado conversa com o gráfico anterior: além de terem proporção ativa um pouco maior, os mais jovens também treinam mais dias, em média.</p>
+          </article>
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Proporção entre pessoas ativas e sedentárias</h3>
+                <p>Distribuição por grupo de idade</p>
+              </div>
+              <span class="badge">idade</span>
+            </div>
+            <div class="stack-chart" id="stackIdadeEx"></div>
+          </figure>
+        </div>
+
+        <div class="row">
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Qualidade da alimentação de acordo com a idade</h3>
+                <p>Média da escala de alimentação</p>
+              </div>
+              <span class="badge">média</span>
+            </div>
+            <div class="bar-chart" id="barIdadeAlim"></div>
+          </figure>
+          <article class="panel">
+            <p>A qualidade da alimentação é semelhante entre os grupos, mas os mais jovens mantêm pequena vantagem.</p>
+            <p>O gráfico de proporção abaixo mostra a distribuição completa das notas e evita esconder variações internas dentro de cada grupo.</p>
+          </article>
+        </div>
+
+        <div class="row single">
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Distribuição da alimentação por idade</h3>
+                <p>Quanto mais verde, maior a concentração nos níveis altos da escala</p>
+              </div>
+              <span class="badge">0 a 5</span>
+            </div>
+            <div class="stack-chart" id="stackIdadeAlim"></div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="sono">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Sono</p>
+            <h2>Horas de sono e bem-estar</h2>
+          </div>
+          <p>A relação com sono exige cautela porque algumas faixas têm poucos respondentes, mas a comparação final fecha a narrativa do dashboard.</p>
+        </div>
+
+        <div class="row">
+          <article class="panel">
+            <p>Curiosamente, a faixa de 7 a 8 horas não aparece com a maior média de bem-estar na amostra. A maior média está entre estudantes que dormem de 5 a 6 horas.</p>
+            <p>A interpretação mais responsável é tratar isso como um achado da amostra, não como regra geral de saúde.</p>
+            <div class="callout">A visualização mostra associação dentro do grupo pesquisado. Para afirmar causalidade, seria necessário um desenho de pesquisa mais controlado.</div>
+          </article>
+          <figure class="chart-card">
+            <div class="chart-title">
+              <div>
+                <h3>Média do bem-estar de acordo com horas de sono</h3>
+                <p>Comparação por faixa de sono declarada</p>
+              </div>
+              <span class="badge">sono</span>
+            </div>
+            <div class="bar-chart" id="barSonoBem"></div>
+          </figure>
+        </div>
+
+        <p class="footer-note">Banco analisado: 53 respostas válidas. A linha vazia do CSV original foi removida automaticamente pelo dashboard.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+
+  <script>
+    const rawData = `id,dias_exercicio,alimentacao,dieta,sono,bem_estar,melhora,idade
+1,1 a 2 dias,4,0,5 a 6 horas,3,3,18 - 21
+2,1 a 2 dias,3,0,7 a 8 horas,3,4,22 - 25
+3,3 a 4 dias,2,0,7 a 8 horas,2,2,18 - 21
+4,1 a 2 dias,5,4,7 a 8 horas,4,5,22 - 25
+5,1 a 2 dias,4,3,5 a 6 horas,3,4,14 - 17
+6,5 ou mais dias,4,3,Menos de 5 horas,3,5,18 - 21
+7,0 dias,3,2,7 a 8 horas,3,3,18 - 21
+8,3 a 4 dias,3,3,7 a 8 horas,4,5,18 - 21
+9,1 a 2 dias,3,3,7 a 8 horas,4,5,18 - 21
+10,1 a 2 dias,4,0,7 a 8 horas,2,5,18 - 21
+11,0 dias,2,0,7 a 8 horas,2,5,18 - 21
+12,3 a 4 dias,3,3,5 a 6 horas,3,5,18 - 21
+13,5 ou mais dias,5,4,7 a 8 horas,4,5,14 - 17
+14,0 dias,1,0,7 a 8 horas,0,4,22 - 25
+15,1 a 2 dias,3,1,7 a 8 horas,3,5,18 - 21
+16,3 a 4 dias,4,1,7 a 8 horas,4,5,14 - 17
+17,0 dias,4,0,7 a 8 horas,3,4,18 - 21
+18,0 dias,4,3,5 a 6 horas,5,0,18 - 21
+19,1 a 2 dias,2,2,7 a 8 horas,1,4,22 - 25
+20,1 a 2 dias,4,0,7 a 8 horas,4,5,26 ou mais.
+21,5 ou mais dias,1,0,7 a 8 horas,4,4,18 - 21
+22,1 a 2 dias,3,2,7 a 8 horas,1,5,26 ou mais.
+23,0 dias,3,3,7 a 8 horas,3,4,18 - 21
+24,1 a 2 dias,0,0,7 a 8 horas,5,5,26 ou mais.
+25,5 ou mais dias,5,4,5 a 6 horas,5,5,26 ou mais.
+26,3 a 4 dias,2,1,5 a 6 horas,3,4,26 ou mais.
+27,3 a 4 dias,3,2,7 a 8 horas,4,5,18 - 21
+28,3 a 4 dias,4,4,5 a 6 horas,3,4,18 - 21
+29,0 dias,3,0,7 a 8 horas,3,5,18 - 21
+30,5 ou mais dias,4,4,5 a 6 horas,4,5,26 ou mais.
+31,1 a 2 dias,4,3,7 a 8 horas,4,5,18 - 21
+32,3 a 4 dias,3,2,7 a 8 horas,4,5,18 - 21
+33,5 ou mais dias,5,5,7 a 8 horas,2,4,18 - 21
+34,1 a 2 dias,3,0,5 a 6 horas,4,4,14 - 17
+35,1 a 2 dias,2,0,7 a 8 horas,3,4,18 - 21
+36,1 a 2 dias,3,4,5 a 6 horas,3,4,18 - 21
+37,0 dias,4,2,5 a 6 horas,4,5,22 - 25
+38,1 a 2 dias,2,1,7 a 8 horas,1,4,18 - 21
+39,3 a 4 dias,1,0,7 a 8 horas,0,1,18 - 21
+40,0 dias,2,0,5 a 6 horas,2,3,22 - 25
+41,3 a 4 dias,4,4,5 a 6 horas,4,3,18 - 21
+42,1 a 2 dias,4,3,5 a 6 horas,4,5,18 - 21
+43,1 a 2 dias,3,3,5 a 6 horas,4,5,18 - 21
+44,5 ou mais dias,4,4,5 a 6 horas,4,5,18 - 21
+45,1 a 2 dias,3,1,7 a 8 horas,3,4,22 - 25
+46,3 a 4 dias,4,4,5 a 6 horas,3,5,18 - 21
+47,1 a 2 dias,3,0,7 a 8 horas,2,3,18 - 21
+48,3 a 4 dias,3,2,5 a 6 horas,2,4,18 - 21
+49,0 dias,3,1,5 a 6 horas,3,3,18 - 21
+50,3 a 4 dias,4,2,7 a 8 horas,4,5,18 - 21
+51,0 dias,4,4,5 a 6 horas,2,5,22 - 25
+52,3 a 4 dias,4,3,5 a 6 horas,4,5,26 ou mais.
+53,0 dias,3,2,5 a 6 horas,4,4,18 - 21`;
+
+    const labelsAlim = {
+      0: "Muito ruim",
+      1: "Ruim",
+      2: "Abaixo da média",
+      3: "Regular",
+      4: "Boa",
+      5: "Muito boa"
+    };
+
+    const labelsBem = {
+      0: "Muito ruim",
+      1: "Ruim",
+      2: "Abaixo da média",
+      3: "Regular",
+      4: "Bom",
+      5: "Muito bom"
+    };
+
+    const labelsDieta = {
+      0: "Nunca sigo",
+      1: "Muito pouco",
+      2: "Sigo pouco",
+      3: "Parcialmente",
+      4: "Quase sempre",
+      5: "Totalmente"
+    };
+
+    const dayValue = {
+      "0 dias": 0,
+      "1 a 2 dias": 1,
+      "3 a 4 dias": 3,
+      "5 ou mais dias": 5
+    };
+
+    const sleepValue = {
+      "Menos de 5 horas": 4,
+      "5 a 6 horas": 5,
+      "6 a 7 horas": 6,
+      "7 a 8 horas": 7
+    };
+
+    const palette = [
+      ["#0f9f96", "#54d2bb"],
+      ["#6f56c9", "#aa8ef5"],
+      ["#f4b942", "#f7d66d"],
+      ["#ef5f55", "#ff988e"],
+      ["#29a66a", "#80d56e"],
+      ["#086972", "#0f9f96"]
+    ];
+
+    const dangerPalette = [
+      ["#d94b4b", "#ef8a62"],
+      ["#ef8a62", "#f4b942"],
+      ["#f4b942", "#8fcf6a"],
+      ["#29a66a", "#0f9f96"],
+      ["#0f9f96", "#6f56c9"],
+      ["#6f56c9", "#aa8ef5"]
+    ];
+
+    const rows = rawData.trim().split("\n");
+    const headers = rows.shift().split(",");
+    const dados = rows.map((line) => {
+      const values = line.split(",");
+      const item = Object.fromEntries(headers.map((key, index) => [key, values[index]]));
+      const dias = item.dias_exercicio;
+      const sono = item.sono;
+      return {
+        id: Number(item.id),
+        dias_exercicio_txt: dias,
+        dias_exercicio: dayValue[dias],
+        exercicios: dias === "0 dias" ? "Não" : "Sim",
+        alimentacao: Number(item.alimentacao),
+        dieta: Number(item.dieta),
+        sono_txt: sono,
+        sono: sleepValue[sono],
+        bem_estar: Number(item.bem_estar),
+        melhora: Number(item.melhora),
+        idade: item.idade,
+        idade_grupo: ["22 - 25", "26 ou mais."].includes(item.idade) ? "22 ou mais" : "14 a 21"
+      };
+    });
+
+    const fmt = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 });
+    const fmt1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const pctFmt = new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 1 });
+
+    function mean(values) {
+      const valid = values.filter((value) => Number.isFinite(value));
+      return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : 0;
+    }
+
+    function countWhere(predicate) {
+      return dados.filter(predicate).length;
+    }
+
+    function groupBy(items, keyFn) {
+      return items.reduce((acc, item) => {
+        const key = keyFn(item);
+        if (!acc.has(key)) acc.set(key, []);
+        acc.get(key).push(item);
+        return acc;
+      }, new Map());
+    }
+
+    function countBy(items, keyFn) {
+      return Array.from(groupBy(items, keyFn), ([key, values]) => ({ key, n: values.length }));
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function renderKpis() {
+      const total = dados.length;
+      const ativos = countWhere((d) => d.exercicios === "Sim");
+      const alimentacaoRegular = countWhere((d) => d.alimentacao >= 3);
+      const melhoraAlta = countWhere((d) => d.melhora >= 4);
+      const bemMedio = mean(dados.map((d) => d.bem_estar));
+
+      const cards = [
+        ["Respostas válidas", total, "Linha vazia do CSV removida"],
+        ["Praticam exercícios", pctFmt.format(ativos / total), `${ativos} estudantes ativos`],
+        ["Alimentação regular ou melhor", pctFmt.format(alimentacaoRegular / total), `${alimentacaoRegular} respostas entre 3 e 5`],
+        ["Bem-estar médio", fmt.format(bemMedio), "Escala de 0 a 5"],
+        ["Percebem melhora alta", pctFmt.format(melhoraAlta / total), `${melhoraAlta} respostas entre 4 e 5`],
+        ["Dormem 5 a 6 horas", pctFmt.format(countWhere((d) => d.sono === 5) / total), `${countWhere((d) => d.sono === 5)} estudantes`]
+      ];
+
+      document.querySelector("#kpis").innerHTML = cards.map(([label, value, note]) => `
+        <article class="kpi-card" data-tooltip="${escapeHtml(`${label}: ${value}. ${note}.`)}">
+          <span class="kpi-label">${escapeHtml(label)}</span>
+          <strong class="kpi-value">${escapeHtml(value)}</strong>
+          <span class="kpi-note">${escapeHtml(note)}</span>
+        </article>
+      `).join("");
+
+      document.querySelector("#badgeAtivos").textContent = pctFmt.format(ativos / total);
+    }
+
+    function renderBars(target, data, options = {}) {
+      const max = options.max ?? Math.max(...data.map((d) => d.value), 1);
+      const formatter = options.formatter ?? ((value) => fmt.format(value));
+      document.querySelector(target).innerHTML = data.map((item, index) => {
+        const colors = item.colors ?? palette[index % palette.length];
+        const width = Math.max(4, Math.min(100, (item.value / max) * 100));
+        return `
+          <div class="bar-row" data-tooltip="${escapeHtml(item.tooltip ?? `${item.label}: ${formatter(item.value)}`)}">
+            <div class="bar-text">
+              <strong>${escapeHtml(item.label)}</strong>
+              ${item.sub ? `<small>${escapeHtml(item.sub)}</small>` : ""}
+            </div>
+            <div class="bar-track" aria-hidden="true">
+              <div class="bar-fill" style="--w:${width}%; --start:${colors[0]}; --end:${colors[1]};"></div>
+            </div>
+            <div class="bar-number">${escapeHtml(formatter(item.value))}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderHistogram(target, counts, labelMap, colors) {
+      const max = Math.max(...counts.map((d) => d.n), 1);
+      document.querySelector(target).innerHTML = counts.map((item, index) => {
+        const color = colors[index % colors.length];
+        const height = Math.max(3, (item.n / max) * 100);
+        return `
+          <div class="hist-column" data-tooltip="${escapeHtml(`${labelMap[item.key]}: ${item.n} resposta(s).`)}">
+            <div class="hist-shell">
+              <div class="hist-fill" style="--h:${height}%; --start:${color[0]}; --end:${color[1]};"></div>
+            </div>
+            <div class="hist-count">${item.n}</div>
+            <div class="hist-label">${escapeHtml(labelMap[item.key])}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderStack(target, rowsData) {
+      document.querySelector(target).innerHTML = rowsData.map((row) => {
+        const total = row.segments.reduce((sum, segment) => sum + segment.value, 0) || 1;
+        const segments = row.segments.map((segment, index) => {
+          const colors = segment.colors ?? palette[index % palette.length];
+          const share = segment.value / total;
+          const label = share > .12 ? pctFmt.format(share) : "";
+          return `
+            <div class="segment" style="width:${share * 100}%; --start:${colors[0]}; --end:${colors[1]};" data-tooltip="${escapeHtml(`${segment.label}: ${segment.value} pessoa(s), ${pctFmt.format(share)}.`)}">
+              ${escapeHtml(label)}
+            </div>
+          `;
+        }).join("");
+        return `
+          <div class="stack-row">
+            <div class="stack-label">
+              <strong>${escapeHtml(row.label)}</strong>
+              ${row.sub ? `<small>${escapeHtml(row.sub)}</small>` : ""}
+            </div>
+            <div class="stack-track">${segments}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderTable(target, headersList, rowsList) {
+      document.querySelector(target).innerHTML = `
+        <table class="data-table">
+          <thead>
+            <tr>${headersList.map((header) => `<th>${escapeHtml(header)}</th>`).join("")}</tr>
+          </thead>
+          <tbody>
+            ${rowsList.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function mediaPorGrupo(items, keyFn, valueFn) {
+      return Array.from(groupBy(items, keyFn), ([key, values]) => ({
+        key,
+        n: values.length,
+        value: mean(values.map(valueFn))
+      }));
+    }
+
+    function renderAll() {
+      renderKpis();
+
+      const alimMedia = mediaPorGrupo(
+        dados.filter((d) => d.alimentacao > 0),
+        (d) => d.alimentacao,
+        (d) => d.bem_estar
+      )
+        .sort((a, b) => Number(b.key) - Number(a.key))
+        .map((d) => ({
+          label: labelsAlim[d.key],
+          sub: `${d.n} estudante(s)`,
+          value: d.value,
+          colors: dangerPalette[Number(d.key)],
+          tooltip: `Alimentação ${labelsAlim[d.key]}: bem-estar médio ${fmt.format(d.value)} em ${d.n} resposta(s).`
+        }));
+      renderBars("#barAlimBem", alimMedia, { max: 5, formatter: (value) => fmt.format(value) });
+
+      const allScale = [0, 1, 2, 3, 4, 5];
+      const alimCounts = countBy(dados, (d) => d.alimentacao);
+      const bemCounts = countBy(dados, (d) => d.bem_estar);
+      renderHistogram("#histAlim", allScale.map((key) => ({ key, n: alimCounts.find((d) => Number(d.key) === key)?.n ?? 0 })), labelsAlim, dangerPalette);
+      renderHistogram("#histBem", allScale.map((key) => ({ key, n: bemCounts.find((d) => Number(d.key) === key)?.n ?? 0 })), labelsBem, dangerPalette);
+
+      const dietaMedia = mediaPorGrupo(dados, (d) => d.dieta, (d) => d.bem_estar)
+        .sort((a, b) => Number(b.key) - Number(a.key))
+        .map((d) => ({
+          label: labelsDieta[d.key],
+          sub: `${d.n} estudante(s)`,
+          value: d.value,
+          colors: dangerPalette[Number(d.key)],
+          tooltip: `Dieta ${labelsDieta[d.key]}: bem-estar médio ${fmt.format(d.value)} em ${d.n} resposta(s).`
+        }));
+      renderBars("#barDietaBem", dietaMedia, { max: 5, formatter: (value) => fmt.format(value) });
+
+      const boaAlim = dados.filter((d) => d.alimentacao >= 4);
+      const seguemDieta = boaAlim.filter((d) => d.dieta >= 4).length;
+      const demaisDieta = boaAlim.length - seguemDieta;
+      renderTable("#tableDietaBoa", ["Grupo", "Quantidade", "Proporção"], [
+        ["Sigo quase sempre ou totalmente", seguemDieta, pctFmt.format(seguemDieta / boaAlim.length)],
+        ["Sigo parcialmente, pouco ou não sigo", demaisDieta, pctFmt.format(demaisDieta / boaAlim.length)]
+      ]);
+
+      const exCounts = countBy(dados, (d) => d.exercicios);
+      renderBars("#barExercicio", [
+        { label: "Pratico", sub: "Ao menos 1 dia/semana", value: exCounts.find((d) => d.key === "Sim")?.n ?? 0, colors: ["#0f9f96", "#54d2bb"] },
+        { label: "Não pratico", sub: "0 dias/semana", value: exCounts.find((d) => d.key === "Não")?.n ?? 0, colors: ["#ef5f55", "#f4b942"] }
+      ], { max: dados.length, formatter: (value) => `${value}` });
+
+      const estilo = countBy(dados, (d) => {
+        if (d.exercicios === "Sim" && d.dieta !== 0) return "Treino e dieta";
+        if (d.exercicios === "Não" && d.dieta === 0) return "Sem treino e sem dieta";
+        return "Treino ou dieta";
+      });
+      renderStack("#stackTreinoDieta", [{
+        label: "Amostra total",
+        sub: `${dados.length} estudantes`,
+        segments: [
+          { label: "Treino e dieta", value: estilo.find((d) => d.key === "Treino e dieta")?.n ?? 0, colors: ["#29a66a", "#0f9f96"] },
+          { label: "Treino ou dieta", value: estilo.find((d) => d.key === "Treino ou dieta")?.n ?? 0, colors: ["#f4b942", "#ef8a62"] },
+          { label: "Sem treino e sem dieta", value: estilo.find((d) => d.key === "Sem treino e sem dieta")?.n ?? 0, colors: ["#d94b4b", "#ef5f55"] }
+        ]
+      }]);
+
+      const bemEx = mediaPorGrupo(dados, (d) => d.exercicios, (d) => d.bem_estar).sort((a, b) => b.value - a.value);
+      renderTable("#tableBemExercicio", ["Pratica exercícios", "Média do bem-estar", "Quantidade"], bemEx.map((d) => [d.key, fmt.format(d.value), d.n]));
+
+      const ativoBoa = dados.filter((d) => d.exercicios === "Sim" && d.alimentacao >= 4);
+      const sedRuim = dados.filter((d) => d.exercicios === "Não" && d.alimentacao <= 3);
+      renderBars("#barCombo", [
+        {
+          label: "Ativo e alimentação boa",
+          sub: `${ativoBoa.length} estudante(s)`,
+          value: mean(ativoBoa.map((d) => d.bem_estar)),
+          colors: ["#29a66a", "#0f9f96"]
+        },
+        {
+          label: "Sedentário e alimentação regular/inferior",
+          sub: `${sedRuim.length} estudante(s)`,
+          value: mean(sedRuim.map((d) => d.bem_estar)),
+          colors: ["#d94b4b", "#ef8a62"]
+        }
+      ], { max: 5, formatter: (value) => fmt.format(value) });
+
+      const melhoraAlta = dados.filter((d) => d.melhora >= 4);
+      const melhoraEx = countBy(melhoraAlta, (d) => d.exercicios);
+      const melhoraDias = countBy(melhoraAlta, (d) => d.dias_exercicio >= 3 ? "3 ou mais" : "2 ou menos");
+      const melhoraAlim = countBy(melhoraAlta, (d) => d.alimentacao >= 4 ? "Boa ou muito boa" : "Regular ou inferior");
+      renderStack("#stackMelhoraEx", [{ label: "Melhora alta", sub: `${melhoraAlta.length} pessoas`, segments: [
+        { label: "Sim", value: melhoraEx.find((d) => d.key === "Sim")?.n ?? 0, colors: ["#29a66a", "#0f9f96"] },
+        { label: "Não", value: melhoraEx.find((d) => d.key === "Não")?.n ?? 0, colors: ["#ef5f55", "#f4b942"] }
+      ] }]);
+      renderStack("#stackMelhoraDias", [{ label: "Melhora alta", sub: `${melhoraAlta.length} pessoas`, segments: [
+        { label: "3 ou mais", value: melhoraDias.find((d) => d.key === "3 ou mais")?.n ?? 0, colors: ["#6f56c9", "#aa8ef5"] },
+        { label: "2 ou menos", value: melhoraDias.find((d) => d.key === "2 ou menos")?.n ?? 0, colors: ["#f4b942", "#ef8a62"] }
+      ] }]);
+      renderStack("#stackMelhoraAlim", [{ label: "Melhora alta", sub: `${melhoraAlta.length} pessoas`, segments: [
+        { label: "Boa ou muito boa", value: melhoraAlim.find((d) => d.key === "Boa ou muito boa")?.n ?? 0, colors: ["#29a66a", "#0f9f96"] },
+        { label: "Regular ou inferior", value: melhoraAlim.find((d) => d.key === "Regular ou inferior")?.n ?? 0, colors: ["#ef5f55", "#f4b942"] }
+      ] }]);
+
+      const idadeDias = mediaPorGrupo(dados.filter((d) => d.exercicios === "Sim"), (d) => d.idade_grupo, (d) => d.dias_exercicio)
+        .sort((a, b) => a.key.localeCompare(b.key))
+        .map((d, index) => ({ label: d.key, sub: `${d.n} estudante(s) ativos`, value: d.value, colors: palette[index] }));
+      renderBars("#barIdadeDias", idadeDias, { max: 5, formatter: (value) => fmt.format(value) });
+
+      const idadeGroups = ["14 a 21", "22 ou mais"];
+      renderStack("#stackIdadeEx", idadeGroups.map((idade) => {
+        const group = dados.filter((d) => d.idade_grupo === idade);
+        const counts = countBy(group, (d) => d.exercicios);
+        return {
+          label: idade,
+          sub: `${group.length} estudantes`,
+          segments: [
+            { label: "Pratica", value: counts.find((d) => d.key === "Sim")?.n ?? 0, colors: ["#0f9f96", "#54d2bb"] },
+            { label: "Não pratica", value: counts.find((d) => d.key === "Não")?.n ?? 0, colors: ["#ef5f55", "#f4b942"] }
+          ]
+        };
+      }));
+
+      const idadeAlim = mediaPorGrupo(dados, (d) => d.idade_grupo, (d) => d.alimentacao)
+        .sort((a, b) => a.key.localeCompare(b.key))
+        .map((d, index) => ({ label: d.key, sub: `${d.n} estudante(s)`, value: d.value, colors: palette[index] }));
+      renderBars("#barIdadeAlim", idadeAlim, { max: 5, formatter: (value) => fmt.format(value) });
+
+      renderStack("#stackIdadeAlim", idadeGroups.map((idade) => {
+        const group = dados.filter((d) => d.idade_grupo === idade);
+        const counts = countBy(group, (d) => d.alimentacao);
+        return {
+          label: idade,
+          sub: `${group.length} estudantes`,
+          segments: allScale.map((scale) => ({
+            label: labelsAlim[scale],
+            value: counts.find((d) => Number(d.key) === scale)?.n ?? 0,
+            colors: dangerPalette[scale]
+          }))
+        };
+      }));
+
+      const sonoOrder = [4, 5, 6, 7];
+      const sonoMedia = mediaPorGrupo(dados, (d) => d.sono, (d) => d.bem_estar)
+        .filter((d) => sonoOrder.includes(Number(d.key)))
+        .sort((a, b) => Number(b.key) - Number(a.key))
+        .map((d, index) => ({
+          label: Number(d.key) === 4 ? "Menos de 5 horas" : `${d.key} a ${Number(d.key) + 1} horas`,
+          sub: `${d.n} estudante(s)`,
+          value: d.value,
+          colors: palette[index],
+          tooltip: `${Number(d.key) === 4 ? "Menos de 5 horas" : `${d.key} a ${Number(d.key) + 1} horas`}: bem-estar médio ${fmt.format(d.value)} em ${d.n} resposta(s).`
+        }));
+      renderBars("#barSonoBem", sonoMedia, { max: 5, formatter: (value) => fmt.format(value) });
+    }
+
+    function setupTabs() {
+      document.querySelectorAll(".tab-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach((btn) => btn.classList.remove("active"));
+          document.querySelectorAll(".tab-panel").forEach((panel) => panel.classList.remove("active"));
+          button.classList.add("active");
+          document.querySelector(`#${button.dataset.tab}`).classList.add("active");
+        });
+      });
+    }
+
+    function setupTooltip() {
+      const tooltip = document.querySelector("#tooltip");
+      let active = null;
+      document.addEventListener("pointerover", (event) => {
+        const target = event.target.closest("[data-tooltip]");
+        if (!target) return;
+        active = target;
+        tooltip.textContent = target.dataset.tooltip;
+        tooltip.classList.add("visible");
+      });
+      document.addEventListener("pointermove", (event) => {
+        if (!active) return;
+        const x = Math.min(event.clientX + 16, window.innerWidth - tooltip.offsetWidth - 12);
+        const y = Math.min(event.clientY + 16, window.innerHeight - tooltip.offsetHeight - 12);
+        tooltip.style.left = `${x}px`;
+        tooltip.style.top = `${y}px`;
+      });
+      document.addEventListener("pointerout", (event) => {
+        if (!active || event.relatedTarget?.closest("[data-tooltip]") === active) return;
+        active = null;
+        tooltip.classList.remove("visible");
+      });
+    }
+
+    function setupNav() {
+      const links = Array.from(document.querySelectorAll(".nav-links a"));
+      const sections = links.map((link) => document.querySelector(link.getAttribute("href")));
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          links.forEach((link) => link.classList.toggle("active", link.getAttribute("href") === `#${entry.target.id}`));
+        });
+      }, { rootMargin: "-30% 0px -55% 0px", threshold: .01 });
+      sections.forEach((section) => observer.observe(section));
+    }
+
+    function setupProgress() {
+      const progress = document.querySelector("#progress");
+      const update = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.width = `${max > 0 ? (window.scrollY / max) * 100 : 0}%`;
+      };
+      document.addEventListener("scroll", update, { passive: true });
+      update();
+    }
+
+    function setupTheme() {
+      const button = document.querySelector("#themeToggle");
+      button.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+      });
+    }
+
+    renderAll();
+    setupTabs();
+    setupTooltip();
+    setupNav();
+    setupProgress();
+    setupTheme();
+  </script>
+</body>
+</html>
