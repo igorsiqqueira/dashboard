@@ -1,0 +1,887 @@
+---
+title: "Trabalho Dieta e Treino"
+format: 
+  dashboard:
+    scrolling: true
+    fontsize: 1.08rem
+    theme: 
+      light: lux
+      dark: darkly
+execute:
+  warning: false
+  message: false
+editor: visual
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(plotly)
+library(DT)
+library(scales)
+library(htmltools)
+
+dados_raw <- read_csv("dados.csv", locale = locale(encoding = "UTF-8"), show_col_types = FALSE)
+
+colnames(dados_raw) <- c(
+  "data_hora",
+  "exercicios_original",
+  "dias_exercicio_txt",
+  "alimentacao",
+  "dieta",
+  "sono_txt",
+  "bem_estar",
+  "melhora",
+  "idade"
+)
+
+dados <- dados_raw |>
+  filter(if_any(everything(), ~ !is.na(.x) & trimws(as.character(.x)) != "")) |>
+  mutate(
+    dias_exercicio_txt = as.character(dias_exercicio_txt),
+    sono_txt = as.character(sono_txt),
+    alimentacao = as.numeric(alimentacao),
+    dieta = as.numeric(dieta),
+    bem_estar = as.numeric(bem_estar),
+    melhora = as.numeric(melhora)
+  ) |>
+  transmute(
+    id = row_number(),
+    exercicios = if_else(dias_exercicio_txt == "0 dias", "Não", "Sim"),
+    dias_exercicio = case_when(
+      dias_exercicio_txt == "0 dias" ~ 0,
+      dias_exercicio_txt == "1 a 2 dias" ~ 1,
+      dias_exercicio_txt == "3 a 4 dias" ~ 3,
+      dias_exercicio_txt == "5 ou mais dias" ~ 5,
+      TRUE ~ NA_real_
+    ),
+    alimentacao,
+    dieta,
+    sono = case_when(
+      sono_txt == "Menos de 5 horas" ~ 4,
+      sono_txt == "5 a 6 horas" ~ 5,
+      sono_txt == "6 a 7 horas" ~ 6,
+      sono_txt == "7 a 8 horas" ~ 7,
+      TRUE ~ NA_real_
+    ),
+    sono_txt,
+    bem_estar,
+    melhora,
+    idade = as.character(idade),
+    idade_grupo = if_else(idade %in% c("22 - 25", "26 ou mais."), "22 ou mais", "14 a 21")
+  )
+
+rotulo_alimentacao <- c(
+  "0" = "Muito ruim",
+  "1" = "Ruim",
+  "2" = "Abaixo da média",
+  "3" = "Regular",
+  "4" = "Boa",
+  "5" = "Muito boa"
+)
+
+rotulo_bem_estar <- c(
+  "0" = "Muito ruim",
+  "1" = "Ruim",
+  "2" = "Abaixo da média",
+  "3" = "Regular",
+  "4" = "Bom",
+  "5" = "Muito bom"
+)
+
+rotulo_dieta <- c(
+  "0" = "Nunca sigo",
+  "1" = "Sigo muito pouco",
+  "2" = "Sigo pouco",
+  "3" = "Sigo parcialmente",
+  "4" = "Sigo quase sempre",
+  "5" = "Sigo totalmente"
+)
+
+paleta_escala <- c("#d94b4b", "#ef8a62", "#f4b942", "#29a66a", "#0f9f96", "#6f56c9")
+paleta_binaria <- c("Sim" = "#0f9f96", "Não" = "#ef5f55")
+paleta_habitos <- c(
+  "Treino e dieta" = "#29a66a",
+  "Treino ou dieta" = "#f4b942",
+  "Sem treino e sem dieta" = "#d94b4b"
+)
+paleta_stack <- c("#29a66a", "#f4b942", "#d94b4b", "#0f9f96", "#6f56c9", "#ef8a62", "#51bbfe")
+
+plot_bar_h <- function(df, x_col, y_col, title, subtitle = "", x_title = "", max_x = 5, colors = NULL) {
+  x <- df[[x_col]]
+  y <- df[[y_col]]
+  if (is.null(colors)) {
+    colors <- col_numeric(c("#ef5f55", "#f4b942", "#0f9f96"), domain = c(0, max_x))(x)
+  }
+
+  plot_ly(
+    x = x,
+    y = y,
+    type = "bar",
+    orientation = "h",
+    text = df$label_text,
+    textposition = "inside",
+    insidetextfont = list(color = "white", size = 14),
+    hovertext = df$hover_text,
+    hoverinfo = "text",
+    marker = list(
+      color = colors,
+      line = list(color = "rgba(255,255,255,.82)", width = 1)
+    )
+  ) |>
+    layout(
+      title = list(text = paste0(title, "<br><sup>", subtitle, "</sup>"), x = 0),
+      paper_bgcolor = "rgba(0,0,0,0)",
+      plot_bgcolor = "rgba(0,0,0,0)",
+      margin = list(l = 150, r = 25, t = 80, b = 50),
+      xaxis = list(title = x_title, range = c(0, max_x), gridcolor = "rgba(130,130,130,.18)"),
+      yaxis = list(title = "", categoryorder = "array", categoryarray = y),
+      hoverlabel = list(bgcolor = "#17212b", font = list(color = "white")),
+      showlegend = FALSE
+    ) |>
+    config(displaylogo = FALSE)
+}
+
+plot_stack_h <- function(df, x_col, y_col, fill_col, title, subtitle = "", x_title = "Proporção") {
+  plot_ly(
+    data = df,
+    x = as.formula(paste0("~", x_col)),
+    y = as.formula(paste0("~", y_col)),
+    color = as.formula(paste0("~", fill_col)),
+    colors = paleta_stack,
+    type = "bar",
+    orientation = "h",
+    text = ~percent(prop, accuracy = 0.1),
+    textposition = "inside",
+    hovertext = ~hover_text,
+    hoverinfo = "text"
+  ) |>
+    layout(
+      barmode = "stack",
+      title = list(text = paste0(title, "<br><sup>", subtitle, "</sup>"), x = 0),
+      paper_bgcolor = "rgba(0,0,0,0)",
+      plot_bgcolor = "rgba(0,0,0,0)",
+      margin = list(l = 130, r = 25, t = 80, b = 50),
+      xaxis = list(title = x_title, tickformat = ".0%", gridcolor = "rgba(130,130,130,.18)"),
+      yaxis = list(title = ""),
+      hoverlabel = list(bgcolor = "#17212b", font = list(color = "white")),
+      legend = list(orientation = "h", x = 0, y = -0.18)
+    ) |>
+    config(displaylogo = FALSE)
+}
+
+metric_card <- function(label, value, note) {
+  tags$article(
+    class = "metric-card",
+    tags$span(class = "metric-label", label),
+    tags$strong(class = "metric-value", value),
+    tags$span(class = "metric-note", note)
+  )
+}
+
+pretty_table <- function(df) {
+  datatable(
+    df,
+    rownames = FALSE,
+    class = "compact stripe hover",
+    options = list(dom = "t", pageLength = 8)
+  )
+}
+```
+
+```{r}
+#| label: visual-style
+#| echo: false
+#| results: asis
+
+tags$style(HTML("
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.metric-card {
+  min-height: 132px;
+  border: 1px solid rgba(120,120,120,.24);
+  border-radius: 8px;
+  padding: 18px;
+  background: linear-gradient(135deg, rgba(15,159,150,.12), rgba(244,185,66,.10));
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 42px rgba(20,35,50,.16);
+  border-color: rgba(15,159,150,.45);
+}
+.metric-label {
+  display: block;
+  font-size: .82rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #62717d;
+  font-weight: 800;
+}
+.metric-value {
+  display: block;
+  font-size: 2.4rem;
+  line-height: 1;
+  margin: 14px 0 8px;
+}
+.metric-note {
+  color: #62717d;
+}
+.insight {
+  border-left: 4px solid #0f9f96;
+  padding: 12px 14px;
+  border-radius: 0 8px 8px 0;
+  background: rgba(15,159,150,.10);
+}
+.quarto-dashboard .card,
+.bslib-card {
+  border-radius: 8px !important;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+.quarto-dashboard .card:hover,
+.bslib-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 42px rgba(20,35,50,.14);
+}
+@media (max-width: 780px) {
+  .metric-grid { grid-template-columns: 1fr; }
+}
+"))
+```
+
+# Página inicial
+
+## Row
+
+### Column {width="58%"}
+
+**Bem-vindo(a) ao trabalho sobre dieta e treino**
+
+Ao elaborar nossa pesquisa, coletamos dados sobre exercício físico, alimentação, dieta, sono, bem-estar, percepção de melhora e idade.
+
+Esta versão mantém a mesma estrutura do trabalho, mas troca os gráficos estáticos por visualizações interativas. Ao passar o mouse pelos gráficos, aparecem valores, médias, percentuais e tamanho dos grupos.
+
+<div class="insight">
+O banco original tinha uma linha vazia abaixo do cabeçalho. Ela foi removida no tratamento dos dados, deixando 53 respostas válidas para análise.
+</div>
+
+### Column {width="42%"}
+
+```{r}
+#| echo: false
+
+total <- nrow(dados)
+ativos <- sum(dados$exercicios == "Sim")
+melhora_alta <- sum(dados$melhora >= 4)
+alimentacao_regular <- sum(dados$alimentacao >= 3)
+bem_estar_medio <- mean(dados$bem_estar)
+
+tags$div(
+  class = "metric-grid",
+  metric_card("Respostas válidas", total, "Linha vazia removida"),
+  metric_card("Praticam exercícios", percent(ativos / total, accuracy = 0.1), paste(ativos, "estudantes")),
+  metric_card("Alimentação regular ou melhor", percent(alimentacao_regular / total, accuracy = 0.1), "Notas de 3 a 5"),
+  metric_card("Bem-estar médio", number(bem_estar_medio, accuracy = 0.01), "Escala de 0 a 5"),
+  metric_card("Percebem melhora alta", percent(melhora_alta / total, accuracy = 0.1), "Notas de 4 a 5"),
+  metric_card("Dormem 5 a 6 horas", percent(mean(dados$sono == 5), accuracy = 0.1), "Faixa mais associada ao bem-estar")
+)
+```
+
+# Alimentação
+
+## Row {height="520px"}
+
+### Column {width="28%"}
+
+Agrupando os estudantes pela qualidade da alimentação, a pergunta central é: **qual é a média de bem-estar de cada grupo?**
+
+O padrão geral aponta associação positiva: níveis mais altos de alimentação tendem a aparecer com médias maiores de bem-estar.
+
+<div class="insight">
+A categoria 0 teve apenas uma resposta. Por isso, ela aparece nas distribuições, mas não entra no gráfico principal de médias.
+</div>
+
+### Column {width="72%"}
+
+```{r}
+#| echo: false
+
+alim_media <- dados |>
+  filter(alimentacao > 0) |>
+  group_by(alimentacao) |>
+  summarise(
+    media_bem_estar = mean(bem_estar),
+    n = n(),
+    .groups = "drop"
+  ) |>
+  mutate(
+    grupo = rotulo_alimentacao[as.character(alimentacao)],
+    label_text = number(media_bem_estar, accuracy = 0.01),
+    hover_text = paste0(
+      grupo,
+      "<br>Média do bem-estar: ", number(media_bem_estar, accuracy = 0.01),
+      "<br>Respondentes: ", n
+    )
+  ) |>
+  arrange(alimentacao)
+
+plot_bar_h(
+  alim_media,
+  "media_bem_estar",
+  "grupo",
+  "Bem-estar segundo a qualidade da alimentação",
+  "Pessoas que comem melhor tendem a se sentir melhor",
+  "Média do bem-estar",
+  max_x = 5,
+  colors = paleta_escala[alim_media$alimentacao + 1]
+)
+```
+
+## Row {height="520px"}
+
+### Column {width="28%"}
+
+As distribuições ajudam a entender a amostra antes de tirar conclusões.
+
+Alimentação e bem-estar se concentram nos níveis intermediários e altos, o que reforça a leitura de associação entre bons hábitos e sensação geral de bem-estar.
+
+### Column {.tabset width="72%"}
+
+#### Alimentação
+
+```{r}
+#| echo: false
+
+alim_dist <- dados |>
+  count(alimentacao) |>
+  complete(alimentacao = 0:5, fill = list(n = 0)) |>
+  mutate(
+    grupo = rotulo_alimentacao[as.character(alimentacao)],
+    label_text = n,
+    hover_text = paste0(grupo, "<br>Respostas: ", n)
+  )
+
+plot_bar_h(
+  alim_dist,
+  "n",
+  "grupo",
+  "Ocorrências de cada nível de alimentação",
+  "Distribuição da escala de 0 a 5",
+  "Quantidade",
+  max_x = max(alim_dist$n),
+  colors = paleta_escala[alim_dist$alimentacao + 1]
+)
+```
+
+#### Bem-estar
+
+```{r}
+#| echo: false
+
+bem_dist <- dados |>
+  count(bem_estar) |>
+  complete(bem_estar = 0:5, fill = list(n = 0)) |>
+  mutate(
+    grupo = rotulo_bem_estar[as.character(bem_estar)],
+    label_text = n,
+    hover_text = paste0(grupo, "<br>Respostas: ", n)
+  )
+
+plot_bar_h(
+  bem_dist,
+  "n",
+  "grupo",
+  "Ocorrências de cada nível de bem-estar",
+  "Distribuição da escala de 0 a 5",
+  "Quantidade",
+  max_x = max(bem_dist$n),
+  colors = paleta_escala[bem_dist$bem_estar + 1]
+)
+```
+
+## Row {height="520px"}
+
+### Column {width="72%"}
+
+```{r}
+#| echo: false
+
+dieta_media <- dados |>
+  group_by(dieta) |>
+  summarise(
+    media_bem_estar = mean(bem_estar),
+    n = n(),
+    .groups = "drop"
+  ) |>
+  mutate(
+    grupo = rotulo_dieta[as.character(dieta)],
+    label_text = number(media_bem_estar, accuracy = 0.01),
+    hover_text = paste0(
+      grupo,
+      "<br>Média do bem-estar: ", number(media_bem_estar, accuracy = 0.01),
+      "<br>Respondentes: ", n
+    )
+  ) |>
+  arrange(dieta)
+
+plot_bar_h(
+  dieta_media,
+  "media_bem_estar",
+  "grupo",
+  "Bem-estar segundo a adesão a uma dieta",
+  "O melhor resultado aparece nos níveis intermediários de adesão",
+  "Média do bem-estar",
+  max_x = 5,
+  colors = paleta_escala[dieta_media$dieta + 1]
+)
+```
+
+### Column {width="28%"}
+
+Ao comparar os níveis de adesão à dieta, aparece uma nuance importante:
+
+- o melhor bem-estar está nos grupos que seguem parcialmente ou quase sempre;
+- a adesão total tem apenas uma resposta;
+- seguir um plano muito rígido não aparece como condição necessária para maior bem-estar.
+
+Essa leitura deixa a análise menos simplista: dieta importa, mas equilíbrio também parece importar.
+
+## Row {height="360px"}
+
+### Column {width="55%"}
+
+```{r}
+#| echo: false
+
+tabela_dieta_boa <- dados |>
+  filter(alimentacao %in% c(4, 5)) |>
+  mutate(
+    grupo = if_else(
+      dieta >= 4,
+      "Sigo quase sempre ou totalmente",
+      "Sigo parcialmente, pouco ou não sigo"
+    )
+  ) |>
+  count(grupo, name = "Quantidade de pessoas") |>
+  mutate(Proporção = percent(`Quantidade de pessoas` / sum(`Quantidade de pessoas`), accuracy = 0.1))
+
+pretty_table(tabela_dieta_boa)
+```
+
+### Column {width="45%"}
+
+Entre estudantes que classificaram a alimentação como boa ou muito boa, nem todos seguem dieta rígida.
+
+Isso diferencia duas coisas que muitas vezes são tratadas como iguais: **alimentar-se bem** e **seguir um plano alimentar fixo**.
+
+# Exercícios
+
+## Row
+
+Do total de respostas válidas, a maioria pratica exercícios físicos ao menos uma vez por semana.
+
+## Row {height="500px"}
+
+```{r}
+#| echo: false
+
+exercicio_dist <- dados |>
+  count(exercicios) |>
+  mutate(
+    grupo = recode(exercicios, "Sim" = "Pratico", "Não" = "Não pratico"),
+    label_text = n,
+    hover_text = paste0(grupo, "<br>Quantidade: ", n, "<br>Proporção: ", percent(n / sum(n), accuracy = 0.1))
+  ) |>
+  arrange(desc(exercicios))
+
+plot_bar_h(
+  exercicio_dist,
+  "n",
+  "grupo",
+  "Grande maioria dos estudantes tem rotina ativa",
+  "Contagem a partir dos dias de exercício declarados",
+  "Quantidade",
+  max_x = nrow(dados),
+  colors = paleta_binaria[exercicio_dist$exercicios]
+)
+```
+
+## Row {height="500px"}
+
+### Column {width="30%"}
+
+Agora, combinamos duas variáveis: exercício e dieta.
+
+A visualização mostra que mais da metade dos estudantes pratica exercícios e segue algum nível de plano alimentar. Apenas uma parcela pequena não faz nem um nem outro.
+
+### Column {width="70%"}
+
+```{r}
+#| echo: false
+
+treino_dieta <- dados |>
+  mutate(
+    habito = case_when(
+      exercicios == "Sim" & dieta != 0 ~ "Treino e dieta",
+      exercicios == "Não" & dieta == 0 ~ "Sem treino e sem dieta",
+      TRUE ~ "Treino ou dieta"
+    )
+  ) |>
+  count(habito) |>
+  mutate(
+    pessoas = "Amostra total",
+    prop = n / sum(n),
+    hover_text = paste0(habito, "<br>Pessoas: ", n, "<br>Proporção: ", percent(prop, accuracy = 0.1))
+  )
+
+plot_stack_h(
+  treino_dieta,
+  "prop",
+  "pessoas",
+  "habito",
+  "Estilo de vida disciplinado ainda é maioria",
+  "Treino e dieta analisados em conjunto"
+)
+```
+
+## Row {height="340px"}
+
+### Column {width="40%"}
+
+Pessoas que praticam exercícios têm melhor bem-estar?
+
+A média de bem-estar é maior entre estudantes com rotina ativa. A diferença não é enorme, mas aparece de forma consistente.
+
+### Column {width="60%"}
+
+```{r}
+#| echo: false
+
+tabela_exercicio_bem <- dados |>
+  group_by(`Pratica exercícios` = exercicios) |>
+  summarise(
+    `Média do bem-estar` = number(mean(bem_estar), accuracy = 0.01),
+    `Quantidade de pessoas` = n(),
+    .groups = "drop"
+  )
+
+pretty_table(tabela_exercicio_bem)
+```
+
+## Row {height="520px"}
+
+### Column {width="70%"}
+
+```{r}
+#| echo: false
+
+comparacao_habitos <- tibble(
+  habito = c("Ativo e alimentação boa", "Sedentário e alimentação regular/inferior"),
+  media_bem_estar = c(
+    dados |> filter(exercicios == "Sim", alimentacao >= 4) |> summarise(media = mean(bem_estar)) |> pull(media),
+    dados |> filter(exercicios == "Não", alimentacao <= 3) |> summarise(media = mean(bem_estar)) |> pull(media)
+  ),
+  n = c(
+    dados |> filter(exercicios == "Sim", alimentacao >= 4) |> nrow(),
+    dados |> filter(exercicios == "Não", alimentacao <= 3) |> nrow()
+  )
+) |>
+  mutate(
+    label_text = number(media_bem_estar, accuracy = 0.01),
+    hover_text = paste0(habito, "<br>Média do bem-estar: ", number(media_bem_estar, accuracy = 0.01), "<br>Respondentes: ", n)
+  )
+
+plot_bar_h(
+  comparacao_habitos,
+  "media_bem_estar",
+  "habito",
+  "Disciplina no dia a dia: vale a pena?",
+  "Comparação entre dois conjuntos de hábitos",
+  "Média do bem-estar",
+  max_x = 5,
+  colors = c("#29a66a", "#d94b4b")
+)
+```
+
+### Column {width="30%"}
+
+Ao comparar grupos extremos, a associação fica mais clara:
+
+- ativo e alimentação boa: maior média de bem-estar;
+- sedentário e alimentação regular ou inferior: menor média.
+
+Isso não prova causa, mas mostra um padrão coerente com a hipótese do trabalho.
+
+## Row
+
+Com a variável **sentimento de melhora**, verificamos se as pessoas que reconhecem os benefícios de associar treino e alimentação realmente praticam esses hábitos.
+
+## Row {height="500px"}
+
+### Column {.tabset width="100%"}
+
+#### Exercício
+
+```{r}
+#| echo: false
+
+melhora_alta_dados <- dados |> filter(melhora >= 4)
+
+melhora_ex <- melhora_alta_dados |>
+  count(exercicios) |>
+  mutate(
+    grupo = recode(exercicios, "Sim" = "Pratica", "Não" = "Não pratica"),
+    pessoas = "Melhora alta",
+    prop = n / sum(n),
+    hover_text = paste0(grupo, "<br>Pessoas: ", n, "<br>Proporção: ", percent(prop, accuracy = 0.1))
+  )
+
+plot_stack_h(
+  melhora_ex,
+  "prop",
+  "pessoas",
+  "grupo",
+  "Pessoas que percebem grande melhora",
+  "Praticam exercícios?"
+)
+```
+
+#### Dias por semana
+
+```{r}
+#| echo: false
+
+melhora_dias <- melhora_alta_dados |>
+  mutate(grupo = if_else(dias_exercicio >= 3, "3 ou mais", "2 ou menos")) |>
+  count(grupo) |>
+  mutate(
+    pessoas = "Melhora alta",
+    prop = n / sum(n),
+    hover_text = paste0(grupo, "<br>Pessoas: ", n, "<br>Proporção: ", percent(prop, accuracy = 0.1))
+  )
+
+plot_stack_h(
+  melhora_dias,
+  "prop",
+  "pessoas",
+  "grupo",
+  "Pessoas que percebem grande melhora",
+  "Quantos treinam 3 dias ou mais?"
+)
+```
+
+#### Alimentação
+
+```{r}
+#| echo: false
+
+melhora_alim <- melhora_alta_dados |>
+  mutate(grupo = if_else(alimentacao >= 4, "Alimentação boa ou muito boa", "Regular ou inferior")) |>
+  count(grupo) |>
+  mutate(
+    pessoas = "Melhora alta",
+    prop = n / sum(n),
+    hover_text = paste0(grupo, "<br>Pessoas: ", n, "<br>Proporção: ", percent(prop, accuracy = 0.1))
+  )
+
+plot_stack_h(
+  melhora_alim,
+  "prop",
+  "pessoas",
+  "grupo",
+  "Pessoas que percebem grande melhora",
+  "Como avaliam a alimentação?"
+)
+```
+
+# Idade
+
+## Row
+
+Nesta página, buscamos entender como a idade influencia as demais variáveis. Para evitar grupos muito pequenos, as faixas foram agrupadas em **14 a 21** e **22 ou mais**.
+
+## Row {height="520px"}
+
+### Column {width="70%"}
+
+```{r}
+#| echo: false
+
+idade_dias <- dados |>
+  filter(exercicios == "Sim") |>
+  group_by(idade_grupo) |>
+  summarise(
+    media_dias_exercicio = mean(dias_exercicio),
+    n = n(),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label_text = number(media_dias_exercicio, accuracy = 0.01),
+    hover_text = paste0(idade_grupo, "<br>Média de dias: ", number(media_dias_exercicio, accuracy = 0.01), "<br>Respondentes ativos: ", n)
+  )
+
+plot_bar_h(
+  idade_dias,
+  "media_dias_exercicio",
+  "idade_grupo",
+  "Dias de exercício por semana de acordo com a idade",
+  "Média entre estudantes que praticam exercícios",
+  "Média de dias por semana",
+  max_x = 5,
+  colors = c("#0f9f96", "#6f56c9")
+)
+```
+
+### Column {width="30%"}
+
+Os estudantes de 14 a 21 anos praticam atividades físicas por mais dias na semana, em média.
+
+Como as faixas etárias não têm o mesmo tamanho, o agrupamento ajuda a tornar a comparação mais estável.
+
+## Row {height="520px"}
+
+### Column {width="40%"}
+
+A proporção entre ativos e sedentários também é parecida nos dois grupos, com pequena vantagem para os estudantes mais jovens.
+
+Essa leitura reforça o gráfico anterior: eles aparecem um pouco mais ativos tanto na proporção quanto na frequência semanal.
+
+### Column {width="60%"}
+
+```{r}
+#| echo: false
+
+idade_ex <- dados |>
+  count(idade_grupo, exercicios) |>
+  group_by(idade_grupo) |>
+  mutate(
+    prop = n / sum(n),
+    hover_text = paste0(idade_grupo, "<br>", exercicios, ": ", n, " pessoa(s)<br>", percent(prop, accuracy = 0.1))
+  ) |>
+  ungroup()
+
+plot_stack_h(
+  idade_ex,
+  "prop",
+  "idade_grupo",
+  "exercicios",
+  "Proporção entre pessoas ativas e sedentárias",
+  "Agrupando os estudantes pela idade"
+)
+```
+
+## Row
+
+Será que os mais jovens se alimentam melhor?
+
+## Row {height="520px"}
+
+```{r}
+#| echo: false
+
+idade_alim <- dados |>
+  group_by(idade_grupo) |>
+  summarise(
+    media_alimentacao = mean(alimentacao),
+    n = n(),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label_text = number(media_alimentacao, accuracy = 0.01),
+    hover_text = paste0(idade_grupo, "<br>Média da alimentação: ", number(media_alimentacao, accuracy = 0.01), "<br>Respondentes: ", n)
+  )
+
+plot_bar_h(
+  idade_alim,
+  "media_alimentacao",
+  "idade_grupo",
+  "Qualidade da alimentação de acordo com a idade",
+  "Média da escala de 0 a 5",
+  "Média da qualidade da alimentação",
+  max_x = 5,
+  colors = c("#0f9f96", "#6f56c9")
+)
+```
+
+## Row
+
+Outro tipo de visualização:
+
+## Row {height="520px"}
+
+```{r}
+#| echo: false
+
+idade_alim_prop <- dados |>
+  count(idade_grupo, alimentacao) |>
+  complete(idade_grupo, alimentacao = 0:5, fill = list(n = 0)) |>
+  group_by(idade_grupo) |>
+  mutate(
+    prop = n / sum(n),
+    grupo = rotulo_alimentacao[as.character(alimentacao)],
+    hover_text = paste0(idade_grupo, "<br>", grupo, ": ", n, " pessoa(s)<br>", percent(prop, accuracy = 0.1))
+  ) |>
+  ungroup()
+
+plot_stack_h(
+  idade_alim_prop,
+  "prop",
+  "idade_grupo",
+  "grupo",
+  "Qualidade da alimentação de acordo com a idade",
+  "Distribuição completa da escala"
+)
+```
+
+## Row
+
+Quanto mais a barra estiver preenchida com tons de verde e azul, maior será a concentração nos níveis altos da escala.
+
+No conjunto da amostra, o grupo de 14 a 21 anos fica levemente à frente em exercícios e alimentação.
+
+# Sono
+
+## Row
+
+Por fim: pessoas que dormem mais têm melhor bem-estar?
+
+Curiosamente, no banco coletado, a faixa de 7 a 8 horas não aparece com a maior média de bem-estar. A melhor média pertence às pessoas que dormem cerca de 5 a 6 horas por noite.
+
+<div class="insight">
+Essa conclusão precisa de cuidado: ela descreve a amostra pesquisada, mas não deve ser lida como regra geral de saúde.
+</div>
+
+## Row {height="520px"}
+
+```{r}
+#| echo: false
+
+sono_media <- dados |>
+  group_by(sono, sono_txt) |>
+  summarise(
+    media_bem_estar = mean(bem_estar),
+    n = n(),
+    .groups = "drop"
+  ) |>
+  arrange(sono) |>
+  mutate(
+    label_text = number(media_bem_estar, accuracy = 0.01),
+    hover_text = paste0(sono_txt, "<br>Média do bem-estar: ", number(media_bem_estar, accuracy = 0.01), "<br>Respondentes: ", n)
+  )
+
+plot_bar_h(
+  sono_media,
+  "media_bem_estar",
+  "sono_txt",
+  "Média do bem-estar de acordo com horas de sono",
+  "Comparação por faixa de sono declarada",
+  "Média do bem-estar",
+  max_x = 5,
+  colors = rep_len(c("#51bbfe", "#29a66a", "#f4b942", "#6f56c9"), nrow(sono_media))
+)
+```
