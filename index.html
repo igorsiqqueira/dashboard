@@ -1565,3 +1565,304 @@
 
 <style id="mobileOverflowFixCss">
   @media(max-width:680px){.chart-title{display:block!important}.chart-title>.analysis-btn,.section-head>.analysis-btn{margin-top:10px!important;margin-left:0!important;align-self:flex-start!important}.analysis-btn{max-width:100%}}</style>
+
+<style id="academicPatchCss">
+.analysis-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  max-width: 100% !important;
+  border: 1px solid color-mix(in srgb, var(--teal) 35%, var(--line)) !important;
+  border-radius: 999px !important;
+  color: var(--teal-dark) !important;
+  background: color-mix(in srgb, var(--teal) 9%, var(--surface)) !important;
+  padding: 6px 9px !important;
+  font-size: .84rem !important;
+  font-weight: 800 !important;
+  box-shadow: none !important;
+  opacity: .84 !important;
+}
+body.dark .analysis-btn {
+  color: #9eece5 !important;
+  background: color-mix(in srgb, var(--teal) 12%, var(--surface)) !important;
+}
+.analysis-btn:hover {
+  transform: translateY(-1px) !important;
+  opacity: 1 !important;
+  box-shadow: 0 8px 18px rgba(15, 159, 150, .12) !important;
+}
+.info-dot {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: .72rem !important;
+  background: color-mix(in srgb, var(--teal) 22%, transparent) !important;
+  color: inherit !important;
+}
+.research-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.meta-pill {
+  border: 1px solid color-mix(in srgb, var(--teal) 28%, var(--line));
+  border-radius: 999px;
+  padding: 8px 11px;
+  background: color-mix(in srgb, var(--teal) 8%, var(--surface));
+  color: var(--muted);
+  font-size: .84rem;
+  font-weight: 750;
+}
+.mini-grid {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 14px !important;
+}
+.mini-card {
+  min-width: 0 !important;
+  padding: 18px !important;
+}
+.heatmap-wrap {
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.heatmap {
+  min-width: 640px;
+  display: grid;
+  gap: 7px;
+}
+.heat-row {
+  display: grid;
+  grid-template-columns: minmax(130px, .9fr) repeat(6, minmax(48px, 1fr));
+  gap: 7px;
+}
+.heat-label,
+.heat-cell,
+.heat-empty {
+  min-height: 44px;
+  border-radius: var(--radius);
+}
+.heat-label {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 800;
+}
+.heat-cell {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgb(15 159 150 / var(--border-alpha, .22));
+  background: rgb(15 159 150 / var(--level-alpha, .1));
+  color: var(--text);
+  font-weight: 850;
+  transition: transform .18s ease, filter .18s ease;
+}
+.heat-cell:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.12);
+}
+.heat-note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+.conclusion-card {
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(280px, .55fr);
+  gap: 20px;
+  align-items: start;
+}
+.conclusion-card p {
+  color: var(--muted);
+}
+.finding-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.finding-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.finding-list li:last-child {
+  border-bottom: 0;
+}
+.finding-list strong {
+  display: block;
+  font-size: 1.35rem;
+}
+.finding-list span {
+  color: var(--muted);
+  font-size: .92rem;
+}
+@media (max-width: 940px) {
+  .conclusion-card {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 680px) {
+  .meta-pill {
+    font-size: .78rem;
+  }
+  .analysis-btn {
+    padding: 6px 9px !important;
+    font-size: .82rem !important;
+  }
+  .heatmap {
+    min-width: 560px;
+  }
+}
+@media (max-width: 560px) {
+  .mini-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+</style>
+<script id="academicPatchJs">
+(() => {
+  if (window.academicPatchReady) return;
+  window.academicPatchReady = true;
+
+  const q = (selector, root = document) => root.querySelector(selector);
+  const A = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+  const esc = (value) => String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+  function openModal(title, text, trigger) {
+    const modal = q("#analysisModal");
+    const modalTitle = q("#analysisModalTitle");
+    const modalText = q("#analysisModalText");
+    const close = q(".analysis-close");
+    if (!modal || !modalTitle || !modalText) return;
+    modalTitle.textContent = title;
+    modalText.textContent = text;
+    modal.hidden = false;
+    requestAnimationFrame(() => modal.classList.add("open"));
+    close && close.focus();
+    modal.dataset.lastTrigger = trigger ? "1" : "";
+  }
+
+  function renderHeatmap() {
+    const target = q("#heatAlimBem");
+    if (!target) return;
+    let source;
+    try {
+      source = dados;
+    } catch (error) {
+      return;
+    }
+    const labelsAlimLocal = ["Não consegui", "Muito pouco", "Sigo pouco", "Parcialmente", "Quase sempre", "Totalmente"];
+    const labelsBemLocal = ["Muito ruim", "Ruim", "Regular", "Bom", "Muito bom", "Excelente"];
+    const levels = [0, 1, 2, 3, 4, 5];
+    const counts = new Map();
+    source.forEach((item) => {
+      const key = `${item.bem_estar}-${item.alimentacao}`;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+    const max = Math.max(...counts.values(), 1);
+    const header = `<div class="heat-row"><div class="heat-empty"></div>${levels.map((level) => `<div class="heat-label">Alim. ${level}</div>`).join("")}</div>`;
+    const body = levels.slice().reverse().map((bem) => `<div class="heat-row"><div class="heat-label">Bem-estar ${bem}</div>${levels.map((alim) => {
+      const n = counts.get(`${bem}-${alim}`) || 0;
+      const intensity = n / max;
+      const alpha = (.08 + intensity * .68).toFixed(2);
+      const borderAlpha = (.2 + intensity * .58).toFixed(2);
+      const tip = `Alimentação ${labelsAlimLocal[alim]} e bem-estar ${labelsBemLocal[bem]}: ${n} resposta(s).`;
+      return `<div class="heat-cell" style="--level-alpha:${alpha}; --border-alpha:${borderAlpha};" data-tooltip="${esc(tip)}">${n}</div>`;
+    }).join("")}</div>`).join("");
+    target.innerHTML = header + body;
+  }
+
+  function run() {
+    const nav = q(".nav-links");
+    if (nav && !q('.nav-links a[href="#conclusao"]')) {
+      nav.insertAdjacentHTML("beforeend", '<a href="#conclusao">Conclusão</a>');
+    }
+
+    const eyebrow = q(".hero .eyebrow");
+    if (eyebrow) eyebrow.textContent = "Pesquisa de campo | Campus UFV";
+    const h1 = q(".hero h1");
+    if (h1) h1.textContent = "Dieta, treino e bem-estar entre estudantes";
+    const lead = q(".hero .lead");
+    if (lead) {
+      lead.textContent = "Análise exploratória de uma pesquisa aplicada com estudantes da Universidade Federal de Viçosa (UFV), investigando relações entre exercício físico, alimentação, dieta, sono, bem-estar e melhora percebida.";
+      q(".research-meta")?.remove();
+      lead.insertAdjacentHTML("afterend", '<div class="research-meta"><span class="meta-pill">Coleta: 25/04 a 17/05/2026</span><span class="meta-pill">54 respostas coletadas</span><span class="meta-pill">53 registros tratados</span><span class="meta-pill">Campus UFV</span></div>');
+    }
+
+    const firstKpi = q(".kpi-card");
+    if (firstKpi) {
+      const label = q(".kpi-label", firstKpi);
+      const note = q(".kpi-note", firstKpi);
+      if (label) label.textContent = "Registros tratados";
+      if (note) note.textContent = "54 respostas coletadas no formulário";
+    }
+
+    const heroButton = q(".hero-analysis-btn");
+    if (heroButton) {
+      const nextButton = heroButton.cloneNode(true);
+      nextButton.addEventListener("click", () => openModal(
+        "Sobre a pesquisa",
+        "Pesquisa de campo realizada com estudantes da Universidade Federal de Viçosa (UFV), no período de 25/04/2026 a 17/05/2026.\n\nForam recebidas 54 respostas no formulário. Para os gráficos, 53 registros foram tratados porque uma linha vazia do CSV foi removida.",
+        nextButton
+      ));
+      heroButton.replaceWith(nextButton);
+    }
+    A(".analysis-btn span:last-child").forEach((span) => {
+      span.textContent = "Detalhes";
+    });
+
+    A(".mini-grid").forEach((grid) => {
+      const panel = grid.closest(".panel");
+      if (!panel) return;
+      panel.hidden = false;
+      panel.classList.remove("compact-panel");
+      A(".analysis-copy", panel).forEach((item) => item.classList.remove("analysis-copy"));
+    });
+
+    A(".segment").forEach((segment) => {
+      const width = Number.parseFloat(segment.style.width);
+      if (Number.isFinite(width) && width < 20) segment.textContent = "";
+    });
+
+    if (!q("#heatAlimBem")) {
+      const histRow = q("#histBem")?.closest(".row");
+      histRow?.insertAdjacentHTML("afterend", '<div class="row single academic-heatmap-row"><figure class="chart-card viz-special"><div class="chart-title"><div><h3>Mapa de associação entre alimentação e bem-estar</h3><p>Cruzamento das duas escalas para localizar concentração de respostas</p></div><span class="badge">matriz</span></div><div class="heatmap-wrap"><div class="heatmap" id="heatAlimBem"></div></div><p class="heat-note">Quanto mais intensa a célula, maior a concentração de estudantes naquela combinação de notas.</p></figure></div>');
+    }
+    renderHeatmap();
+
+    const miniPanel = q(".mini-grid")?.closest(".panel");
+    if (miniPanel) {
+      const title = q("h3", miniPanel);
+      const paragraph = q("p", miniPanel);
+      if (title) title.textContent = "Evidências entre estudantes que percebem grande melhora";
+      if (paragraph) paragraph.textContent = "Entre os respondentes com melhora percebida alta, a prática de exercício aparece como o hábito mais frequente. A alimentação boa ou muito boa aparece em menor proporção, indicando que os hábitos não avançam sempre no mesmo ritmo.";
+    }
+
+    const footer = q(".footer-note");
+    if (footer) {
+      footer.textContent = "Banco analisado: 54 respostas coletadas e 53 registros tratados para visualização. O período de coleta foi de 25/04/2026 a 17/05/2026.";
+    }
+
+    if (!q("#conclusao")) {
+      q("main")?.insertAdjacentHTML("beforeend", '<section class="page" id="conclusao"><div class="shell"><div class="section-head"><div><p class="eyebrow">Síntese da pesquisa</p><h2>Conclusão exploratória</h2></div><p>Os resultados descrevem padrões observados na amostra do campus UFV e devem ser interpretados como associação, não como prova de causalidade.</p></div><article class="panel conclusion-card"><div><h3>O que os dados sugerem?</h3><p>A amostra indica que exercício físico, alimentação e bem-estar caminham juntos, mas não de forma perfeitamente uniforme. A prática de exercício aparece como o marcador mais consistente entre estudantes que relatam grande melhora percebida.</p><p>Ao mesmo tempo, a alimentação boa ou muito boa aparece em proporção menor dentro do grupo de melhora alta. Isso torna a leitura mais interessante para análise de dados: os hábitos se combinam, mas cada variável contribui de maneira diferente.</p><p>Como a coleta foi feita entre 25/04/2026 e 17/05/2026 com estudantes da UFV, a conclusão deve ser apresentada como retrato da amostra pesquisada, útil para levantar hipóteses sobre rotina, saúde e bem-estar no campus.</p></div><ul class="finding-list"><li><strong>77,4%</strong><span>dos registros tratados indicam prática de exercício físico.</span></li><li><strong>83,0%</strong><span>relatam melhora percebida alta nos hábitos.</span></li><li><strong>81,8%</strong><span>do grupo com melhora alta pratica exercício.</span></li></ul></article></div></section>');
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", run, { once: true });
+  } else {
+    run();
+  }
+})();
+
+</script>
