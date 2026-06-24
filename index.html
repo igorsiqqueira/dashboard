@@ -2177,3 +2177,437 @@ body.dark .analysis-btn {
 })();
 
 </script>
+
+<style id="visualSimplifyCss">
+  .visual-simplified .lead {
+      max-width: 760px;
+      font-size: clamp(1rem, 2vw, 1.18rem);
+  }
+
+  .credit-strip {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 14px;
+      border: 1px solid color-mix(in srgb, var(--teal) 24%, var(--line));
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--teal) 6%, var(--surface));
+  }
+
+  .credit-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      color: var(--muted);
+      font-size: .9rem;
+  }
+
+  .credit-row strong {
+      color: var(--text);
+  }
+
+  .credit-name {
+      color: var(--text);
+      font-weight: 760;
+  }
+
+  .visual-simplified .research-meta {
+      margin-top: 12px;
+  }
+
+  .visual-simplified .research-meta .meta-pill:nth-child(n+4) {
+      display: none;
+  }
+
+  .focus-rings {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+  }
+
+  .ring-card {
+      min-width: 0;
+      display: grid;
+      place-items: center;
+      gap: 10px;
+      min-height: 178px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      text-align: center;
+      box-shadow: 0 10px 28px rgba(20, 35, 50, .06);
+  }
+
+  .ring {
+      width: min(118px, 32vw);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(var(--ring) calc(var(--p) * 1%), var(--surface-soft) 0);
+      position: relative;
+  }
+
+  .ring::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      background: var(--surface);
+  }
+
+  .ring span {
+      position: relative;
+      z-index: 1;
+      color: var(--text);
+      font-size: 1.35rem;
+      font-weight: 950;
+  }
+
+  .ring-card strong {
+      font-size: .98rem;
+  }
+
+  .ring-card small {
+      color: var(--muted);
+  }
+
+  .objective-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, .9fr) minmax(0, 1fr);
+      gap: 16px;
+  }
+
+  .objective-card,
+  .waffle-card {
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+  }
+
+  .objective-card h3,
+  .waffle-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+  }
+
+  .objective-card p,
+  .waffle-card p {
+      margin: 0;
+      color: var(--muted);
+  }
+
+  .objective-number {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--teal-dark);
+      font-size: 2.1rem;
+      font-weight: 950;
+      line-height: 1;
+  }
+
+  .waffle {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+      margin: 14px 0 12px;
+  }
+
+  .waffle-dot {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      background: var(--surface-soft);
+  }
+
+  .waffle-dot.active {
+      background: linear-gradient(135deg, var(--teal), var(--green));
+  }
+
+  .waffle-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      color: var(--muted);
+      font-size: .84rem;
+  }
+
+  .visual-note-panel {
+      display: none !important;
+  }
+
+  .visual-only-row,
+  .visual-only-row.reverse,
+  .visual-only-row.equal {
+      grid-template-columns: 1fr !important;
+  }
+
+  .visual-simplified .data-table {
+      display: none !important;
+  }
+
+  .theme-toggle {
+      width: 40px;
+      min-width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+      justify-content: center;
+      padding: 0 !important;
+  }
+
+  .theme-toggle svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      fill: none;
+  }
+
+  .theme-toggle .theme-moon {
+      display: none;
+  }
+
+  body.dark .theme-toggle .theme-sun {
+      display: none;
+  }
+
+  body.dark .theme-toggle .theme-moon {
+      display: inline-grid;
+  }
+
+  .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+  }
+
+  .visual-simplified .topbar {
+      overflow: hidden;
+  }
+
+  .visual-simplified .nav-shell,
+  .visual-simplified .nav-links {
+      min-width: 0;
+  }
+
+  .visual-simplified .nav-links {
+      overflow-x: auto;
+      overflow-y: hidden;
+      flex-wrap: nowrap;
+      scrollbar-width: none;
+  }
+
+  .visual-simplified .nav-links::-webkit-scrollbar {
+      display: none;
+  }
+
+  .visual-simplified .nav-links a,
+  .visual-simplified .theme-toggle {
+      flex: 0 0 auto;
+  }
+
+  .visual-simplified .heatmap-wrap {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+  }
+
+  .visual-simplified .chart-card:has(.heatmap-wrap) {
+      overflow: hidden;
+  }
+
+  @media (max-width: 940px) {
+      .focus-rings,
+      .objective-grid {
+            grid-template-columns: 1fr;
+      }
+  }
+
+  @media (max-width: 680px) {
+      .credit-strip,
+      .objective-card,
+      .waffle-card {
+            padding: 14px;
+      }
+
+    .ring-card {
+          min-height: 150px;
+    }
+  }
+
+  </style>
+  <script id="visualSimplifyJs">
+    (() => {
+        if (window.visualSimplifyReady) return;
+        window.visualSimplifyReady = true;
+
+       const q = (selector, root = document) => root.querySelector(selector);
+        const A = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+       function setThemeIcon() {
+             const button = q("#themeToggle");
+             if (!button) return;
+             button.setAttribute("aria-label", "Alternar tema claro e escuro");
+             button.title = "Alternar tema";
+             button.innerHTML = `
+                   <span class="theme-sun" aria-hidden="true">
+                           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+                                 </span>
+                                       <span class="theme-moon" aria-hidden="true">
+                                               <svg viewBox="0 0 24 24"><path d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5Z"></path></svg>
+                                                     </span>
+                                                           <span class="sr-only">Tema</span>
+                                                               `;
+       }
+
+       function setNav() {
+             const labels = {
+                     "#pagina-inicial": "In\u00edcio",
+                     "#perguntas": "Objetivo",
+                     "#alimentacao": "Bem-estar",
+                     "#exercicios": "H\u00e1bitos",
+                     "#idade": "Perfil",
+                     "#sono": "Sono",
+                     "#conclusao": "Conclus\u00e3o"
+             };
+             A(".nav-links a").forEach((link) => {
+                     const label = labels[link.getAttribute("href")];
+                     if (label) link.textContent = label;
+             });
+       }
+
+       function setHero() {
+             const lead = q(".hero .lead");
+             if (lead) {
+                     lead.textContent = "Pesquisa de campo com estudantes da UFV sobre como h\u00e1bitos de rotina se associam ao bem-estar percebido.";
+             }
+             q(".hero .variable-list")?.remove();
+             q(".credit-strip")?.remove();
+             const meta = q(".hero .research-meta");
+             if (meta) {
+                     meta.insertAdjacentHTML("beforebegin", `
+                             <div class="credit-strip" aria-label="Respons\u00e1veis pelo trabalho">
+                                       <div class="credit-row"><strong>Alunos:</strong>
+                                                   <span class="credit-name">Caio Augusto Pereira Queiroz</span>
+                                                               <span class="credit-name">Igor Siqueira Alves</span>
+                                                                           <span class="credit-name">Pedro Hashimoto Sanches Barbosa</span>
+                                                                                       <span class="credit-name">Bernardo Tufi Mansur Gentil</span>
+                                                                                                 </div>
+                                                                                                           <div class="credit-row"><strong>Professor:</strong> <span class="credit-name">Prof. Guaraci de Lima Requena</span></div>
+                                                                                                                   </div>
+                                                                                                                         `);
+             }
+       }
+
+       function setRingCards() {
+             const kpis = q("#kpis");
+             if (!kpis) return;
+             kpis.className = "focus-rings";
+             const items = [
+                     ["77%", "Praticam exerc\u00edcio", "41 de 53 estudantes", 77.4, "var(--teal)"],
+                     ["83%", "Percebem melhora alta", "44 de 53 respostas", 83, "var(--green)"],
+                     ["43%", "Avaliam alimenta\u00e7\u00e3o como boa", "23 de 53 respostas", 43.4, "var(--amber)"],
+                     ["19%", "Treino + dieta alta", "10 de 53 estudantes", 18.9, "var(--violet)"]
+                   ];
+             kpis.innerHTML = items.map(([value, title, note, p, color]) => `
+                   <article class="ring-card" data-tooltip="${title}: ${note}.">
+                           <div class="ring" style="--p:${p};--ring:${color};"><span>${value}</span></div>
+                                   <strong>${title}</strong>
+                                           <small>${note}</small>
+                                                 </article>
+                                                     `).join("");
+       }
+
+       function setObjective() {
+             const section = q("#perguntas");
+             if (!section) return;
+             q(".eyebrow", section).textContent = "Objetivo";
+             q("h2", section).textContent = "O que a pesquisa quer mostrar?";
+             const copy = q(".section-head > p", section);
+             if (copy) {
+                     copy.textContent = "A dashboard organiza a leitura em uma pergunta central e gr\u00e1ficos que mostram padr\u00f5es da amostra.";
+                     copy.classList.remove("analysis-copy");
+             }
+             const grid = q("#questionGrid");
+             if (!grid) return;
+             const dots = Array.from({ length: 53 }, (_, index) => `<span class="waffle-dot ${index < 41 ? "active" : ""}"></span>`).join("");
+             grid.className = "objective-grid";
+             grid.innerHTML = `
+                   <article class="objective-card">
+                           <span class="objective-number">1</span>
+                                   <h3>Pergunta-guia</h3>
+                                           <p>Estudantes com h\u00e1bitos mais saud\u00e1veis relatam maior bem-estar?</p>
+                                                 </article>
+                                                       <article class="waffle-card">
+                                                               <h3>Amostra ativa</h3>
+                                                                       <p>Cada quadrado representa um estudante tratado na an\u00e1lise.</p>
+                                                                               <div class="waffle" aria-hidden="true">${dots}</div>
+                                                                                       <div class="waffle-legend"><span>41 ativos</span><span>12 n\u00e3o ativos</span><span>n = 53</span></div>
+                                                                                             </article>
+                                                                                                   <article class="objective-card">
+                                                                                                           <span class="objective-number">2</span>
+                                                                                                                   <h3>Como ler</h3>
+                                                                                                                           <p>Os gr\u00e1ficos mostram associa\u00e7\u00e3o e distribui\u00e7\u00e3o. N\u00e3o s\u00e3o prova de causa.</p>
+                                                                                                                                 </article>
+                                                                                                                                     `;
+       }
+
+       function simplifySections() {
+             A("main .row").forEach((row) => {
+                     A(":scope > .panel", row).forEach((panel) => {
+                               if (panel.querySelector(".mini-grid, #storyDumbbellBem")) return;
+                               panel.classList.add("visual-note-panel");
+                               row.classList.add("visual-only-row");
+                     });
+             });
+             A(".data-table").forEach((table) => {
+                     const panel = table.closest(".panel");
+                     if (panel && !panel.querySelector("#storyDumbbellBem")) {
+                               panel.classList.add("visual-note-panel");
+                               panel.closest(".row")?.classList.add("visual-only-row");
+                     }
+             });
+       }
+
+       function tuneHeadings() {
+             const title = q("#pagina-inicial h1");
+             if (title) title.textContent = "H\u00e1bitos e bem-estar no campus UFV";
+             const conclusion = q("#conclusao .conclusion-card div");
+             if (conclusion) {
+                     conclusion.innerHTML = `
+                             <h3>Mensagem principal</h3>
+                                     <p>Na amostra, exerc\u00edcio f\u00edsico \u00e9 o sinal mais vis\u00edvel de melhora percebida. Alimenta\u00e7\u00e3o ajuda a explicar o bem-estar, mas dieta r\u00edgida n\u00e3o aparece como resposta \u00fanica.</p>
+                                             <p class="story-limit">A leitura \u00e9 explorat\u00f3ria: mostra padr\u00f5es dos estudantes pesquisados, sem afirmar causalidade.</p>
+                                                   `;
+             }
+       }
+
+       function run() {
+             document.body.classList.add("visual-simplified");
+             setNav();
+             setThemeIcon();
+             setHero();
+             setRingCards();
+             setObjective();
+             simplifySections();
+             tuneHeadings();
+       }
+
+       if (document.readyState === "loading") {
+             document.addEventListener("DOMContentLoaded", run, { once: true });
+       } else {
+             run();
+       }
+    })();
+
+</script>
+
+
