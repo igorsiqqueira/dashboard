@@ -1875,3 +1875,305 @@ body.dark .analysis-btn {
 </script>
 
 
+
+<style id="storytellingPatchCss">
+.storytelling-active .section-head-clean .analysis-copy {
+  display: block !important;
+}
+
+.storytelling-active .section-head > .analysis-btn,
+.storytelling-active .chart-title .analysis-btn,
+.storytelling-active .panel > .analysis-btn,
+.storytelling-active .mini-card .analysis-btn {
+  display: none !important;
+}
+
+.storytelling-active .hero .analysis-btn {
+  display: inline-flex !important;
+}
+
+.storytelling-active .chart-title h3 {
+  max-width: 820px;
+}
+
+.story-dumbbell {
+  margin: 14px 0 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--teal) 5%, var(--surface));
+}
+
+.story-dumbbell-title {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: .88rem;
+  font-weight: 800;
+}
+
+.story-dumbbell-line {
+  position: relative;
+  height: 58px;
+  margin: 8px 6px 4px;
+}
+
+.story-dumbbell-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 28px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--surface-soft), color-mix(in srgb, var(--teal) 28%, var(--surface-soft)));
+}
+
+.story-dot {
+  position: absolute;
+  left: calc(var(--x) * 20%);
+  top: 16px;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 900;
+  font-size: .78rem;
+  box-shadow: 0 8px 18px rgba(15, 159, 150, .16);
+}
+
+.story-dot.active {
+  background: linear-gradient(135deg, var(--teal), var(--green));
+}
+
+.story-dot.inactive {
+  background: linear-gradient(135deg, var(--violet), #9b7cf2);
+}
+
+.story-dumbbell-scale,
+.story-dumbbell-legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.story-dumbbell-legend {
+  margin-top: 10px;
+  font-size: .84rem;
+}
+
+.story-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.story-chip::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--chip);
+}
+
+.story-limit {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.storytelling-active .conclusion-card p {
+  max-width: 78ch;
+}
+
+@media (max-width: 680px) {
+  .story-dumbbell {
+    padding: 14px;
+  }
+
+  .story-dot {
+    width: 38px;
+    height: 38px;
+    font-size: .72rem;
+  }
+
+  .story-dumbbell-legend {
+    display: grid;
+  }
+}
+
+</style>
+<script id="storytellingPatchJs">
+(() => {
+  if (window.storytellingPatchReady) return;
+  window.storytellingPatchReady = true;
+
+  const q = (selector, root = document) => root.querySelector(selector);
+  const A = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+  function setSection(id, h2, text) {
+    const section = q(`#${id}`);
+    if (!section) return;
+    const title = q(".section-head h2", section);
+    const copy = q(".section-head > p", section);
+    if (title) title.textContent = h2;
+    if (copy) {
+      copy.textContent = text;
+      copy.classList.remove("analysis-copy");
+    }
+  }
+
+  function setChart(oldTitle, newTitle, newSubtitle, newBadge) {
+    const heading = A(".chart-card h3").find((item) => item.textContent.trim() === oldTitle);
+    if (!heading) return;
+    heading.textContent = newTitle;
+    const card = heading.closest(".chart-card");
+    const subtitle = q(".chart-title p", card);
+    const badge = q(".badge", card);
+    if (subtitle) subtitle.textContent = newSubtitle;
+    if (badge && newBadge) badge.textContent = newBadge;
+  }
+
+  function setChartAt(sectionId, index, newTitle, newSubtitle, newBadge) {
+    const card = A(`#${sectionId} .chart-card`)[index];
+    if (!card) return;
+    const heading = q("h3", card);
+    const subtitle = q(".chart-title p", card);
+    const badge = q(".badge", card);
+    if (heading) heading.textContent = newTitle;
+    if (subtitle) subtitle.textContent = newSubtitle;
+    if (badge && newBadge) badge.textContent = newBadge;
+  }
+
+  function openMethodology(button) {
+    const modal = q("#analysisModal");
+    const title = q("#analysisModalTitle");
+    const text = q("#analysisModalText");
+    const close = q(".analysis-close");
+    if (!modal || !title || !text) return;
+    title.textContent = "Metodologia da pesquisa";
+    text.textContent = [
+      "Pesquisa de campo aplicada com estudantes da Universidade Federal de Viçosa (UFV).",
+      "Coleta: 25/04/2026 a 17/05/2026.",
+      "Foram recebidas 54 respostas; 53 registros foram tratados para os gráficos.",
+      "Os resultados descrevem associações observadas na amostra. Eles não provam causalidade."
+    ].join("\n\n");
+    modal.hidden = false;
+    requestAnimationFrame(() => modal.classList.add("open"));
+    close && close.focus();
+  }
+
+  function simplifyButtons() {
+    const hero = q(".hero");
+    const heroButtons = A(".analysis-btn", hero);
+    heroButtons.forEach((button, index) => {
+      if (index > 0) {
+        button.remove();
+        return;
+      }
+      button.classList.add("hero-analysis-btn");
+      const label = q("span:last-child", button);
+      if (label) label.textContent = "Metodologia";
+      button.onclick = () => openMethodology(button);
+    });
+    A(".analysis-btn").forEach((button) => {
+      if (!button.closest(".hero")) button.remove();
+    });
+  }
+
+  function addDumbbell() {
+    const host = q("#tableBemExercicio");
+    if (!host || q("#storyDumbbellBem")) return;
+    host.insertAdjacentHTML("beforebegin", `
+      <div class="story-dumbbell" id="storyDumbbellBem" aria-label="Comparação de bem-estar médio entre estudantes ativos e não ativos">
+        <p class="story-dumbbell-title">Bem-estar médio em escala de 0 a 5</p>
+        <div class="story-dumbbell-line">
+          <span class="story-dot inactive" style="--x:2.83" data-tooltip="Não ativos: média 2,83 em 12 estudantes">2,83</span>
+          <span class="story-dot active" style="--x:3.20" data-tooltip="Ativos: média 3,20 em 41 estudantes">3,20</span>
+        </div>
+        <div class="story-dumbbell-scale"><span>0</span><span>5</span></div>
+        <div class="story-dumbbell-legend">
+          <span class="story-chip" style="--chip:var(--violet)">Não ativos</span>
+          <span class="story-chip" style="--chip:var(--teal)">Ativos</span>
+        </div>
+      </div>
+    `);
+  }
+
+  function run() {
+    document.body.classList.add("storytelling-active");
+
+    setSection("perguntas", "Perguntas de pesquisa", "Cada bloco testa uma associação observada na amostra, sem assumir causalidade.");
+    setSection("alimentacao", "Alimentação e bem-estar: onde as respostas se concentram?", "A leitura combina médias, distribuição e mapa de calor para mostrar padrão, variação e concentração.");
+    setSection("exercicios", "Exercício é o marcador mais forte de melhora percebida", "A maioria ativa aparece com melhora alta; dieta e alimentação ajudam a qualificar o perfil.");
+    setSection("idade", "Idade muda mais a frequência de treino do que a alimentação", "A comparação por grupos etários destaca diferenças de rotina, não perfis fixos.");
+    setSection("sono", "Sono aparece como alerta de interpretação", "As faixas de sono têm tamanhos diferentes; por isso, a leitura deve considerar quantidade de respostas.");
+    setSection("conclusao", "Conclusão: hábitos se combinam, mas não pesam igual", "O padrão mais consistente é exercício associado a melhora percebida; alimentação e dieta refinam a explicação.");
+
+    setChart("Bem-estar segundo a qualidade da alimentação", "Entre notas 1 a 5, melhor alimentação acompanha maior bem-estar", "Médias por nota; a nota 0 tem n=1 e deve ser lida como exceção.", "média");
+    setChart("Distribuição das respostas", "Alimentação e bem-estar se concentram no meio-alto da escala", "Distribuição por nota; o padrão geral vale mais que pontos isolados.", "distribuição");
+    setChart("Mapa de associação entre alimentação e bem-estar", "O núcleo da amostra está entre notas 3 e 4", "Mapa de calor: células mais escuras indicam mais estudantes.", "matriz");
+    setChart("Bem-estar segundo adesão à dieta", "Dieta parcial supera adesão extrema na média de bem-estar", "Notas 3 e 4 têm as maiores médias; nota 5 tem apenas 1 resposta.", "média");
+    setChart("Grande maioria dos estudantes tem rotina ativa", "77,4% dos estudantes praticam exercício", "Classificação derivada dos dias informados: 1 dia ou mais = ativo.", "77,4%");
+    setChart("Estilo de vida disciplinado ainda é maioria", "Só 18,9% combinam treino e dieta alta", "A maioria tem apenas um dos dois hábitos fortes.", "perfil");
+    setChart("Disciplina no dia a dia: vale a pena?", "Ativos têm bem-estar médio ligeiramente maior", "Comparação direta: 3,20 entre ativos contra 2,83 entre não ativos.", "dumbbell");
+    setChart("Dias de exercício por semana de acordo com a idade", "Jovens treinam um pouco mais dias por semana", "Média de dias entre estudantes ativos: 2,28 no grupo 14-21 vs 1,83 no 22+.", "dias");
+    setChart("Proporção entre pessoas ativas e sedentárias", "Atividade física é alta nos dois grupos etários", "Proporção por idade; comparação de perfil, não conclusão causal.", "idade");
+    setChart("Qualidade da alimentação de acordo com a idade", "Alimentação média muda pouco entre idades", "A diferença entre grupos é menor que a variação individual.", "média");
+    setChart("Distribuição da alimentação por idade", "Distribuição revela a mistura dentro de cada idade", "Barras empilhadas mostram notas de alimentação em cada grupo etário.", "0 a 5");
+    setChart("Média do bem-estar de acordo com horas de sono", "Quem dorme 5-6 horas aparece com maior média de bem-estar", "As faixas têm tamanhos diferentes; 7-8h concentra mais respostas, mas menor média.", "sono");
+
+    setChartAt("alimentacao", 0, "Entre notas 1 a 5, melhor alimentação acompanha maior bem-estar", "Médias por nota; a nota 0 tem n=1 e deve ser lida como exceção.", "média");
+    setChartAt("alimentacao", 1, "Alimentação e bem-estar se concentram no meio-alto da escala", "Distribuição por nota; o padrão geral vale mais que pontos isolados.", "distribuição");
+    setChartAt("alimentacao", 2, "O núcleo da amostra está entre notas 3 e 4", "Mapa de calor: células mais escuras indicam mais estudantes.", "matriz");
+    setChartAt("alimentacao", 3, "Dieta parcial supera adesão extrema na média de bem-estar", "Notas 3 e 4 têm as maiores médias; nota 5 tem apenas 1 resposta.", "média");
+    setChartAt("exercicios", 0, "77,4% dos estudantes praticam exercício", "Classificação derivada dos dias informados: 1 dia ou mais = ativo.", "77,4%");
+    setChartAt("exercicios", 1, "Só 18,9% combinam treino e dieta alta", "A maioria tem apenas um dos dois hábitos fortes.", "perfil");
+    setChartAt("exercicios", 2, "Ativos têm bem-estar médio ligeiramente maior", "Comparação direta: 3,20 entre ativos contra 2,83 entre não ativos.", "dumbbell");
+    setChartAt("idade", 0, "Jovens treinam um pouco mais dias por semana", "Média de dias entre estudantes ativos: 2,28 no grupo 14-21 vs 1,83 no 22+.", "dias");
+    setChartAt("idade", 1, "Atividade física é alta nos dois grupos etários", "Proporção por idade; comparação de perfil, não conclusão causal.", "idade");
+    setChartAt("idade", 2, "Alimentação média muda pouco entre idades", "A diferença entre grupos é menor que a variação individual.", "média");
+    setChartAt("idade", 3, "Distribuição revela a mistura dentro de cada idade", "Barras empilhadas mostram notas de alimentação em cada grupo etário.", "0 a 5");
+    setChartAt("sono", 0, "Quem dorme 5-6 horas aparece com maior média de bem-estar", "As faixas têm tamanhos diferentes; 7-8h concentra mais respostas, mas menor média.", "sono");
+
+    const miniPanel = q(".mini-grid")?.closest(".panel");
+    if (miniPanel) {
+      const title = q("h3", miniPanel);
+      const copy = q("p", miniPanel);
+      if (title) title.textContent = "Melhora alta aparece mais ligada ao exercício que à dieta";
+      if (copy) {
+        copy.textContent = "Entre quem relatou melhora alta, 81,8% praticam exercício; só 22,7% seguem dieta quase sempre ou totalmente.";
+        copy.classList.remove("analysis-copy");
+      }
+      miniPanel.hidden = false;
+      miniPanel.classList.remove("compact-panel");
+    }
+
+    const conclusion = q("#conclusao .conclusion-card");
+    if (conclusion) {
+      const main = q("div", conclusion);
+      if (main) {
+        main.innerHTML = `
+          <h3>Leitura final para apresentação</h3>
+          <p>Na amostra, exercício físico é o sinal mais constante de melhora percebida. Alimentação se associa a maior bem-estar médio, mas dieta rígida não aparece como o melhor cenário.</p>
+          <p class="story-limit">Como o estudo é exploratório e tem 53 registros tratados, a conclusão deve ser apresentada como associação observada no campus, não como causalidade.</p>
+        `;
+      }
+    }
+
+    addDumbbell();
+    simplifyButtons();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", run, { once: true });
+  } else {
+    run();
+  }
+})();
+
+</script>
