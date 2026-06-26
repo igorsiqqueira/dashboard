@@ -228,6 +228,17 @@
 
     .meta-list strong { color: var(--ink); }
 
+    .sample-note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-left: 5px solid var(--amber);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: color-mix(in srgb, var(--amber) 13%, transparent);
+      color: var(--ink);
+      font-weight: 850;
+      max-width: 760px;
+    }
+
     .hero-panel,
     .panel {
       border: 1px solid var(--line);
@@ -319,6 +330,38 @@
       background: color-mix(in srgb, var(--teal) 9%, transparent);
       color: var(--ink);
       font-weight: 800;
+    }
+
+    .measure-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .measure-card {
+      min-height: 150px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    .measure-card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 1.02rem;
+    }
+
+    .measure-card span {
+      color: var(--muted);
+      font-weight: 760;
+      font-size: .92rem;
+    }
+
+    .measure-card.attention {
+      background: color-mix(in srgb, var(--amber) 11%, var(--paper));
+      border-color: color-mix(in srgb, var(--amber) 36%, var(--line));
     }
 
     .method-steps {
@@ -464,6 +507,18 @@
       font-weight: 900;
     }
 
+    .comparison-values strong,
+    .comparison-values small {
+      display: block;
+    }
+
+    .comparison-values small {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 850;
+    }
+
     .comparison-values span:nth-child(2) {
       color: var(--teal-2);
       font-size: .9rem;
@@ -554,6 +609,11 @@
       border-color: color-mix(in srgb, var(--cell-color, var(--teal)) 70%, var(--line));
     }
 
+    .habit-cell.small-group {
+      border-style: dashed;
+      opacity: .82;
+    }
+
     .habit-cell::after {
       content: "";
       position: absolute;
@@ -593,6 +653,18 @@
       z-index: 1;
       color: var(--muted);
       margin-bottom: 0;
+    }
+
+    .caution-tag {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 8px;
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: color-mix(in srgb, var(--amber) 17%, transparent);
+      color: var(--ink);
+      font-size: .78rem;
+      font-weight: 900;
     }
 
     .heatmap {
@@ -753,6 +825,44 @@
     .distribution {
       display: grid;
       gap: 10px;
+    }
+
+    .well-histogram {
+      display: grid;
+      gap: 12px;
+    }
+
+    .hist-row {
+      display: grid;
+      grid-template-columns: minmax(56px, 80px) 1fr minmax(96px, auto);
+      gap: 12px;
+      align-items: center;
+    }
+
+    .hist-label {
+      color: var(--ink);
+      font-weight: 950;
+    }
+
+    .hist-track {
+      height: 22px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--line) 62%, transparent);
+      overflow: hidden;
+    }
+
+    .hist-fill {
+      width: var(--w);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--coral), var(--amber), var(--teal));
+    }
+
+    .hist-value {
+      color: var(--muted);
+      text-align: right;
+      font-weight: 850;
+      white-space: nowrap;
     }
 
     .dist-row {
@@ -962,6 +1072,7 @@
       .radial-layout { grid-template-columns: 1fr; }
       .stat-grid,
       .grid-3,
+      .measure-grid,
       .method-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
@@ -973,6 +1084,7 @@
       nav a { padding: 8px 11px; font-size: .86rem; }
       .stat-grid,
       .grid-3,
+      .measure-grid,
       .method-steps,
       .ladder-note,
       .matrix,
@@ -994,9 +1106,11 @@
         display: block;
       }
       .bar-row,
-      .dist-row { grid-template-columns: 1fr; gap: 6px; }
+      .dist-row,
+      .hist-row { grid-template-columns: 1fr; gap: 6px; }
       .bar-value,
-      .dist-value { text-align: left; }
+      .dist-value,
+      .hist-value { text-align: left; }
       .panel { padding: 18px; }
       .desktop-chart { display: none; }
       .mobile-chart { display: grid; }
@@ -1013,7 +1127,9 @@
       <nav aria-label="Navegação principal">
         <a href="#pagina-inicial">Início</a>
         <a href="#metodo">Pesquisa</a>
+        <a href="#medicao">Medição</a>
         <a href="#alimentacao">Alimentação</a>
+        <a href="#distribuicao">Distribuição</a>
         <a href="#exercicios">Exercícios</a>
         <a href="#perfis">Perfis</a>
         <a href="#alunos">Cruzamento</a>
@@ -1033,6 +1149,7 @@
           <h1>Quando hábito vira bem-estar?</h1>
           <p class="lead">Pesquisa com estudantes da Universidade Federal de Viçosa sobre exercício físico, alimentação, sono e percepção de qualidade de vida.</p>
           <p class="question">O que os dados mostram sobre a relação entre hábitos cotidianos e bem-estar?</p>
+          <p class="sample-note">Como a amostra tem 53 respostas, grupos pequenos devem ser interpretados com cautela.</p>
           <div class="meta-list">
             <div><strong>Período de coleta:</strong> <span id="dateRange">25/04/2026 a 17/05/2026</span></div>
             <div><strong>Professor:</strong> Guaraci de Lima Requena</div>
@@ -1041,7 +1158,7 @@
         </div>
         <aside class="hero-panel reveal" aria-label="Resumo da pesquisa">
           <h2 style="font-size:1.55rem;margin-bottom:0">Três achados da pesquisa</h2>
-          <div id="heroStats" class="loading">Carregando dados...</div>
+          <div id="heroStats" class="loading">Preparando resumo...</div>
         </aside>
       </div>
       <div class="inner stat-grid reveal" id="topStats"></div>
@@ -1090,20 +1207,71 @@
       </div>
     </section>
 
+    <section class="section" id="medicao">
+      <div class="inner">
+        <div class="section-head reveal">
+          <p class="eyebrow">Como os dados foram medidos</p>
+          <h2>As variáveis vêm de respostas autodeclaradas</h2>
+          <p>Antes dos gráficos, vale entender o que cada medida representa na pesquisa.</p>
+        </div>
+        <div class="measure-grid reveal">
+          <div class="measure-card">
+            <strong>Bem-estar</strong>
+            <span>Nota autodeclarada de 0 a 10 sobre bem-estar físico e mental.</span>
+          </div>
+          <div class="measure-card">
+            <strong>Alimentação</strong>
+            <span>Nota dada pelo próprio estudante sobre a qualidade da própria alimentação.</span>
+          </div>
+          <div class="measure-card">
+            <strong>Exercício</strong>
+            <span>Frequência semanal de prática de atividade física.</span>
+          </div>
+          <div class="measure-card">
+            <strong>Sono</strong>
+            <span>Horas médias de sono por noite, informadas em faixas.</span>
+          </div>
+          <div class="measure-card attention">
+            <strong>Atenção</strong>
+            <span>Os dados mostram associações entre hábitos e bem-estar; não provam causa e efeito.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="alimentacao">
       <div class="inner">
         <div class="section-head reveal">
           <p class="eyebrow">Evidência 1</p>
-          <h2>O maior salto aparece na alimentação percebida como melhor</h2>
-          <p>A comparação mostra quanto a nota média de bem-estar muda entre estudantes com menor e maior presença de cada hábito.</p>
+          <h2>A maior diferença aparece entre grupos de alimentação percebida</h2>
+          <p>A comparação mostra quanto a nota média de bem-estar varia entre grupos com menor e maior presença de cada hábito.</p>
         </div>
         <div class="panel reveal">
           <h3>Qual hábito mais acompanha o bem-estar?</h3>
-          <p>Notas médias em escala de 0 a 10. Quanto maior a diferença, mais forte é o contraste entre os grupos.</p>
+          <p>Notas médias em escala de 0 a 10. O gráfico compara extremos de cada hábito e informa o tamanho dos grupos.</p>
           <div class="chart-shell" id="variationPlot"></div>
           <div class="reading">
             <span class="reading-mark">1</span>
-            <div><strong>O que o gráfico mostra:</strong> a alimentação melhor avaliada apresenta o maior salto de bem-estar médio: cerca de 3 pontos em uma escala de 0 a 10.</div>
+            <div><strong>O que foi comparado:</strong> médias de bem-estar entre grupos baixos e altos em alimentação, exercício e dieta. <strong>O que aparece:</strong> a maior diferença está entre pior e melhor avaliação da alimentação. <strong>Cuidado:</strong> os grupos têm tamanhos diferentes, então a leitura é associativa.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="distribuicao">
+      <div class="inner">
+        <div class="section-head reveal">
+          <p class="eyebrow">Distribuição</p>
+          <h2>As notas de bem-estar não contam apenas pela média</h2>
+          <p>A distribuição mostra se as respostas estão concentradas ou espalhadas na escala de 0 a 10.</p>
+        </div>
+        <div class="panel reveal">
+          <h3>Distribuição das notas de bem-estar</h3>
+          <p>Cada barra mostra quantos estudantes marcaram cada nota convertida para a escala de 0 a 10.</p>
+          <div class="well-histogram" id="wellDistribution"></div>
+          <div class="reading">
+            <span class="reading-mark">D</span>
+            <div><strong>O que foi comparado:</strong> a frequência de cada nota de bem-estar. <strong>O que aparece:</strong> as respostas se concentram nas notas intermediárias e altas. <strong>Cuidado:</strong> duas categorias podem ter médias parecidas, mas distribuições diferentes.</div>
           </div>
         </div>
       </div>
@@ -1113,8 +1281,8 @@
       <div class="inner">
         <div class="section-head reveal">
           <p class="eyebrow">Evidência 2</p>
-          <h2>Exercício entra como ritmo: quanto mais frequente, maior a média</h2>
-          <p>A frequência semanal cria uma escada simples de leitura: quanto maior a rotina de exercício, maior tende a ser a nota média de bem-estar.</p>
+          <h2>A frequência de exercício acompanha uma tendência de maior bem-estar médio</h2>
+          <p>A frequência semanal cria uma escada de comparação: grupos que treinam mais aparecem com médias maiores na amostra.</p>
         </div>
         <div class="panel reveal">
           <h3>Bem-estar médio por frequência de exercício</h3>
@@ -1123,7 +1291,7 @@
           <div class="ladder-note" id="exerciseMiniStats"></div>
           <div class="reading">
             <span class="reading-mark">2</span>
-            <div><strong>Como interpretar:</strong> a média sobe de 5,7/10 entre sedentários para 7,4/10 entre estudantes que treinam cinco dias ou mais.</div>
+            <div><strong>O que foi comparado:</strong> faixas de frequência semanal de exercício. <strong>O que aparece:</strong> a média vai de 5,7/10 entre quem não treina a 7,4/10 entre quem treina cinco dias ou mais. <strong>Cuidado:</strong> isso mostra tendência na amostra, não prova efeito direto do exercício.</div>
           </div>
         </div>
       </div>
@@ -1140,7 +1308,7 @@
           <div class="matrix" id="habitMatrix"></div>
           <div class="reading">
             <span class="reading-mark">3</span>
-            <div><strong>Síntese:</strong> o perfil com treino e boa alimentação reúne 35,8% da amostra e tem média 7,2/10. O grupo sem treino e sem boa alimentação fica em 5,0/10.</div>
+            <div><strong>O que foi comparado:</strong> quatro perfis combinando exercício e alimentação. <strong>O que aparece:</strong> treino com boa alimentação reúne 35,8% da amostra e média 7,2/10; sem treino e sem boa alimentação fica em 5,0/10. <strong>Cuidado:</strong> perfis menores devem ser lidos com mais cautela.</div>
           </div>
         </div>
       </div>
@@ -1150,7 +1318,7 @@
       <div class="inner">
         <div class="section-head reveal">
           <p class="eyebrow">Evidência 4</p>
-          <h2>O cruzamento dos hábitos mostra onde o bem-estar se concentra</h2>
+          <h2>O cruzamento dos hábitos indica onde as médias se concentram</h2>
           <p>O mapa de calor cruza exercício e alimentação. Cada célula mostra a nota média de bem-estar em 0 a 10 e o tamanho daquele grupo.</p>
         </div>
         <div class="panel reveal">
@@ -1162,7 +1330,7 @@
           </div>
           <div class="reading">
             <span class="reading-mark">4</span>
-            <div><strong>Atenção ao n:</strong> entre os grupos com mais estudantes, as maiores médias aparecem principalmente entre quem avalia melhor a própria alimentação. Células com poucos casos devem ser lidas com cautela.</div>
+            <div><strong>O que foi comparado:</strong> alimentação percebida e frequência de exercício. <strong>O que aparece:</strong> entre grupos com mais estudantes, maiores médias aparecem principalmente em alimentação melhor avaliada. <strong>Cuidado:</strong> células com n baixo têm média instável.</div>
           </div>
         </div>
       </div>
@@ -1188,7 +1356,7 @@
           </div>
           <div class="reading">
             <span class="reading-mark">5</span>
-            <div><strong>Síntese:</strong> 83,0% dos estudantes marcaram 4 ou 5. Mesmo em uma amostra pequena, a percepção positiva da combinação é muito forte.</div>
+            <div><strong>O que foi comparado:</strong> notas de melhora percebida ao associar exercício e alimentação equilibrada. <strong>O que aparece:</strong> 83,0% marcaram 4 ou 5. <strong>Cuidado:</strong> é percepção autodeclarada, não medição clínica de melhora.</div>
           </div>
         </div>
       </div>
@@ -1198,13 +1366,17 @@
       <div class="inner">
         <div class="section-head reveal">
           <p class="eyebrow">Sono</p>
-          <h2>A faixa de sono mais comum concentra a leitura</h2>
-          <p>As faixas de sono mostram como o bem-estar médio muda entre grupos, sempre com o número de estudantes ao lado.</p>
+          <h2>O sono ajuda a comparar grupos, mas exige cautela</h2>
+          <p>As faixas de sono mostram como o bem-estar médio varia entre grupos, sempre com o número de estudantes ao lado.</p>
         </div>
         <div class="grid-2">
           <div class="panel reveal">
             <h3>Bem-estar médio por faixa de sono</h3>
             <div class="sleep-bars" id="sleepBars"></div>
+            <div class="reading">
+              <span class="reading-mark">6</span>
+              <div><strong>O que foi comparado:</strong> médias de bem-estar por faixa de sono. <strong>O que aparece:</strong> a faixa de 7 a 8 horas concentra mais estudantes. <strong>Cuidado:</strong> faixas com poucos casos podem oscilar bastante.</div>
+            </div>
           </div>
           <div class="panel reveal">
             <h3>O que observar</h3>
@@ -1218,13 +1390,13 @@
       <div class="inner">
         <div class="section-head reveal">
           <p class="eyebrow">Síntese da pesquisa</p>
-          <h2>Conclusão: bem-estar aparece como resultado de rotina</h2>
-          <p>Os dados não apontam uma fórmula pronta, mas mostram um caminho claro: movimento, alimentação melhor avaliada e percepção positiva caminham juntos.</p>
+          <h2>Conclusão: bem-estar aparece associado a hábitos mais equilibrados</h2>
+          <p>Os dados não apontam uma fórmula pronta. Eles indicam padrões de associação entre rotina, alimentação, exercício, sono e bem-estar percebido.</p>
         </div>
         <div class="conclusion-grid">
           <div class="big-conclusion reveal">
-            <p class="final-sentence">A vida universitária parece pesar menos quando a rotina tem movimento e uma alimentação mais bem cuidada.</p>
-            <p>Na amostra analisada, estudantes com alimentação melhor avaliada e prática de exercício físico tendem a relatar maior bem-estar. A dieta rígida aparece como parte da explicação, mas a história mais forte é a combinação entre movimento, alimentação cotidiana e percepção positiva de melhora.</p>
+            <p class="final-sentence">Na amostra, hábitos mais equilibrados aparecem junto de maiores notas de bem-estar.</p>
+            <p>Os dados indicam que estudantes com melhor alimentação percebida, maior frequência de exercício e sono mais regular tendem a relatar maior bem-estar. No entanto, como a pesquisa é autodeclarada e tem amostra limitada, os resultados devem ser interpretados como associações, não como prova de causa e efeito.</p>
             <div class="final-metric-strip">
               <div class="final-chip"><strong>53</strong><span>respostas analisadas</span></div>
               <div class="final-chip"><strong>83,0%</strong><span>percebem melhora alta</span></div>
@@ -1238,8 +1410,8 @@
             </div>
           </div>
           <div class="final-points reveal">
-            <div class="point"><strong>1. O achado mais forte</strong><span>Alimentação boa ou muito boa se associa ao maior salto de bem-estar médio.</span></div>
-            <div class="point"><strong>2. O papel do exercício</strong><span>A frequência de treino organiza uma tendência positiva, principalmente no grupo de 5 dias ou mais.</span></div>
+            <div class="point"><strong>1. O achado mais forte</strong><span>Alimentação boa ou muito boa se associa à maior diferença de bem-estar médio.</span></div>
+            <div class="point"><strong>2. O papel do exercício</strong><span>A frequência de treino acompanha uma tendência de médias mais altas, principalmente no grupo de 5 dias ou mais.</span></div>
             <div class="point"><strong>3. A leitura honesta</strong><span>Os gráficos mostram padrões úteis para discussão, mas não substituem estudo causal ou amostra maior.</span></div>
           </div>
         </div>
@@ -1373,7 +1545,7 @@
         </div>
         <div class="stat-card">
           <span class="stat-value">+${scoreText(gapFood)}</span>
-          <div class="stat-label">pontos na escala 0-10 ligados à alimentação melhor avaliada</div>
+          <div class="stat-label">pontos na escala 0-10 associados à alimentação melhor avaliada</div>
         </div>
       `;
 
@@ -1400,9 +1572,28 @@
         <div class="bar-row">
           <div class="bar-name">${escapeHtml(d.label.replace(".", ""))}</div>
           <div class="bar-track"><div class="bar-fill" style="--w:${d.n / max * 100}%"></div></div>
-          <div class="bar-value">${d.n} | ${pctText(d.n, data.length)}</div>
+          <div class="bar-value">n = ${d.n} | ${pctText(d.n, data.length)}</div>
         </div>
       `).join("");
+    }
+
+    function renderWellDistribution(data) {
+      const scores = [0, 2, 4, 6, 8, 10];
+      const counts = scores.map(score => ({
+        score,
+        n: data.filter(d => wellScore(d.well) === score).length
+      }));
+      const max = Math.max(...counts.map(d => d.n), 1);
+      document.getElementById("wellDistribution").innerHTML = counts.map(d => {
+        const isSmall = d.n > 0 && d.n < 5;
+        return `
+          <div class="hist-row">
+            <div class="hist-label">${scoreText(d.score)}/10</div>
+            <div class="hist-track"><div class="hist-fill" style="--w:${d.n / max * 100}%"></div></div>
+            <div class="hist-value">n = ${d.n} | ${pctText(d.n, data.length)}${isSmall ? " • n baixo" : ""}</div>
+          </div>
+        `;
+      }).join("");
     }
 
     function renderVariationPlot(data) {
@@ -1445,6 +1636,8 @@
           <circle class="dot" cx="${x(high)}" cy="${y}" r="15" fill="${d.color}"></circle>
           <text class="svg-title" x="${x(low)}" y="${y - 20}" text-anchor="middle">${scoreText(low)}/10</text>
           <text class="svg-title" x="${x(high)}" y="${y - 22}" text-anchor="middle">${scoreText(high)}/10</text>
+          <text class="svg-label" x="${x(low)}" y="${y + 26}" text-anchor="middle">n = ${d.low.n}</text>
+          <text class="svg-label" x="${x(high)}" y="${y + 28}" text-anchor="middle">n = ${d.high.n}</text>
           <text class="svg-title" x="${w - 24}" y="${y + 5}" text-anchor="end" fill="${d.color}">+${scoreText(gap)}</text>
         `;
       }).join("");
@@ -1465,9 +1658,9 @@
               <span class="comparison-dot" style="--x:${highPct}%;--dot-color:${d.color}"></span>
             </div>
             <div class="comparison-values">
-              <span>${scoreText(low)}/10</span>
+              <span><strong>${scoreText(low)}/10</strong><small>n = ${d.low.n}</small></span>
               <span>+${scoreText(gap)}</span>
-              <span>${scoreText(high)}/10</span>
+              <span><strong>${scoreText(high)}/10</strong><small>n = ${d.high.n}</small></span>
             </div>
           </article>
         `;
@@ -1502,7 +1695,7 @@
           <article class="mobile-step-card">
             <div>
               <h4>${escapeHtml(dayShort[g.label])}</h4>
-              <span>${g.n} estudante(s)</span>
+              <span>n = ${g.n}</span>
             </div>
             <div class="mobile-step-track">
               <span class="mobile-step-dot" style="--x:${pos}%;--dot-color:${color}"></span>
@@ -1533,8 +1726,8 @@
 
       document.getElementById("exerciseMiniStats").innerHTML = groups.map(g => `
         <div class="mini-stat">
-          <strong>${g.n}</strong>
-          <span>${escapeHtml(dayShort[g.label])} • ${pctText(g.n, data.length)}</span>
+          <strong>n = ${g.n}</strong>
+          <span>${escapeHtml(dayShort[g.label])} • ${pctText(g.n, data.length)}${g.n < 5 ? " • n baixo" : ""}</span>
         </div>
       `).join("");
     }
@@ -1571,11 +1764,12 @@
       });
       const maxN = Math.max(...cells.map(d => d.n), 1);
       document.getElementById("habitMatrix").innerHTML = cells.map(c => `
-        <article class="habit-cell" style="--cell-color:${c.color};--bubble:${70 + c.n / maxN * 95}px">
+        <article class="habit-cell ${c.n > 0 && c.n < 5 ? "small-group" : ""}" style="--cell-color:${c.color};--bubble:${70 + c.n / maxN * 95}px">
           <h3>${escapeHtml(c.title)}</h3>
           <p>${escapeHtml(c.desc)}</p>
           <div class="habit-score"><strong>${wellText(c.mean)}</strong><span>nota média</span></div>
-          <p>${c.n} estudante(s) • ${fmt1.format(c.pct)}%</p>
+          <p>n = ${c.n} • ${fmt1.format(c.pct)}%</p>
+          ${c.n > 0 && c.n < 5 ? `<span class="caution-tag">n baixo</span>` : ""}
         </article>
       `).join("");
     }
@@ -1606,14 +1800,14 @@
           const avg = mean(subset.map(d => d.well));
           const avg10 = wellScore(avg);
           const isEmpty = subset.length === 0;
-          const isSmall = subset.length > 0 && subset.length < 3;
+          const isSmall = subset.length > 0 && subset.length < 5;
           const color = isEmpty ? "var(--line)" : heatColor(avg10);
           const intensity = isEmpty || isSmall ? 20 : Math.max(24, Math.min(78, avg10 / 10 * 86));
           return `
             <div class="heatmap-cell ${isEmpty ? "empty" : ""} ${isSmall ? "small" : ""}" style="--cell-color:${color};--intensity:${intensity}%">
               <span class="cell-day">${escapeHtml(dayShort[day])}</span>
               <strong class="cell-mean">${isEmpty ? "--" : wellText(avg)}</strong>
-              <span class="cell-count">${isEmpty ? "sem casos" : isSmall ? `n = ${subset.length} • cautela` : `${subset.length} estudante(s)`}</span>
+              <span class="cell-count">${isEmpty ? "sem casos" : isSmall ? `n = ${subset.length} • cautela` : `n = ${subset.length}`}</span>
             </div>
           `;
         }).join("");
@@ -1647,7 +1841,7 @@
         <div class="dist-row">
           <div class="dist-label">${d.score}</div>
           <div class="dist-track"><div class="dist-fill" style="--w:${d.n / max * 100}%;--bar-color:${improveColor(d.score)}"></div></div>
-          <div class="dist-value">${d.n} | ${pctText(d.n, data.length)}</div>
+          <div class="dist-value">n = ${d.n} | ${pctText(d.n, data.length)}${d.n > 0 && d.n < 5 ? " • n baixo" : ""}</div>
         </div>
       `).join("");
     }
@@ -1661,7 +1855,7 @@
         <div class="bar-row">
           <div class="bar-name">${escapeHtml(g.label)}</div>
           <div class="bar-track"><div class="bar-fill" style="--w:${wellScore(g.mean) / maxMean * 100}%"></div></div>
-          <div class="bar-value">${wellText(g.mean)} • n=${g.n}</div>
+          <div class="bar-value">${wellText(g.mean)} • n = ${g.n}${g.n < 5 ? " • n baixo" : ""}</div>
         </div>
       `).join("");
     }
@@ -1716,6 +1910,7 @@
         if (!data.length) throw new Error("Nenhuma resposta válida encontrada");
         renderStats(data);
         renderAgeBars(data);
+        renderWellDistribution(data);
         renderVariationPlot(data);
         renderExerciseLadder(data);
         renderHabitMatrix(data);
