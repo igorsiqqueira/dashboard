@@ -491,28 +491,109 @@
       margin-bottom: 0;
     }
 
-    .scatter-wrap {
-      position: relative;
-      min-height: 390px;
+    .heatmap {
+      display: grid;
+      gap: 12px;
     }
 
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 16px;
-      margin-top: 12px;
+    .heatmap-head,
+    .heatmap-row {
+      display: grid;
+      grid-template-columns: minmax(130px, 170px) repeat(4, minmax(110px, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .heatmap-head span {
+      min-height: 34px;
+      display: grid;
+      place-items: center;
       color: var(--muted);
-      font-size: .92rem;
-      font-weight: 750;
+      font-size: .88rem;
+      font-weight: 900;
+      text-align: center;
     }
 
-    .legend i {
-      display: inline-block;
-      width: 12px;
+    .heatmap-label {
+      display: flex;
+      align-items: center;
+      min-height: 92px;
+      color: var(--ink);
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .heatmap-cell {
+      min-height: 92px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 13px;
+      display: grid;
+      align-content: center;
+      gap: 5px;
+      background: color-mix(in srgb, var(--cell-color) var(--intensity), var(--paper));
+      transition: transform .18s ease, border-color .18s ease;
+    }
+
+    .heatmap-cell:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--cell-color) 70%, var(--line));
+    }
+
+    .heatmap-cell.empty {
+      background: color-mix(in srgb, var(--line) 34%, transparent);
+      color: var(--muted);
+      opacity: .72;
+    }
+
+    .heatmap-cell.small {
+      border-style: dashed;
+      background:
+        repeating-linear-gradient(
+          135deg,
+          color-mix(in srgb, var(--cell-color) 18%, transparent) 0 9px,
+          transparent 9px 18px
+        ),
+        var(--paper);
+    }
+
+    .cell-mean {
+      color: var(--ink);
+      font-size: 1.55rem;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .cell-day {
+      display: none;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .cell-count {
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 800;
+    }
+
+    .heatmap-scale {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 800;
+    }
+
+    .heatmap-scale-bar {
       height: 12px;
-      margin-right: 6px;
-      border-radius: 50%;
-      vertical-align: -1px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--coral) 35%, var(--paper)), var(--amber), var(--teal));
     }
 
     .radial-layout {
@@ -749,6 +830,21 @@
       .method-steps,
       .ladder-note,
       .matrix { grid-template-columns: 1fr; }
+      .heatmap-head { display: none; }
+      .heatmap-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .heatmap-label {
+        min-height: auto;
+        padding-top: 8px;
+      }
+      .heatmap-cell {
+        min-height: 82px;
+      }
+      .cell-day {
+        display: block;
+      }
       .bar-row,
       .dist-row { grid-template-columns: 1fr; gap: 6px; }
       .bar-value,
@@ -765,11 +861,11 @@
       <div class="brand"><span class="brand-mark"></span>Dieta e treino</div>
       <nav aria-label="Navegação principal">
         <a href="#pagina-inicial">Início</a>
-        <a href="#metodo">Método</a>
+        <a href="#metodo">Pesquisa</a>
         <a href="#alimentacao">Alimentação</a>
         <a href="#exercicios">Exercícios</a>
         <a href="#perfis">Perfis</a>
-        <a href="#alunos">Alunos</a>
+        <a href="#alunos">Cruzamento</a>
         <a href="#sono">Cautela</a>
         <a href="#conclusao">Conclusão</a>
       </nav>
@@ -784,7 +880,7 @@
           <p class="eyebrow">Pesquisa aplicada na UFV</p>
           <h1>Quando hábito vira bem-estar?</h1>
           <p class="lead">Análise exploratória com estudantes da Universidade Federal de Viçosa sobre exercício físico, alimentação, dieta, sono e percepção de qualidade de vida.</p>
-          <p class="question">Pergunta central: quais hábitos aparecem caminhando junto com maior bem-estar?</p>
+          <p class="question">O que os dados mostram sobre a relação entre hábitos cotidianos e bem-estar?</p>
           <div class="meta-list">
             <div><strong>Período de coleta:</strong> <span id="dateRange">carregando...</span></div>
             <div><strong>Professor:</strong> Guaraci de Lima Requena</div>
@@ -801,30 +897,30 @@
     <section class="section alt" id="metodo">
       <div class="inner">
         <div class="section-head reveal">
-          <p class="eyebrow">Como lemos os dados</p>
-          <h2>Um relatório de pesquisa, não só um painel</h2>
-          <p>A leitura segue a lógica da apresentação: primeiro a base, depois a variável central, em seguida as evidências e, por fim, a conclusão com cautela metodológica.</p>
+          <p class="eyebrow">Sobre a pesquisa</p>
+          <h2>Hábitos, rotina e qualidade de vida entre estudantes</h2>
+          <p>A pesquisa observa como exercício físico, alimentação, dieta, sono e idade aparecem associados à percepção de bem-estar físico e mental entre estudantes da UFV.</p>
         </div>
         <div class="method-steps reveal">
           <div class="step">
             <span class="step-num">1</span>
-            <h3>Coleta</h3>
-            <p>Questionário respondido por estudantes da UFV entre abril e maio de 2026.</p>
+            <h3>Amostra</h3>
+            <p>Foram analisadas 53 respostas válidas de estudantes da Universidade Federal de Viçosa.</p>
           </div>
           <div class="step">
             <span class="step-num">2</span>
-            <h3>Limpeza</h3>
-            <p>Uma linha vazia foi retirada, mantendo 53 respostas válidas na análise.</p>
+            <h3>Rotina</h3>
+            <p>Os dados registram frequência de exercício, sono, alimentação e adesão a dieta.</p>
           </div>
           <div class="step">
             <span class="step-num">3</span>
-            <h3>Variável central</h3>
-            <p>O bem-estar físico e mental, em escala de 0 a 5, guia as comparações.</p>
+            <h3>Bem-estar</h3>
+            <p>A variável central é a nota de bem-estar físico e mental, medida em escala de 0 a 5.</p>
           </div>
           <div class="step">
             <span class="step-num">4</span>
-            <h3>Cuidado</h3>
-            <p>Os gráficos mostram associação. Eles não provam causa e efeito.</p>
+            <h3>Leitura</h3>
+            <p>Os resultados indicam padrões de associação e devem ser interpretados com cautela.</p>
           </div>
         </div>
         <div class="grid-2" style="margin-top:18px">
@@ -834,8 +930,8 @@
             <div class="age-bars" id="ageBars"></div>
           </div>
           <div class="panel reveal">
-            <h3>Por que a narrativa mudou?</h3>
-            <p class="callout">Em vez de repetir barras parecidas, a dashboard agora alterna comparação de médias, matriz 2x2, pontos individuais, distribuição e leitura de cautela.</p>
+            <h3>Recorte da análise</h3>
+            <p class="callout">O foco da leitura é comparar grupos e identificar quais hábitos aparecem mais próximos de maiores notas de bem-estar, sem transformar associação em causa.</p>
           </div>
         </div>
       </div>
@@ -901,16 +997,19 @@
       <div class="inner">
         <div class="section-head reveal">
           <p class="eyebrow">Evidência 4</p>
-          <h2>Cada ponto é um estudante: o padrão existe, mas não é perfeito</h2>
-          <p>O gráfico de pontos mostra a variação individual. Ele impede uma conclusão simplista e deixa claro que hábitos saudáveis aumentam a tendência, não determinam o resultado de cada pessoa.</p>
+          <h2>O cruzamento dos hábitos mostra onde o bem-estar se concentra</h2>
+          <p>O mapa de calor compara frequência de exercício e qualidade da alimentação. Cores mais fortes indicam médias maiores de bem-estar dentro de cada combinação.</p>
         </div>
         <div class="panel reveal">
-          <h3>Frequência de exercício, bem-estar e qualidade da alimentação</h3>
-          <div class="scatter-wrap" id="studentScatter"></div>
-          <div class="legend">
-            <span><i style="background:var(--coral)"></i>alimentação baixa</span>
-            <span><i style="background:var(--amber)"></i>alimentação intermediária</span>
-            <span><i style="background:var(--teal)"></i>alimentação boa ou muito boa</span>
+          <h3>Bem-estar médio por exercício e alimentação</h3>
+          <div class="heatmap" id="habitHeatmap"></div>
+          <div class="heatmap-scale">
+            <div class="heatmap-scale-bar"></div>
+            <span>menor → maior média</span>
+          </div>
+          <div class="reading">
+            <span class="reading-mark">4</span>
+            <div><strong>Principal leitura:</strong> as maiores médias aparecem principalmente quando a alimentação é melhor avaliada. Células com poucos casos ficam discretas para evitar conclusões fortes demais.</div>
           </div>
         </div>
       </div>
@@ -935,7 +1034,7 @@
             </div>
           </div>
           <div class="reading">
-            <span class="reading-mark">4</span>
+            <span class="reading-mark">5</span>
             <div><strong>Principal leitura:</strong> 83,0% dos estudantes marcaram 4 ou 5. Mesmo em uma amostra pequena, a percepção positiva da combinação é muito forte.</div>
           </div>
         </div>
@@ -1268,34 +1367,54 @@
       `).join("");
     }
 
-    function foodColor(score) {
-      if (score >= 4) return colors.teal;
-      if (score === 3) return colors.amber;
+    function heatColor(meanValue) {
+      if (meanValue >= 3.45) return colors.teal;
+      if (meanValue >= 2.8) return colors.amber;
       return colors.coral;
     }
 
-    function renderStudentScatter(data) {
-      const w = 920, h = 430, left = 66, right = 28, top = 30, bottom = 72;
-      const x = d => left + dayOrder.indexOf(d.days) / (dayOrder.length - 1) * (w - left - right);
-      const y = v => top + (5 - v) / 5 * (h - top - bottom);
-      const jitter = i => ((i * 37) % 31) - 15;
-      const points = data.map((d, i) => {
-        const cx = x(d) + jitter(i);
-        const cy = y(d.well) + (((i * 19) % 17) - 8);
-        const r = 6 + d.improve * 1.2;
-        const tip = `Aluno ${d.id}: ${dayShort[d.days]}, alimentação ${d.food}, bem-estar ${d.well}, melhora percebida ${d.improve}.`;
-        return `<circle class="dot" cx="${cx}" cy="${cy}" r="${r}" fill="${foodColor(d.food)}" fill-opacity=".78" stroke="var(--paper)" stroke-width="2" data-tip="${escapeHtml(tip)}"></circle>`;
+    function renderHabitHeatmap(data) {
+      const foodRows = [
+        { label: "Alimentação baixa", sub: "notas 0 a 2", pred: d => d.food <= 2 },
+        { label: "Alimentação intermediária", sub: "nota 3", pred: d => d.food === 3 },
+        { label: "Alimentação boa ou muito boa", sub: "notas 4 e 5", pred: d => d.food >= 4 }
+      ];
+
+      const header = `
+        <div class="heatmap-head" aria-hidden="true">
+          <span></span>
+          ${dayOrder.map(day => `<span>${escapeHtml(dayShort[day])}</span>`).join("")}
+        </div>
+      `;
+
+      const rows = foodRows.map(row => {
+        const cells = dayOrder.map(day => {
+          const subset = data.filter(d => d.days === day && row.pred(d));
+          const avg = mean(subset.map(d => d.well));
+          const isEmpty = subset.length === 0;
+          const isSmall = subset.length > 0 && subset.length < 3;
+          const color = isEmpty ? "var(--line)" : heatColor(avg);
+          const intensity = isEmpty || isSmall ? 20 : Math.max(24, Math.min(76, avg / 5 * 86));
+          const tip = isEmpty
+            ? `${row.label} + ${dayShort[day]}: sem estudantes na amostra.`
+            : `${row.label} + ${dayShort[day]}: bem-estar médio ${scoreText(avg)}; ${subset.length} estudante(s)${isSmall ? "; poucos casos, leia com cautela" : ""}.`;
+          return `
+            <div class="heatmap-cell ${isEmpty ? "empty" : ""} ${isSmall ? "small" : ""}" style="--cell-color:${color};--intensity:${intensity}%" data-tip="${escapeHtml(tip)}">
+              <span class="cell-day">${escapeHtml(dayShort[day])}</span>
+              <strong class="cell-mean">${isEmpty ? "--" : scoreText(avg)}</strong>
+              <span class="cell-count">${isEmpty ? "sem casos" : `${subset.length} estudante(s)${isSmall ? " • cautela" : ""}`}</span>
+            </div>
+          `;
+        }).join("");
+        return `
+          <div class="heatmap-row">
+            <div class="heatmap-label">${escapeHtml(row.label)}<br><span class="cell-count">${escapeHtml(row.sub)}</span></div>
+            ${cells}
+          </div>
+        `;
       }).join("");
 
-      document.getElementById("studentScatter").innerHTML = `
-        <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Pontos individuais relacionando exercício e bem-estar">
-          ${[0,1,2,3,4,5].map(t => `<line class="tick-line" x1="${left}" x2="${w - right}" y1="${y(t)}" y2="${y(t)}"></line><text class="svg-label" x="24" y="${y(t)+5}">${t}</text>`).join("")}
-          ${dayOrder.map((label, i) => `<text class="svg-label" x="${left + i / (dayOrder.length - 1) * (w - left - right)}" y="${h - 32}" text-anchor="middle">${dayShort[label]}</text>`).join("")}
-          <text class="svg-label" x="${w / 2}" y="${h - 6}" text-anchor="middle">frequência semanal de exercício</text>
-          <text class="svg-label" x="-${h/2}" y="14" transform="rotate(-90)" text-anchor="middle">bem-estar físico e mental</text>
-          ${points}
-        </svg>
-      `;
+      document.getElementById("habitHeatmap").innerHTML = header + rows;
     }
 
     function renderImprove(data) {
@@ -1404,7 +1523,7 @@
         renderVariationPlot(data);
         renderExerciseLadder(data);
         renderHabitMatrix(data);
-        renderStudentScatter(data);
+        renderHabitHeatmap(data);
         renderImprove(data);
         renderSleep(data);
         setupTooltip();
