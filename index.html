@@ -135,6 +135,12 @@
       cursor: pointer;
       font-size: 1.1rem;
       font-weight: 900;
+      transition: transform .2s ease, border-color .2s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-2px) rotate(8deg);
+      border-color: color-mix(in srgb, var(--teal) 55%, var(--line));
     }
 
     .section {
@@ -214,6 +220,36 @@
       font-size: clamp(1.08rem, 2vw, 1.45rem);
     }
 
+    .main-insight {
+      margin-top: 26px;
+      padding: clamp(18px, 3vw, 26px);
+      border: 1px solid color-mix(in srgb, var(--teal) 28%, var(--line));
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--teal) 18%, var(--paper)), color-mix(in srgb, var(--teal) 4%, var(--paper))),
+        var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .main-insight span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--teal-2);
+      font-size: .78rem;
+      font-weight: 950;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .main-insight strong {
+      display: block;
+      max-width: 720px;
+      color: var(--ink);
+      font-size: clamp(1.55rem, 3.4vw, 2.85rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
     .note {
       margin-top: 20px;
       padding: 14px 16px;
@@ -247,6 +283,13 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: color-mix(in srgb, var(--paper-2) 62%, transparent);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .hero-stat:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--teal) 48%, var(--line));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--teal) 13%, var(--paper)), var(--paper));
     }
 
     .hero-stat strong {
@@ -278,6 +321,65 @@
     .info-card {
       min-height: 150px;
       padding: 18px;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .info-card:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--teal) 42%, var(--line));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--teal) 9%, var(--paper)), var(--paper));
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .hero-panel .quick-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .quick-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--card-color, var(--teal)) 14%, var(--paper)), var(--paper));
+      box-shadow: 0 14px 32px rgba(18, 38, 63, .06);
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .quick-card:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--card-color, var(--teal)) 52%, var(--line));
+      box-shadow: var(--shadow);
+    }
+
+    .quick-card small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 950;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .quick-card strong {
+      display: block;
+      color: var(--ink);
+      font-size: clamp(1.3rem, 2.4vw, 2rem);
+      line-height: 1.05;
+      font-weight: 950;
+    }
+
+    .quick-card span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-weight: 780;
     }
 
     .info-card strong {
@@ -307,6 +409,32 @@
       font-size: 1.08rem;
     }
 
+    .impact-line {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 16px;
+      border: 1px solid color-mix(in srgb, var(--teal) 26%, var(--line));
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--teal) 12%, var(--paper)), color-mix(in srgb, var(--blue) 5%, var(--paper))),
+        var(--paper);
+    }
+
+    .impact-line strong {
+      color: var(--ink);
+      font-size: clamp(1.1rem, 2.3vw, 1.55rem);
+      line-height: 1.1;
+    }
+
+    .impact-line span {
+      color: var(--muted);
+      font-weight: 850;
+    }
+
     .results-grid {
       display: grid;
       gap: 24px;
@@ -315,6 +443,13 @@
     .result-card {
       padding: clamp(20px, 3vw, 30px);
       overflow: hidden;
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+    .result-card:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--teal) 42%, var(--line));
+      box-shadow: 0 26px 60px rgba(18, 38, 63, .12);
     }
 
     .chart-note {
@@ -337,6 +472,13 @@
       display: grid;
       align-content: space-between;
       gap: 14px;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .big-bar-card:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--bar-end, var(--teal)) 46%, var(--line));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--bar-end, var(--teal)) 10%, var(--paper)), var(--paper));
     }
 
     .big-bar-card small,
@@ -362,10 +504,15 @@
     }
 
     .fill {
-      width: var(--w);
+      width: 0;
       height: 100%;
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--teal), var(--blue), var(--violet));
+      background: linear-gradient(90deg, var(--bar-start, var(--teal)), var(--bar-end, var(--teal-2)));
+      transition: width 1.15s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .reveal.is-visible .fill.ready {
+      width: var(--w);
     }
 
     .trend-list {
@@ -380,6 +527,11 @@
       align-items: center;
       padding: 12px 0;
       border-bottom: 1px solid var(--line);
+      transition: transform .2s ease;
+    }
+
+    .trend-row:hover {
+      transform: translateX(4px);
     }
 
     .trend-row:last-child { border-bottom: 0; }
@@ -448,6 +600,11 @@
       border-color: color-mix(in srgb, var(--cell-color) 66%, var(--line));
     }
 
+    .heat-cell.best-cell {
+      border-color: color-mix(in srgb, var(--teal) 70%, var(--line));
+      box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--teal) 22%, transparent);
+    }
+
     .heat-cell.small-base {
       opacity: .78;
       border-style: dashed;
@@ -480,6 +637,19 @@
       font-weight: 950;
     }
 
+    .cell-tag {
+      width: fit-content;
+      margin-top: 2px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--teal) 14%, var(--paper));
+      color: var(--teal-2);
+      font-size: .72rem;
+      font-weight: 950;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+
     .legend {
       display: grid;
       gap: 8px;
@@ -506,6 +676,12 @@
       border-left: 5px solid var(--teal);
       border-radius: 0 var(--radius) var(--radius) 0;
       background: color-mix(in srgb, var(--teal) 8%, transparent);
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .reading:hover {
+      transform: translateX(3px);
+      background: color-mix(in srgb, var(--teal) 12%, transparent);
     }
 
     .reading strong {
@@ -605,12 +781,34 @@
       font-weight: 850;
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *,
+      *::before,
+      *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+
+      .reveal,
+      .reveal.is-visible {
+        opacity: 1;
+        transform: none;
+      }
+
+      .fill { width: var(--w); }
+    }
+
     @media (max-width: 940px) {
       .nav-wrap { grid-template-columns: 1fr auto; }
-      nav { grid-column: 1 / -1; justify-content: flex-start; }
+      .brand { grid-column: 1; grid-row: 1; min-width: 0; }
+      .theme-toggle { grid-column: 2; grid-row: 1; }
+      nav { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; }
       .hero-grid,
       .final-grid { grid-template-columns: 1fr; }
       .simple-grid,
+      .quick-grid,
       .two-bars { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .heat-head,
       .heat-row { grid-template-columns: minmax(120px, 160px) repeat(4, minmax(105px, 1fr)); }
@@ -621,8 +819,10 @@
       .hero { min-height: auto; padding-top: 42px; }
       .nav-wrap { padding: 12px 0; }
       .brand { font-size: .9rem; }
-      nav a { padding: 8px 11px; font-size: .86rem; }
+      nav { gap: 5px; }
+      nav a { padding: 8px 8px; font-size: .82rem; }
       .simple-grid,
+      .quick-grid,
       .two-bars { grid-template-columns: 1fr; }
       .trend-row { grid-template-columns: 1fr; gap: 8px; }
       .trend-score { text-align: left; }
@@ -660,6 +860,10 @@
           <p class="eyebrow">Pesquisa aplicada na UFV</p>
           <h1>Hábitos e bem-estar entre estudantes</h1>
           <p class="lead">Esta pesquisa analisou 53 respostas de estudantes da UFV para entender como alimentação, exercício, sono e rotina aparecem relacionados ao bem-estar. Os dados não provam causa e efeito, mas mostram padrões interessantes dentro da amostra.</p>
+          <div class="main-insight reveal">
+            <span>Mensagem em 10 segundos</span>
+            <strong>Melhor alimentação e mais exercício aparecem junto de maior bem-estar.</strong>
+          </div>
           <p class="note">Base pequena: quando um grupo tiver poucas respostas, a leitura deve ser feita com cuidado.</p>
         </div>
 
@@ -669,6 +873,23 @@
             <div class="hero-stat"><strong id="sampleCount">53</strong><span>respostas</span></div>
             <div class="hero-stat"><strong>25/04 a 17/05</strong><span>período de coleta em 2026</span></div>
             <div class="hero-stat"><strong>0 a 10</strong><span>escala de bem-estar</span></div>
+          </div>
+          <div class="quick-grid">
+            <div class="quick-card" style="--card-color:var(--teal)">
+              <small>Mais forte</small>
+              <strong>Alimentação</strong>
+              <span>maior diferença visual nas médias.</span>
+            </div>
+            <div class="quick-card" style="--card-color:var(--blue)">
+              <small>Tendência</small>
+              <strong>Exercício</strong>
+              <span>mais dias acompanham notas maiores.</span>
+            </div>
+            <div class="quick-card" style="--card-color:var(--amber)">
+              <small>Cuidado</small>
+              <strong>Base pequena</strong>
+              <span>alguns grupos pedem leitura calma.</span>
+            </div>
           </div>
         </aside>
       </div>
@@ -713,7 +934,7 @@
         <div class="section-head reveal">
           <p class="eyebrow">Resultados</p>
           <h2>O que aparece nos dados</h2>
-          <p>Os gráficos abaixo mostram os três padrões mais claros sem excesso de informação.</p>
+          <p>O caminho de leitura é simples: primeiro alimentação, depois exercício, depois a combinação dos dois hábitos.</p>
         </div>
 
         <article class="result-card reveal">
@@ -920,42 +1141,68 @@
         groupStats(data, "Alimentação baixa", d => d.food <= 2),
         groupStats(data, "Boa ou muito boa", d => d.food >= 4)
       ];
+      const scores = groups.map(group => score10(group.mean));
+      const difference = scores[1] - scores[0];
 
-      document.getElementById("foodChart").innerHTML = groups.map((group, index) => {
+      const cards = groups.map((group, index) => {
         const score = score10(group.mean);
-        const color = index === 0 ? colors.coral : colors.teal;
+        const palette = index === 0
+          ? { start: "#ff978d", end: colors.coral }
+          : { start: "#35d7ca", end: colors.teal };
         return `
-          <div class="big-bar-card">
+          <div class="big-bar-card" style="--bar-end:${palette.end}">
             <div>
               <h4>${group.label}</h4>
               <small>${baseText(group.count)}</small>
             </div>
             <div>
-              <div class="score" style="color:${color}">${scoreText(score)}</div>
-              <div class="track"><div class="fill" style="--w:${score * 10}%;background:${color}"></div></div>
+              <div class="score" style="color:${palette.end}">${scoreText(score)}</div>
+              <div class="track"><div class="fill" style="--w:${score * 10}%;--bar-start:${palette.start};--bar-end:${palette.end}"></div></div>
             </div>
           </div>
         `;
       }).join("");
+
+      document.getElementById("foodChart").innerHTML = `
+        ${cards}
+        <div class="impact-line">
+          <strong>Diferença de ${fmtOne.format(difference)} ponto${Math.abs(difference) === 1 ? "" : "s"} no bem-estar médio</strong>
+          <span>maior média entre quem avalia melhor a alimentação</span>
+        </div>
+      `;
     }
 
     function renderExerciseChart(data) {
       const groups = dayOrder.map(label => groupStats(data, label, d => d.days === label));
+      const firstScore = score10(groups[0].mean);
+      const lastScore = score10(groups[groups.length - 1].mean);
 
-      document.getElementById("exerciseChart").innerHTML = groups.map((group, index) => {
+      const rows = groups.map((group, index) => {
         const score = score10(group.mean);
-        const color = index === 0 ? colors.coral : index === groups.length - 1 ? colors.teal : colors.amber;
+        const palette = index === 0
+          ? { start: "#ff978d", end: colors.coral }
+          : index === groups.length - 1
+            ? { start: "#35d7ca", end: colors.teal }
+            : { start: "#ffdc7d", end: colors.amber };
         return `
           <div class="trend-row">
             <div>
               <div class="trend-name">${dayShort[group.label]}</div>
               <div class="bar-meta">${baseText(group.count)}</div>
             </div>
-            <div class="track"><div class="fill" style="--w:${score * 10}%;background:${color}"></div></div>
+            <div class="track"><div class="fill" style="--w:${score * 10}%;--bar-start:${palette.start};--bar-end:${palette.end}"></div></div>
             <div class="trend-score">${scoreText(score)}</div>
           </div>
         `;
       }).join("");
+
+      document.getElementById("exerciseChart").innerHTML = `
+        ${rows}
+        <div class="impact-line">
+          <strong>De ${scoreText(firstScore)} para ${scoreText(lastScore)}</strong>
+          <span>comparando 0 dias com 5+ dias por semana</span>
+        </div>
+      `;
     }
 
     function renderHeatmap(data) {
@@ -972,21 +1219,35 @@
         </div>
       `;
 
-      const rows = foodRows.map(row => {
+      const bestReliable = foodRows.flatMap((row, rowIndex) => dayOrder.map(day => {
+        const subset = data.filter(d => d.days === day && row.test(d));
+        return {
+          rowIndex,
+          day,
+          count: subset.length,
+          score: score10(mean(subset.map(d => d.well)))
+        };
+      }))
+        .filter(cell => cell.count >= 5)
+        .sort((a, b) => b.score - a.score)[0];
+
+      const rows = foodRows.map((row, rowIndex) => {
         const cells = dayOrder.map(day => {
           const subset = data.filter(d => d.days === day && row.test(d));
           const isEmpty = subset.length === 0;
           const isSmall = subset.length > 0 && subset.length < 5;
           const average = mean(subset.map(d => d.well));
           const score = score10(average);
+          const isBest = bestReliable && bestReliable.rowIndex === rowIndex && bestReliable.day === day;
           const color = isEmpty ? "var(--line)" : heatColor(score);
           const intensity = isEmpty || isSmall ? 18 : Math.max(28, Math.min(76, score * 8));
 
           return `
-            <div class="heat-cell ${isEmpty ? "empty" : ""} ${isSmall ? "small-base" : ""}" style="--cell-color:${color};--intensity:${intensity}%">
+            <div class="heat-cell ${isEmpty ? "empty" : ""} ${isSmall ? "small-base" : ""} ${isBest ? "best-cell" : ""}" style="--cell-color:${color};--intensity:${intensity}%">
               <span class="cell-day">${dayShort[day]}</span>
               <strong class="cell-score">${isEmpty ? "--" : scoreText(score)}</strong>
               <span class="cell-count">${isEmpty ? "sem respostas" : baseText(subset.length)}</span>
+              ${isBest ? `<span class="cell-tag">melhor leitura</span>` : ""}
             </div>
           `;
         }).join("");
@@ -1000,6 +1261,12 @@
       }).join("");
 
       document.getElementById("habitHeatmap").innerHTML = header + rows;
+    }
+
+    function activateBars() {
+      requestAnimationFrame(() => {
+        document.querySelectorAll(".fill").forEach(fill => fill.classList.add("ready"));
+      });
     }
 
     // 5. Textos de interpretação
@@ -1073,6 +1340,7 @@
         renderFoodChart(data);
         renderExerciseChart(data);
         renderHeatmap(data);
+        activateBars();
 
         if (location.hash) {
           const scrollToHash = () => {
