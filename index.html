@@ -323,7 +323,7 @@
 
     .method-steps {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
     }
 
@@ -377,8 +377,113 @@
 
     .tick-line { stroke: var(--line); stroke-width: 1; }
     .range-line { stroke: color-mix(in srgb, var(--muted) 34%, transparent); stroke-width: 8; stroke-linecap: round; }
-    .dot { transition: transform .18s ease, filter .18s ease; cursor: default; }
-    .dot:hover { transform: scale(1.18); filter: drop-shadow(0 8px 12px rgba(0,0,0,.18)); }
+    .dot { cursor: default; }
+
+    .mobile-chart {
+      display: none;
+    }
+
+    .comparison-list,
+    .mobile-ladder {
+      display: grid;
+      gap: 12px;
+    }
+
+    .comparison-card,
+    .mobile-step-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--paper-2) 58%, transparent);
+      padding: 14px;
+    }
+
+    .comparison-card h4,
+    .mobile-step-card h4 {
+      margin: 0 0 4px;
+      font-size: 1rem;
+      line-height: 1.1;
+    }
+
+    .comparison-sub,
+    .mobile-step-card span {
+      display: block;
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 800;
+    }
+
+    .comparison-track,
+    .mobile-step-track {
+      position: relative;
+      height: 36px;
+      margin: 16px 0 10px;
+    }
+
+    .comparison-track::before,
+    .mobile-step-track::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 8px;
+      border-radius: 999px;
+      transform: translateY(-50%);
+      background: color-mix(in srgb, var(--line) 64%, transparent);
+    }
+
+    .comparison-range {
+      position: absolute;
+      left: var(--low);
+      width: calc(var(--high) - var(--low));
+      top: 50%;
+      height: 8px;
+      border-radius: 999px;
+      transform: translateY(-50%);
+      background: linear-gradient(90deg, var(--teal), var(--blue), var(--violet));
+    }
+
+    .comparison-dot,
+    .mobile-step-dot {
+      position: absolute;
+      top: 50%;
+      left: var(--x);
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      transform: translate(-50%, -50%);
+      border: 4px solid var(--paper);
+      background: var(--dot-color, var(--teal));
+      box-shadow: 0 6px 14px rgba(15, 23, 42, .12);
+    }
+
+    .comparison-values {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 8px;
+      align-items: center;
+      font-weight: 900;
+    }
+
+    .comparison-values span:nth-child(2) {
+      color: var(--teal-2);
+      font-size: .9rem;
+    }
+
+    .comparison-values span:last-child { text-align: right; }
+
+    .mobile-step-card {
+      display: grid;
+      grid-template-columns: 78px 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .mobile-step-card strong {
+      color: var(--ink);
+      font-size: 1.25rem;
+      white-space: nowrap;
+    }
 
     .reading {
       margin-top: 18px;
@@ -658,7 +763,7 @@
       height: 100%;
       width: var(--w);
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--coral), var(--amber), var(--teal));
+      background: var(--bar-color, var(--teal));
     }
 
     .dist-value {
@@ -711,11 +816,61 @@
     }
 
     .big-conclusion {
+      position: relative;
       padding: clamp(22px, 4vw, 36px);
       border-radius: var(--radius);
-      background: linear-gradient(135deg, color-mix(in srgb, var(--teal) 18%, var(--paper)), var(--paper));
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--teal) 18%, var(--paper)), var(--paper)),
+        var(--paper);
       border: 1px solid color-mix(in srgb, var(--teal) 34%, var(--line));
       box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .big-conclusion::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 8px;
+      background: linear-gradient(180deg, var(--teal), var(--amber), var(--coral));
+    }
+
+    .final-sentence {
+      margin: 0 0 22px;
+      font-size: clamp(1.45rem, 3.5vw, 2.4rem);
+      line-height: 1.08;
+      font-weight: 950;
+      color: var(--ink);
+    }
+
+    .final-metric-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .final-chip {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--paper) 84%, transparent);
+    }
+
+    .final-chip strong {
+      display: block;
+      color: var(--teal-2);
+      font-size: 1.55rem;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .final-chip span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 800;
     }
 
     .big-conclusion p {
@@ -759,26 +914,6 @@
       font-size: .84rem;
     }
 
-    .tooltip {
-      position: fixed;
-      z-index: 30;
-      max-width: 260px;
-      padding: 10px 12px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--paper);
-      color: var(--ink);
-      box-shadow: var(--shadow);
-      font-size: .88rem;
-      font-weight: 750;
-      pointer-events: none;
-      opacity: 0;
-      transform: translate(12px, 12px);
-      transition: opacity .12s ease;
-    }
-
-    .tooltip.visible { opacity: 1; }
-
     .reveal {
       opacity: 0;
       transform: translateY(18px);
@@ -820,7 +955,7 @@
     }
 
     @media (max-width: 640px) {
-      .section { padding: 56px 16px; }
+      .section { padding: 56px 16px; scroll-margin-top: 152px; }
       .hero { min-height: auto; padding-top: 48px; }
       .nav-wrap { padding: 12px 16px; }
       .brand { font-size: .9rem; }
@@ -829,13 +964,15 @@
       .grid-3,
       .method-steps,
       .ladder-note,
-      .matrix { grid-template-columns: 1fr; }
+      .matrix,
+      .final-metric-strip { grid-template-columns: 1fr; }
       .heatmap-head { display: none; }
       .heatmap-row {
         grid-template-columns: 1fr;
         gap: 8px;
       }
       .heatmap-label {
+        display: block;
         min-height: auto;
         padding-top: 8px;
       }
@@ -850,7 +987,10 @@
       .bar-value,
       .dist-value { text-align: left; }
       .panel { padding: 18px; }
-      .chart-shell { min-height: 260px; }
+      .desktop-chart { display: none; }
+      .mobile-chart { display: grid; }
+      .chart-shell { min-height: auto; }
+      .mobile-step-card { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -866,10 +1006,11 @@
         <a href="#exercicios">Exercícios</a>
         <a href="#perfis">Perfis</a>
         <a href="#alunos">Cruzamento</a>
-        <a href="#sono">Cautela</a>
+        <a href="#percepcao">Percepção</a>
+        <a href="#sono">Sono</a>
         <a href="#conclusao">Conclusão</a>
       </nav>
-      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">◐</button>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">☾</button>
     </div>
   </header>
 
@@ -879,15 +1020,16 @@
         <div class="reveal">
           <p class="eyebrow">Pesquisa aplicada na UFV</p>
           <h1>Quando hábito vira bem-estar?</h1>
-          <p class="lead">Análise exploratória com estudantes da Universidade Federal de Viçosa sobre exercício físico, alimentação, dieta, sono e percepção de qualidade de vida.</p>
+          <p class="lead">Pesquisa com estudantes da Universidade Federal de Viçosa sobre exercício físico, alimentação, sono e percepção de qualidade de vida.</p>
           <p class="question">O que os dados mostram sobre a relação entre hábitos cotidianos e bem-estar?</p>
           <div class="meta-list">
             <div><strong>Período de coleta:</strong> <span id="dateRange">carregando...</span></div>
             <div><strong>Professor:</strong> Guaraci de Lima Requena</div>
+            <div><strong>Alunos:</strong> Caio Augusto Pereira Queiroz, Igor Siqueira Alves, Pedro Hashimoto Sanches Barbosa e Bernardo Tufi Mansur Gentil</div>
           </div>
         </div>
         <aside class="hero-panel reveal" aria-label="Resumo da pesquisa">
-          <h2 style="font-size:1.55rem;margin-bottom:0">A história em três números</h2>
+          <h2 style="font-size:1.55rem;margin-bottom:0">Três achados da pesquisa</h2>
           <div id="heroStats" class="loading">Carregando dados...</div>
         </aside>
       </div>
@@ -899,13 +1041,13 @@
         <div class="section-head reveal">
           <p class="eyebrow">Sobre a pesquisa</p>
           <h2>Hábitos, rotina e qualidade de vida entre estudantes</h2>
-          <p>A pesquisa observa como exercício físico, alimentação, dieta, sono e idade aparecem associados à percepção de bem-estar físico e mental entre estudantes da UFV.</p>
+          <p>A pesquisa observa como hábitos de rotina aparecem associados à percepção de bem-estar físico e mental entre estudantes da UFV.</p>
         </div>
         <div class="method-steps reveal">
           <div class="step">
             <span class="step-num">1</span>
             <h3>Amostra</h3>
-            <p>Foram analisadas 53 respostas válidas de estudantes da Universidade Federal de Viçosa.</p>
+            <p>Foram analisadas 53 respostas de estudantes da Universidade Federal de Viçosa.</p>
           </div>
           <div class="step">
             <span class="step-num">2</span>
@@ -915,12 +1057,7 @@
           <div class="step">
             <span class="step-num">3</span>
             <h3>Bem-estar</h3>
-            <p>A variável central é a nota de bem-estar físico e mental, medida em escala de 0 a 5.</p>
-          </div>
-          <div class="step">
-            <span class="step-num">4</span>
-            <h3>Leitura</h3>
-            <p>Os resultados indicam padrões de associação e devem ser interpretados com cautela.</p>
+            <p>As médias de bem-estar aparecem em escala de 0 a 10 para facilitar a leitura.</p>
           </div>
         </div>
         <div class="grid-2" style="margin-top:18px">
@@ -931,7 +1068,7 @@
           </div>
           <div class="panel reveal">
             <h3>Recorte da análise</h3>
-            <p class="callout">O foco da leitura é comparar grupos e identificar quais hábitos aparecem mais próximos de maiores notas de bem-estar, sem transformar associação em causa.</p>
+            <p class="callout">O foco da leitura é comparar grupos e mostrar quais hábitos aparecem mais próximos de maiores notas de bem-estar.</p>
           </div>
         </div>
       </div>
@@ -942,15 +1079,15 @@
         <div class="section-head reveal">
           <p class="eyebrow">Evidência 1</p>
           <h2>O maior salto aparece na alimentação percebida como melhor</h2>
-          <p>A comparação abaixo resume o ganho médio de bem-estar entre grupos baixos e altos de cada hábito. Isso ajuda o leitor a ver qual diferença chama mais atenção.</p>
+          <p>A comparação mostra quanto a nota média de bem-estar muda entre estudantes com menor e maior presença de cada hábito.</p>
         </div>
         <div class="panel reveal">
-          <h3>Quanto muda o bem-estar médio?</h3>
-          <p>As linhas ligam o grupo baixo ao grupo alto em cada dimensão analisada.</p>
+          <h3>Qual hábito mais acompanha o bem-estar?</h3>
+          <p>Notas médias em escala de 0 a 10. Quanto maior a diferença, mais forte é o contraste entre os grupos.</p>
           <div class="chart-shell" id="variationPlot"></div>
           <div class="reading">
             <span class="reading-mark">1</span>
-            <div><strong>Principal leitura:</strong> alimentação boa ou muito boa tem o maior contraste de bem-estar na amostra. Dieta rígida ajuda a explicar parte da diferença, mas não é a história toda.</div>
+            <div><strong>Principal leitura:</strong> a alimentação melhor avaliada apresenta o maior salto de bem-estar médio: cerca de 3 pontos em uma escala de 0 a 10.</div>
           </div>
         </div>
       </div>
@@ -961,16 +1098,16 @@
         <div class="section-head reveal">
           <p class="eyebrow">Evidência 2</p>
           <h2>Exercício entra como ritmo: quanto mais frequente, maior a média</h2>
-          <p>A frequência semanal cria uma escada de bem-estar. O salto mais visível está no grupo que treina cinco dias ou mais.</p>
+          <p>A frequência semanal cria uma escada simples de leitura: quanto maior a rotina de exercício, maior tende a ser a nota média de bem-estar.</p>
         </div>
         <div class="panel reveal">
           <h3>Bem-estar médio por frequência de exercício</h3>
-          <p>A escala vai de 0 a 5. Cada ponto representa a média do grupo.</p>
+          <p>Notas médias em escala de 0 a 10. Cada ponto representa um grupo de frequência semanal.</p>
           <div class="chart-shell" id="exerciseLadder"></div>
           <div class="ladder-note" id="exerciseMiniStats"></div>
           <div class="reading">
             <span class="reading-mark">2</span>
-            <div><strong>Principal leitura:</strong> exercício não aparece como resposta única, mas como um sinal consistente. A média sobe de 2,83 entre sedentários para 3,71 no grupo de maior frequência.</div>
+            <div><strong>Principal leitura:</strong> a média sobe de 5,67/10 entre sedentários para 7,43/10 entre estudantes que treinam cinco dias ou mais.</div>
           </div>
         </div>
       </div>
@@ -981,13 +1118,13 @@
         <div class="section-head reveal">
           <p class="eyebrow">Evidência 3</p>
           <h2>A combinação dos hábitos revela quatro perfis</h2>
-          <p>A matriz cruza prática de exercício com alimentação boa ou muito boa. O tamanho visual indica quantos estudantes estão em cada perfil.</p>
+          <p>A matriz separa os estudantes em quatro grupos para comparar tamanho do perfil e nota média de bem-estar.</p>
         </div>
         <div class="panel reveal">
           <div class="matrix" id="habitMatrix"></div>
           <div class="reading">
             <span class="reading-mark">3</span>
-            <div><strong>Principal leitura:</strong> o perfil com treino e boa alimentação concentra 35,8% da amostra e média 3,58 de bem-estar. O grupo sem treino e sem boa alimentação tem média 2,50.</div>
+            <div><strong>Principal leitura:</strong> o perfil com treino e boa alimentação reúne 35,8% da amostra e tem média 7,16/10. O grupo sem treino e sem boa alimentação fica em 5,00/10.</div>
           </div>
         </div>
       </div>
@@ -998,7 +1135,7 @@
         <div class="section-head reveal">
           <p class="eyebrow">Evidência 4</p>
           <h2>O cruzamento dos hábitos mostra onde o bem-estar se concentra</h2>
-          <p>O mapa de calor compara frequência de exercício e qualidade da alimentação. Cores mais fortes indicam médias maiores de bem-estar dentro de cada combinação.</p>
+          <p>O mapa de calor cruza exercício e alimentação. Cada célula mostra a nota média de bem-estar em 0 a 10 e o tamanho daquele grupo.</p>
         </div>
         <div class="panel reveal">
           <h3>Bem-estar médio por exercício e alimentação</h3>
@@ -1009,7 +1146,7 @@
           </div>
           <div class="reading">
             <span class="reading-mark">4</span>
-            <div><strong>Principal leitura:</strong> as maiores médias aparecem principalmente quando a alimentação é melhor avaliada. Células com poucos casos ficam discretas para evitar conclusões fortes demais.</div>
+            <div><strong>Principal leitura:</strong> as melhores notas se concentram nos grupos com alimentação melhor avaliada. Onde há poucos estudantes, o gráfico deixa o tamanho do grupo explícito.</div>
           </div>
         </div>
       </div>
@@ -1044,9 +1181,9 @@
     <section class="section alt" id="sono">
       <div class="inner">
         <div class="section-head reveal">
-          <p class="eyebrow">Cautela metodológica</p>
-          <h2>Sono exige cuidado: nem toda média vira recomendação</h2>
-          <p>A faixa de 5 a 6 horas aparece com média maior na amostra, mas isso não deve ser lido como orientação de saúde. Pode haver influência de rotina, idade, trabalho, estresse e tamanho dos grupos.</p>
+          <p class="eyebrow">Sono</p>
+          <h2>A faixa de sono mais comum concentra a leitura</h2>
+          <p>As faixas de sono mostram como o bem-estar médio muda entre grupos, sempre com o número de estudantes ao lado.</p>
         </div>
         <div class="grid-2">
           <div class="panel reveal">
@@ -1054,8 +1191,8 @@
             <div class="sleep-bars" id="sleepBars"></div>
           </div>
           <div class="panel reveal">
-            <h3>Como apresentar esse achado</h3>
-            <p class="callout">O correto é dizer: “na nossa amostra, essa faixa apareceu com média maior; por ser uma pesquisa exploratória, o resultado precisa ser interpretado com cautela”.</p>
+            <h3>O que observar</h3>
+            <p class="callout">A faixa de 7 a 8 horas reúne mais estudantes e serve como principal referência visual. Grupos menores aparecem com o n informado para a leitura não ficar solta.</p>
           </div>
         </div>
       </div>
@@ -1065,14 +1202,18 @@
       <div class="inner">
         <div class="section-head reveal">
           <p class="eyebrow">Síntese da pesquisa</p>
-          <h2>Conclusão: bem-estar parece nascer da consistência, não de um único hábito</h2>
-          <p>Esta é a frase que amarra a apresentação: os dados não apontam uma fórmula fechada, mas mostram um caminho de associação entre rotina, alimentação e percepção de qualidade de vida.</p>
+          <h2>Conclusão: bem-estar aparece como resultado de rotina</h2>
+          <p>Os dados não apontam uma fórmula pronta, mas mostram um caminho claro: movimento, alimentação melhor avaliada e percepção positiva caminham juntos.</p>
         </div>
         <div class="conclusion-grid">
           <div class="big-conclusion reveal">
-            <h3>Mensagem final</h3>
+            <p class="final-sentence">A vida universitária parece pesar menos quando a rotina tem movimento e uma alimentação mais bem cuidada.</p>
             <p>Na amostra analisada, estudantes com alimentação melhor avaliada e prática de exercício físico tendem a relatar maior bem-estar. A dieta rígida aparece como parte da explicação, mas a história mais forte é a combinação entre movimento, alimentação cotidiana e percepção positiva de melhora.</p>
-            <p>Como o estudo é exploratório e tem 53 respostas válidas, a conclusão deve ser apresentada como associação, não como prova causal.</p>
+            <div class="final-metric-strip">
+              <div class="final-chip"><strong>53</strong><span>respostas analisadas</span></div>
+              <div class="final-chip"><strong>83,0%</strong><span>percebem melhora alta</span></div>
+              <div class="final-chip"><strong>7,16/10</strong><span>média no perfil treino + boa alimentação</span></div>
+            </div>
             <div class="authors">
               <a href="https://ava.ufv.br/user/view.php?id=58803&course=29583" target="_blank" rel="noreferrer">Caio Augusto Pereira Queiroz</a>
               <a href="https://ava.ufv.br/user/view.php?id=60365&course=29583" target="_blank" rel="noreferrer">Igor Siqueira Alves</a>
@@ -1089,8 +1230,6 @@
       </div>
     </section>
   </main>
-
-  <div class="tooltip" id="tooltip"></div>
 
   <script>
     const csvUrl = "dados.csv";
@@ -1174,6 +1313,8 @@
     function pct(n, total) { return total ? n / total * 100 : 0; }
     function pctText(n, total) { return `${fmt1.format(pct(n, total))}%`; }
     function scoreText(n) { return fmt.format(n).replace(".", ","); }
+    function wellScore(n) { return n * 2; }
+    function wellText(n) { return `${scoreText(wellScore(n))}/10`; }
     function escapeHtml(value) {
       return String(value).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[ch]));
     }
@@ -1200,36 +1341,36 @@
       const active = data.filter(d => dayScore[d.days] > 0).length;
       const lowFoodMean = groupStats(data, "Alimentação baixa", d => d.food <= 2).mean;
       const highFoodMean = groupStats(data, "Alimentação boa", d => d.food >= 4).mean;
-      const gapFood = highFoodMean - lowFoodMean;
+      const gapFood = wellScore(highFoodMean - lowFoodMean);
 
       document.getElementById("dateRange").textContent = dateRange(data);
       document.getElementById("heroStats").classList.remove("loading");
       document.getElementById("heroStats").innerHTML = `
-        <div class="stat-card" data-tip="Uma resposta vazia foi retirada antes da análise.">
+        <div class="stat-card">
           <span class="stat-value">${n}</span>
-          <div class="stat-label">respostas válidas</div>
+          <div class="stat-label">respostas analisadas</div>
         </div>
-        <div class="stat-card" data-tip="${highImprove} estudantes deram nota 4 ou 5 para melhora percebida.">
+        <div class="stat-card">
           <span class="stat-value">${pctText(highImprove, n)}</span>
           <div class="stat-label">percebem melhora alta ao combinar exercício e alimentação</div>
         </div>
-        <div class="stat-card" data-tip="Diferença entre alimentação baixa (0-2) e boa/muito boa (4-5).">
+        <div class="stat-card">
           <span class="stat-value">+${scoreText(gapFood)}</span>
-          <div class="stat-label">ponto de bem-estar associado à alimentação melhor avaliada</div>
+          <div class="stat-label">pontos na escala 0-10 ligados à alimentação melhor avaliada</div>
         </div>
       `;
 
       document.getElementById("topStats").innerHTML = `
-        <div class="stat-card" data-tip="${active} de ${n} estudantes relataram pelo menos 1 dia de exercício por semana.">
+        <div class="stat-card">
           <span class="stat-value">${pctText(active, n)}</span>
           <div class="stat-label">praticam algum exercício semanal</div>
         </div>
-        <div class="stat-card" data-tip="${goodFood} de ${n} estudantes avaliaram a alimentação como 4 ou 5.">
+        <div class="stat-card">
           <span class="stat-value">${pctText(goodFood, n)}</span>
           <div class="stat-label">avaliam a alimentação como boa ou muito boa</div>
         </div>
-        <div class="stat-card" data-tip="Média geral da escala de 0 a 5.">
-          <span class="stat-value">${scoreText(mean(data.map(d => d.well)))}</span>
+        <div class="stat-card">
+          <span class="stat-value">${wellText(mean(data.map(d => d.well)))}</span>
           <div class="stat-label">bem-estar médio da amostra</div>
         </div>
       `;
@@ -1239,7 +1380,7 @@
       const counts = ageOrder.map(label => ({ label, n: data.filter(d => d.age === label).length }));
       const max = Math.max(...counts.map(d => d.n), 1);
       document.getElementById("ageBars").innerHTML = counts.map(d => `
-        <div class="bar-row" data-tip="${d.n} estudante(s), ${pctText(d.n, data.length)} da amostra.">
+        <div class="bar-row">
           <div class="bar-name">${escapeHtml(d.label.replace(".", ""))}</div>
           <div class="bar-track"><div class="bar-fill" style="--w:${d.n / max * 100}%"></div></div>
           <div class="bar-value">${d.n} | ${pctText(d.n, data.length)}</div>
@@ -1270,56 +1411,111 @@
       ].map(d => ({ ...d, gap: d.high.mean - d.low.mean }))
        .sort((a, b) => b.gap - a.gap);
 
-      const w = 920, h = 340, left = 170, right = 112, top = 54, rowH = 84;
-      const minX = 1.7, maxX = 3.9;
+      const w = 920, h = 370, left = 170, right = 124, top = 58, rowH = 86;
+      const minX = 4, maxX = 8;
       const x = v => left + (v - minX) / (maxX - minX) * (w - left - right);
-      const ticks = [2, 2.5, 3, 3.5];
+      const ticks = [4, 5, 6, 7, 8];
       const rows = items.map((d, i) => {
         const y = top + i * rowH + 26;
-        const tipLow = `${d.name} baixo (${d.low.label}): média ${scoreText(d.low.mean)}; n=${d.low.n}`;
-        const tipHigh = `${d.name} alto (${d.high.label}): média ${scoreText(d.high.mean)}; n=${d.high.n}`;
+        const low = wellScore(d.low.mean);
+        const high = wellScore(d.high.mean);
+        const gap = wellScore(d.gap);
         return `
           <text class="svg-title" x="24" y="${y + 5}">${escapeHtml(d.name)}</text>
           <text class="svg-label" x="24" y="${y + 26}">${escapeHtml(d.low.label)} → ${escapeHtml(d.high.label)}</text>
-          <line class="range-line" x1="${x(d.low.mean)}" x2="${x(d.high.mean)}" y1="${y}" y2="${y}"></line>
-          <circle class="dot" cx="${x(d.low.mean)}" cy="${y}" r="12" fill="var(--paper)" stroke="${d.color}" stroke-width="5" data-tip="${escapeHtml(tipLow)}"></circle>
-          <circle class="dot" cx="${x(d.high.mean)}" cy="${y}" r="15" fill="${d.color}" data-tip="${escapeHtml(tipHigh)}"></circle>
-          <text class="svg-title" x="${x(d.low.mean)}" y="${y - 20}" text-anchor="middle">${scoreText(d.low.mean)}</text>
-          <text class="svg-title" x="${x(d.high.mean)}" y="${y - 22}" text-anchor="middle">${scoreText(d.high.mean)}</text>
-          <text class="svg-title" x="${w - 24}" y="${y + 5}" text-anchor="end" fill="${d.color}">+${scoreText(d.gap)}</text>
+          <line class="range-line" x1="${x(low)}" x2="${x(high)}" y1="${y}" y2="${y}"></line>
+          <circle class="dot" cx="${x(low)}" cy="${y}" r="12" fill="var(--paper)" stroke="${d.color}" stroke-width="5"></circle>
+          <circle class="dot" cx="${x(high)}" cy="${y}" r="15" fill="${d.color}"></circle>
+          <text class="svg-title" x="${x(low)}" y="${y - 20}" text-anchor="middle">${scoreText(low)}/10</text>
+          <text class="svg-title" x="${x(high)}" y="${y - 22}" text-anchor="middle">${scoreText(high)}/10</text>
+          <text class="svg-title" x="${w - 24}" y="${y + 5}" text-anchor="end" fill="${d.color}">+${scoreText(gap)}</text>
+        `;
+      }).join("");
+
+      const mobileRows = items.map(d => {
+        const low = wellScore(d.low.mean);
+        const high = wellScore(d.high.mean);
+        const gap = wellScore(d.gap);
+        const lowPct = Math.max(0, Math.min(100, low / 10 * 100));
+        const highPct = Math.max(0, Math.min(100, high / 10 * 100));
+        return `
+          <article class="comparison-card">
+            <h4>${escapeHtml(d.name)}</h4>
+            <span class="comparison-sub">${escapeHtml(d.low.label)} → ${escapeHtml(d.high.label)}</span>
+            <div class="comparison-track" style="--low:${lowPct}%;--high:${highPct}%">
+              <span class="comparison-range"></span>
+              <span class="comparison-dot" style="--x:${lowPct}%;--dot-color:${d.color}"></span>
+              <span class="comparison-dot" style="--x:${highPct}%;--dot-color:${d.color}"></span>
+            </div>
+            <div class="comparison-values">
+              <span>${scoreText(low)}/10</span>
+              <span>+${scoreText(gap)}</span>
+              <span>${scoreText(high)}/10</span>
+            </div>
+          </article>
         `;
       }).join("");
 
       document.getElementById("variationPlot").innerHTML = `
-        <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Comparação de bem-estar médio por grupos baixos e altos">
-          ${ticks.map(t => `<line class="tick-line" x1="${x(t)}" x2="${x(t)}" y1="24" y2="${h - 36}"></line><text class="svg-label" x="${x(t)}" y="${h - 12}" text-anchor="middle">${String(t).replace(".", ",")}</text>`).join("")}
-          ${rows}
-        </svg>
+        <div class="desktop-chart">
+          <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Comparação de bem-estar médio por grupos baixos e altos">
+            ${ticks.map(t => `<line class="tick-line" x1="${x(t)}" x2="${x(t)}" y1="24" y2="${h - 54}"></line><text class="svg-label" x="${x(t)}" y="${h - 28}" text-anchor="middle">${String(t).replace(".", ",")}</text>`).join("")}
+            ${rows}
+            <text class="svg-label" x="${(left + w - right) / 2}" y="${h - 6}" text-anchor="middle">nota média de bem-estar (0 a 10)</text>
+          </svg>
+        </div>
+        <div class="mobile-chart comparison-list" aria-label="Comparação de bem-estar médio em escala de 0 a 10">
+          ${mobileRows}
+        </div>
       `;
     }
 
     function renderExerciseLadder(data) {
       const groups = dayOrder.map(label => groupStats(data, label, d => d.days === label));
       const w = 920, h = 360, left = 72, right = 36, top = 42, bottom = 72;
-      const minY = 2.5, maxY = 3.9;
+      const minY = 5, maxY = 8;
       const x = i => left + i / (groups.length - 1) * (w - left - right);
       const y = v => top + (maxY - v) / (maxY - minY) * (h - top - bottom);
-      const path = groups.map((g, i) => `${i ? "L" : "M"} ${x(i)} ${y(g.mean)}`).join(" ");
+      const path = groups.map((g, i) => `${i ? "L" : "M"} ${x(i)} ${y(wellScore(g.mean))}`).join(" ");
+      const mobileSteps = groups.map((g, i) => {
+        const score = wellScore(g.mean);
+        const pos = Math.max(0, Math.min(100, score / 10 * 100));
+        const color = i === 0 ? colors.coral : i === 3 ? colors.teal : colors.amber;
+        return `
+          <article class="mobile-step-card">
+            <div>
+              <h4>${escapeHtml(dayShort[g.label])}</h4>
+              <span>${g.n} estudante(s)</span>
+            </div>
+            <div class="mobile-step-track">
+              <span class="mobile-step-dot" style="--x:${pos}%;--dot-color:${color}"></span>
+            </div>
+            <strong>${wellText(g.mean)}</strong>
+          </article>
+        `;
+      }).join("");
+
       document.getElementById("exerciseLadder").innerHTML = `
-        <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Escada de bem-estar por frequência semanal de exercício">
-          ${[2.5,3,3.5].map(t => `<line class="tick-line" x1="${left}" x2="${w - right}" y1="${y(t)}" y2="${y(t)}"></line><text class="svg-label" x="22" y="${y(t)+5}">${String(t).replace(".", ",")}</text>`).join("")}
-          <path d="${path}" fill="none" stroke="url(#ladderGradient)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>
-          <defs><linearGradient id="ladderGradient" x1="0" x2="1"><stop stop-color="${colors.coral}"/><stop offset=".48" stop-color="${colors.amber}"/><stop offset="1" stop-color="${colors.teal}"/></linearGradient></defs>
-          ${groups.map((g, i) => `
-            <circle class="dot" cx="${x(i)}" cy="${y(g.mean)}" r="17" fill="${i === 0 ? colors.coral : i === 3 ? colors.teal : colors.amber}" data-tip="${escapeHtml(`${g.label}: média ${scoreText(g.mean)}; ${g.n} estudante(s).`)}"></circle>
-            <text class="svg-title" x="${x(i)}" y="${y(g.mean)-25}" text-anchor="middle">${scoreText(g.mean)}</text>
-            <text class="svg-label" x="${x(i)}" y="${h - 34}" text-anchor="middle">${dayShort[g.label]}</text>
-          `).join("")}
-        </svg>
+        <div class="desktop-chart">
+          <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Escada de bem-estar por frequência semanal de exercício">
+            ${[5,6,7,8].map(t => `<line class="tick-line" x1="${left}" x2="${w - right}" y1="${y(t)}" y2="${y(t)}"></line><text class="svg-label" x="22" y="${y(t)+5}">${String(t).replace(".", ",")}</text>`).join("")}
+            <path d="${path}" fill="none" stroke="url(#ladderGradient)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>
+            <defs><linearGradient id="ladderGradient" x1="0" x2="1"><stop stop-color="${colors.coral}"/><stop offset=".48" stop-color="${colors.amber}"/><stop offset="1" stop-color="${colors.teal}"/></linearGradient></defs>
+            ${groups.map((g, i) => `
+              <circle class="dot" cx="${x(i)}" cy="${y(wellScore(g.mean))}" r="17" fill="${i === 0 ? colors.coral : i === 3 ? colors.teal : colors.amber}"></circle>
+              <text class="svg-title" x="${x(i)}" y="${y(wellScore(g.mean))-25}" text-anchor="middle">${wellText(g.mean)}</text>
+              <text class="svg-label" x="${x(i)}" y="${h - 34}" text-anchor="middle">${dayShort[g.label]}</text>
+            `).join("")}
+            <text class="svg-label" x="${w / 2}" y="${h - 6}" text-anchor="middle">nota média de bem-estar (0 a 10)</text>
+          </svg>
+        </div>
+        <div class="mobile-chart mobile-ladder" aria-label="Bem-estar médio por frequência semanal de exercício">
+          ${mobileSteps}
+        </div>
       `;
 
       document.getElementById("exerciseMiniStats").innerHTML = groups.map(g => `
-        <div class="mini-stat" data-tip="${g.n} estudante(s) no grupo ${escapeHtml(g.label)}.">
+        <div class="mini-stat">
           <strong>${g.n}</strong>
           <span>${escapeHtml(dayShort[g.label])} • ${pctText(g.n, data.length)}</span>
         </div>
@@ -1358,18 +1554,18 @@
       });
       const maxN = Math.max(...cells.map(d => d.n), 1);
       document.getElementById("habitMatrix").innerHTML = cells.map(c => `
-        <article class="habit-cell" style="--cell-color:${c.color};--bubble:${70 + c.n / maxN * 95}px" data-tip="${escapeHtml(`${c.title}: ${c.n} estudante(s), ${fmt1.format(c.pct)}%; bem-estar médio ${scoreText(c.mean)}.`)}">
+        <article class="habit-cell" style="--cell-color:${c.color};--bubble:${70 + c.n / maxN * 95}px">
           <h3>${escapeHtml(c.title)}</h3>
           <p>${escapeHtml(c.desc)}</p>
-          <div class="habit-score"><strong>${scoreText(c.mean)}</strong><span>bem-estar médio</span></div>
+          <div class="habit-score"><strong>${wellText(c.mean)}</strong><span>nota média</span></div>
           <p>${c.n} estudante(s) • ${fmt1.format(c.pct)}%</p>
         </article>
       `).join("");
     }
 
-    function heatColor(meanValue) {
-      if (meanValue >= 3.45) return colors.teal;
-      if (meanValue >= 2.8) return colors.amber;
+    function heatColor(meanValue10) {
+      if (meanValue10 >= 7) return colors.teal;
+      if (meanValue10 >= 5.7) return colors.amber;
       return colors.coral;
     }
 
@@ -1391,18 +1587,16 @@
         const cells = dayOrder.map(day => {
           const subset = data.filter(d => d.days === day && row.pred(d));
           const avg = mean(subset.map(d => d.well));
+          const avg10 = wellScore(avg);
           const isEmpty = subset.length === 0;
           const isSmall = subset.length > 0 && subset.length < 3;
-          const color = isEmpty ? "var(--line)" : heatColor(avg);
-          const intensity = isEmpty || isSmall ? 20 : Math.max(24, Math.min(76, avg / 5 * 86));
-          const tip = isEmpty
-            ? `${row.label} + ${dayShort[day]}: sem estudantes na amostra.`
-            : `${row.label} + ${dayShort[day]}: bem-estar médio ${scoreText(avg)}; ${subset.length} estudante(s)${isSmall ? "; poucos casos, leia com cautela" : ""}.`;
+          const color = isEmpty ? "var(--line)" : heatColor(avg10);
+          const intensity = isEmpty || isSmall ? 20 : Math.max(24, Math.min(78, avg10 / 10 * 86));
           return `
-            <div class="heatmap-cell ${isEmpty ? "empty" : ""} ${isSmall ? "small" : ""}" style="--cell-color:${color};--intensity:${intensity}%" data-tip="${escapeHtml(tip)}">
+            <div class="heatmap-cell ${isEmpty ? "empty" : ""} ${isSmall ? "small" : ""}" style="--cell-color:${color};--intensity:${intensity}%">
               <span class="cell-day">${escapeHtml(dayShort[day])}</span>
-              <strong class="cell-mean">${isEmpty ? "--" : scoreText(avg)}</strong>
-              <span class="cell-count">${isEmpty ? "sem casos" : `${subset.length} estudante(s)${isSmall ? " • cautela" : ""}`}</span>
+              <strong class="cell-mean">${isEmpty ? "--" : wellText(avg)}</strong>
+              <span class="cell-count">${isEmpty ? "sem casos" : `${subset.length} estudante(s)${isSmall ? " • poucos casos" : ""}`}</span>
             </div>
           `;
         }).join("");
@@ -1417,6 +1611,12 @@
       document.getElementById("habitHeatmap").innerHTML = header + rows;
     }
 
+    function improveColor(score) {
+      if (score <= 2) return colors.coral;
+      if (score === 3) return colors.blue;
+      return colors.green;
+    }
+
     function renderImprove(data) {
       const high = data.filter(d => d.improve >= 4).length;
       const p = pct(high, data.length);
@@ -1427,9 +1627,9 @@
       const counts = [0,1,2,3,4,5].map(score => ({ score, n: data.filter(d => d.improve === score).length }));
       const max = Math.max(...counts.map(d => d.n), 1);
       document.getElementById("improveDistribution").innerHTML = counts.map(d => `
-        <div class="dist-row" data-tip="Nota ${d.score}: ${d.n} estudante(s), ${pctText(d.n, data.length)}.">
+        <div class="dist-row">
           <div class="dist-label">${d.score}</div>
-          <div class="dist-track"><div class="dist-fill" style="--w:${d.n / max * 100}%"></div></div>
+          <div class="dist-track"><div class="dist-fill" style="--w:${d.n / max * 100}%;--bar-color:${improveColor(d.score)}"></div></div>
           <div class="dist-value">${d.n} | ${pctText(d.n, data.length)}</div>
         </div>
       `).join("");
@@ -1439,35 +1639,14 @@
       const groups = sleepOrder
         .map(label => groupStats(data, label, d => d.sleep === label))
         .filter(g => g.n > 0);
-      const maxMean = 5;
+      const maxMean = 10;
       document.getElementById("sleepBars").innerHTML = groups.map(g => `
-        <div class="bar-row" data-tip="${escapeHtml(`${g.label}: média ${scoreText(g.mean)}; n=${g.n}.`)}">
+        <div class="bar-row">
           <div class="bar-name">${escapeHtml(g.label)}</div>
-          <div class="bar-track"><div class="bar-fill" style="--w:${g.mean / maxMean * 100}%"></div></div>
-          <div class="bar-value">${scoreText(g.mean)} • n=${g.n}</div>
+          <div class="bar-track"><div class="bar-fill" style="--w:${wellScore(g.mean) / maxMean * 100}%"></div></div>
+          <div class="bar-value">${wellText(g.mean)} • n=${g.n}</div>
         </div>
       `).join("");
-    }
-
-    function setupTooltip() {
-      const tooltip = document.getElementById("tooltip");
-      document.addEventListener("pointerover", e => {
-        const target = e.target.closest("[data-tip]");
-        if (!target) return;
-        tooltip.textContent = target.getAttribute("data-tip");
-        tooltip.classList.add("visible");
-      });
-      document.addEventListener("pointermove", e => {
-        if (!tooltip.classList.contains("visible")) return;
-        const pad = 18;
-        const x = Math.min(e.clientX + pad, window.innerWidth - tooltip.offsetWidth - pad);
-        const y = Math.min(e.clientY + pad, window.innerHeight - tooltip.offsetHeight - pad);
-        tooltip.style.left = `${x}px`;
-        tooltip.style.top = `${y}px`;
-      });
-      document.addEventListener("pointerout", e => {
-        if (e.target.closest("[data-tip]")) tooltip.classList.remove("visible");
-      });
     }
 
     function setupMotion() {
@@ -1481,7 +1660,8 @@
       const sections = [...document.querySelectorAll("main section[id]")];
       const links = [...document.querySelectorAll("nav a")];
       const setActive = () => {
-        const scroll = window.scrollY + 140;
+        const headerOffset = (document.querySelector(".topbar")?.offsetHeight || 80) + 64;
+        const scroll = window.scrollY + headerOffset;
         let current = sections[0].id;
         sections.forEach(section => {
           if (section.offsetTop <= scroll) current = section.id;
@@ -1499,7 +1679,7 @@
       const stored = localStorage.getItem("ufv-dashboard-theme");
       if (stored === "dark") document.body.classList.add("dark");
       const button = document.getElementById("themeToggle");
-      const update = () => { button.textContent = document.body.classList.contains("dark") ? "☀" : "◐"; };
+      const update = () => { button.textContent = document.body.classList.contains("dark") ? "☀" : "☾"; };
       button.addEventListener("click", () => {
         document.body.classList.toggle("dark");
         localStorage.setItem("ufv-dashboard-theme", document.body.classList.contains("dark") ? "dark" : "light");
@@ -1510,7 +1690,6 @@
 
     async function init() {
       setupTheme();
-      setupTooltip();
       setupMotion();
       try {
         const response = await fetch(csvUrl, { cache: "no-store" });
@@ -1526,7 +1705,20 @@
         renderHabitHeatmap(data);
         renderImprove(data);
         renderSleep(data);
-        setupTooltip();
+        if (location.hash) {
+          const scrollToHash = () => {
+            const id = decodeURIComponent(location.hash.slice(1));
+            const target = document.getElementById(id);
+            if (!target) return;
+            const headerOffset = (document.querySelector(".topbar")?.offsetHeight || 80) + 18;
+            const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+            window.scrollTo(0, Math.max(0, top));
+            window.dispatchEvent(new Event("scroll"));
+          };
+          requestAnimationFrame(scrollToHash);
+          window.setTimeout(scrollToHash, 280);
+          window.setTimeout(scrollToHash, 720);
+        }
       } catch (error) {
         document.getElementById("heroStats").innerHTML = `<div class="error">Não foi possível carregar o arquivo dados.csv. ${escapeHtml(error.message)}</div>`;
       }
