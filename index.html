@@ -323,7 +323,7 @@
 
     .method-steps {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
     }
 
@@ -652,13 +652,18 @@
 
     .heatmap-cell.small {
       border-style: dashed;
+      opacity: .78;
       background:
         repeating-linear-gradient(
           135deg,
-          color-mix(in srgb, var(--cell-color) 18%, transparent) 0 9px,
+          color-mix(in srgb, var(--cell-color) 12%, transparent) 0 9px,
           transparent 9px 18px
         ),
         var(--paper);
+    }
+
+    .heatmap-cell.small .cell-mean {
+      color: var(--muted);
     }
 
     .cell-mean {
@@ -686,8 +691,7 @@
     .heatmap-scale {
       margin-top: 14px;
       display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       color: var(--muted);
       font-size: .9rem;
@@ -698,6 +702,14 @@
       height: 12px;
       border-radius: 999px;
       background: linear-gradient(90deg, color-mix(in srgb, var(--coral) 35%, var(--paper)), var(--amber), var(--teal));
+    }
+
+    .heatmap-scale-labels {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 850;
     }
 
     .radial-layout {
@@ -1022,7 +1034,7 @@
           <p class="lead">Pesquisa com estudantes da Universidade Federal de Viçosa sobre exercício físico, alimentação, sono e percepção de qualidade de vida.</p>
           <p class="question">O que os dados mostram sobre a relação entre hábitos cotidianos e bem-estar?</p>
           <div class="meta-list">
-            <div><strong>Período de coleta:</strong> <span id="dateRange">carregando...</span></div>
+            <div><strong>Período de coleta:</strong> <span id="dateRange">25/04/2026 a 17/05/2026</span></div>
             <div><strong>Professor:</strong> Guaraci de Lima Requena</div>
             <div><strong>Alunos:</strong> Caio Augusto Pereira Queiroz, Igor Siqueira Alves, Pedro Hashimoto Sanches Barbosa e Bernardo Tufi Mansur Gentil</div>
           </div>
@@ -1040,7 +1052,7 @@
         <div class="section-head reveal">
           <p class="eyebrow">Sobre a pesquisa</p>
           <h2>Hábitos, rotina e qualidade de vida entre estudantes</h2>
-          <p>A pesquisa observa como hábitos de rotina aparecem associados à percepção de bem-estar físico e mental entre estudantes da UFV.</p>
+          <p>A pesquisa observa associações entre rotina, alimentação, sono e percepção de bem-estar físico e mental entre estudantes da UFV.</p>
         </div>
         <div class="method-steps reveal">
           <div class="step">
@@ -1051,12 +1063,17 @@
           <div class="step">
             <span class="step-num">2</span>
             <h3>Rotina</h3>
-            <p>Os dados registram frequência de exercício, sono, alimentação e adesão a dieta.</p>
+            <p>As respostas registram frequência de exercício, sono, alimentação e adesão a dieta.</p>
           </div>
           <div class="step">
             <span class="step-num">3</span>
             <h3>Bem-estar</h3>
             <p>As médias de bem-estar aparecem em escala de 0 a 10 para facilitar a leitura.</p>
+          </div>
+          <div class="step">
+            <span class="step-num">4</span>
+            <h3>Limite</h3>
+            <p>A amostra é pequena e autodeclarada. Os gráficos indicam associação, não causa e efeito.</p>
           </div>
         </div>
         <div class="grid-2" style="margin-top:18px">
@@ -1066,8 +1083,8 @@
             <div class="age-bars" id="ageBars"></div>
           </div>
           <div class="panel reveal">
-            <h3>Recorte da análise</h3>
-            <p class="callout">O foco da leitura é comparar grupos e mostrar quais hábitos aparecem mais próximos de maiores notas de bem-estar.</p>
+            <h3>Como interpretar</h3>
+            <p class="callout">O foco é comparar grupos e mostrar quais hábitos aparecem mais próximos de maiores notas de bem-estar. Quando o grupo tem poucos estudantes, a leitura precisa ser mais cautelosa.</p>
           </div>
         </div>
       </div>
@@ -1086,7 +1103,7 @@
           <div class="chart-shell" id="variationPlot"></div>
           <div class="reading">
             <span class="reading-mark">1</span>
-            <div><strong>Principal leitura:</strong> a alimentação melhor avaliada apresenta o maior salto de bem-estar médio: cerca de 3 pontos em uma escala de 0 a 10.</div>
+            <div><strong>O que o gráfico mostra:</strong> a alimentação melhor avaliada apresenta o maior salto de bem-estar médio: cerca de 3 pontos em uma escala de 0 a 10.</div>
           </div>
         </div>
       </div>
@@ -1106,7 +1123,7 @@
           <div class="ladder-note" id="exerciseMiniStats"></div>
           <div class="reading">
             <span class="reading-mark">2</span>
-            <div><strong>Principal leitura:</strong> a média sobe de 5,67/10 entre sedentários para 7,43/10 entre estudantes que treinam cinco dias ou mais.</div>
+            <div><strong>Como interpretar:</strong> a média sobe de 5,7/10 entre sedentários para 7,4/10 entre estudantes que treinam cinco dias ou mais.</div>
           </div>
         </div>
       </div>
@@ -1123,7 +1140,7 @@
           <div class="matrix" id="habitMatrix"></div>
           <div class="reading">
             <span class="reading-mark">3</span>
-            <div><strong>Principal leitura:</strong> o perfil com treino e boa alimentação reúne 35,8% da amostra e tem média 7,16/10. O grupo sem treino e sem boa alimentação fica em 5,00/10.</div>
+            <div><strong>Síntese:</strong> o perfil com treino e boa alimentação reúne 35,8% da amostra e tem média 7,2/10. O grupo sem treino e sem boa alimentação fica em 5,0/10.</div>
           </div>
         </div>
       </div>
@@ -1141,11 +1158,11 @@
           <div class="heatmap" id="habitHeatmap"></div>
           <div class="heatmap-scale">
             <div class="heatmap-scale-bar"></div>
-            <span>menor → maior média</span>
+            <div class="heatmap-scale-labels"><span>0/10</span><span>5/10</span><span>10/10</span></div>
           </div>
           <div class="reading">
             <span class="reading-mark">4</span>
-            <div><strong>Principal leitura:</strong> as melhores notas se concentram nos grupos com alimentação melhor avaliada. Onde há poucos estudantes, o gráfico deixa o tamanho do grupo explícito.</div>
+            <div><strong>Atenção ao n:</strong> entre os grupos com mais estudantes, as maiores médias aparecem principalmente entre quem avalia melhor a própria alimentação. Células com poucos casos devem ser lidas com cautela.</div>
           </div>
         </div>
       </div>
@@ -1171,7 +1188,7 @@
           </div>
           <div class="reading">
             <span class="reading-mark">5</span>
-            <div><strong>Principal leitura:</strong> 83,0% dos estudantes marcaram 4 ou 5. Mesmo em uma amostra pequena, a percepção positiva da combinação é muito forte.</div>
+            <div><strong>Síntese:</strong> 83,0% dos estudantes marcaram 4 ou 5. Mesmo em uma amostra pequena, a percepção positiva da combinação é muito forte.</div>
           </div>
         </div>
       </div>
@@ -1191,7 +1208,7 @@
           </div>
           <div class="panel reveal">
             <h3>O que observar</h3>
-            <p class="callout">A faixa de 7 a 8 horas reúne mais estudantes e serve como principal referência visual. Grupos menores aparecem com o n informado para a leitura não ficar solta.</p>
+            <p class="callout">A faixa de 7 a 8 horas reúne mais estudantes e serve como principal referência visual. Grupos menores aparecem com o n informado para evitar conclusões exageradas.</p>
           </div>
         </div>
       </div>
@@ -1211,7 +1228,7 @@
             <div class="final-metric-strip">
               <div class="final-chip"><strong>53</strong><span>respostas analisadas</span></div>
               <div class="final-chip"><strong>83,0%</strong><span>percebem melhora alta</span></div>
-              <div class="final-chip"><strong>7,16/10</strong><span>média no perfil treino + boa alimentação</span></div>
+              <div class="final-chip"><strong>7,2/10</strong><span>média no perfil treino + boa alimentação</span></div>
             </div>
             <div class="authors">
               <a href="https://ava.ufv.br/user/view.php?id=58803&course=29583" target="_blank" rel="noreferrer">Caio Augusto Pereira Queiroz</a>
@@ -1248,6 +1265,7 @@
 
     const fmt = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 });
     const fmt1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const fmtScore = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
     function parseCSV(text) {
       const rows = [];
@@ -1311,7 +1329,7 @@
 
     function pct(n, total) { return total ? n / total * 100 : 0; }
     function pctText(n, total) { return `${fmt1.format(pct(n, total))}%`; }
-    function scoreText(n) { return fmt.format(n).replace(".", ","); }
+    function scoreText(n) { return fmtScore.format(n); }
     function wellScore(n) { return n * 2; }
     function wellText(n) { return `${scoreText(wellScore(n))}/10`; }
     function escapeHtml(value) {
@@ -1595,7 +1613,7 @@
             <div class="heatmap-cell ${isEmpty ? "empty" : ""} ${isSmall ? "small" : ""}" style="--cell-color:${color};--intensity:${intensity}%">
               <span class="cell-day">${escapeHtml(dayShort[day])}</span>
               <strong class="cell-mean">${isEmpty ? "--" : wellText(avg)}</strong>
-              <span class="cell-count">${isEmpty ? "sem casos" : `${subset.length} estudante(s)${isSmall ? " • poucos casos" : ""}`}</span>
+              <span class="cell-count">${isEmpty ? "sem casos" : isSmall ? `n = ${subset.length} • cautela` : `${subset.length} estudante(s)`}</span>
             </div>
           `;
         }).join("");
