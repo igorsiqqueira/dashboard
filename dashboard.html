@@ -1,0 +1,1947 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dieta, treino e bem-estar | Dashboard interativo</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%230f9f96'/%3E%3Cpath d='M18 36c9-18 19-20 30-20-2 16-9 28-30 20Z' fill='%23ffffff'/%3E%3Cpath d='M19 38c8-2 17-7 26-18' stroke='%23f2b84b' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --paper: #ffffff;
+      --paper-soft: #eef4f5;
+      --ink: #14212b;
+      --muted: #5c6b76;
+      --line: #dbe5e8;
+      --teal: #0f9f96;
+      --teal-dark: #08746f;
+      --blue: #326fd1;
+      --violet: #7158c8;
+      --amber: #f2b84b;
+      --coral: #e85d55;
+      --green: #29a66a;
+      --shadow: 0 18px 44px rgba(18, 38, 63, .09);
+      --radius: 8px;
+    }
+
+    body.dark {
+      color-scheme: dark;
+      --bg: #111921;
+      --paper: #17242e;
+      --paper-soft: #20313b;
+      --ink: #eff7f8;
+      --muted: #a9bac2;
+      --line: #31434d;
+      --shadow: 0 20px 48px rgba(0, 0, 0, .26);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    p {
+      margin: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 820px;
+      font-size: 4.7rem;
+    }
+
+    h2 {
+      max-width: 760px;
+      font-size: 3rem;
+    }
+
+    h3 {
+      font-size: 1.35rem;
+    }
+
+    h4 {
+      font-size: 1rem;
+    }
+
+    p {
+      color: var(--muted);
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      z-index: 80;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--coral));
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 70;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--paper) 90%, transparent);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav-shell,
+    .container {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    .nav-shell {
+      min-height: 72px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .brand {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      min-width: max-content;
+      color: var(--teal-dark);
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    body.dark .brand {
+      color: #8ce5dc;
+    }
+
+    .brand-mark {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: conic-gradient(from 40deg, var(--teal), var(--blue), var(--violet), var(--amber), var(--coral), var(--teal));
+      box-shadow: inset 0 0 0 7px color-mix(in srgb, var(--paper) 58%, transparent);
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-links::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-links a,
+    .theme-toggle {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 8px 13px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform .2s ease, color .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active,
+    .theme-toggle:hover {
+      color: var(--ink);
+      background: var(--paper-soft);
+      border-color: var(--line);
+      transform: translateY(-1px);
+    }
+
+    .section {
+      padding: 92px 0;
+      scroll-margin-top: 92px;
+    }
+
+    .section.alt {
+      background: color-mix(in srgb, var(--paper-soft) 62%, transparent);
+      border-block: 1px solid color-mix(in srgb, var(--line) 76%, transparent);
+    }
+
+    .hero {
+      min-height: calc(100vh - 72px);
+      display: grid;
+      align-items: center;
+      padding: 56px 0 76px;
+      background:
+        linear-gradient(115deg, color-mix(in srgb, var(--teal) 13%, transparent), transparent 38%),
+        linear-gradient(35deg, color-mix(in srgb, var(--amber) 12%, transparent), transparent 45%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+      gap: 46px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      color: var(--teal-dark);
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    body.dark .eyebrow {
+      color: #8ce5dc;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 32px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--coral));
+    }
+
+    .lead {
+      max-width: 760px;
+      margin-top: 20px;
+      font-size: 1.22rem;
+    }
+
+    .method-note {
+      max-width: 780px;
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-left: 5px solid var(--amber);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: color-mix(in srgb, var(--amber) 13%, transparent);
+      color: var(--ink);
+      font-weight: 760;
+    }
+
+    .hero-visual {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-line {
+      position: relative;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--paper) 78%, transparent);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+    .hero-line:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--accent, var(--teal)) 50%, var(--line));
+      box-shadow: 0 26px 58px rgba(18, 38, 63, .13);
+    }
+
+    .hero-line small,
+    .stat-card small,
+    .metric-label,
+    .bar-meta,
+    .tag {
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 760;
+    }
+
+    .hero-line strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--ink);
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .hero-track {
+      height: 12px;
+      margin-top: 14px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--line) 72%, transparent);
+      overflow: hidden;
+    }
+
+    .hero-fill,
+    .bar-fill,
+    .mini-fill,
+    .matrix-fill {
+      width: var(--w);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--start), var(--end));
+      transform-origin: left;
+      animation: fillIn .9s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .section-head {
+      max-width: 820px;
+      margin-bottom: 28px;
+    }
+
+    .section-head p {
+      max-width: 760px;
+      margin-top: 12px;
+      font-size: 1.04rem;
+    }
+
+    .kpi-grid,
+    .signal-grid,
+    .driver-grid,
+    .two-col,
+    .age-grid,
+    .takeaway-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .kpi-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 28px;
+    }
+
+    .signal-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .driver-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .two-col {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: stretch;
+    }
+
+    .age-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .takeaway-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stat-card,
+    .signal-card,
+    .chart-card,
+    .driver-card,
+    .age-card,
+    .takeaway {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      transition: transform .22s ease, border-color .22s ease, background .22s ease, box-shadow .22s ease;
+    }
+
+    .stat-card:hover,
+    .signal-card:hover,
+    .chart-card:hover,
+    .driver-card:hover,
+    .age-card:hover,
+    .takeaway:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--accent, var(--teal)) 42%, var(--line));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent, var(--teal)) 8%, var(--paper)), var(--paper));
+      box-shadow: 0 24px 58px rgba(18, 38, 63, .12);
+    }
+
+    .stat-card {
+      min-height: 150px;
+      padding: 18px;
+      display: grid;
+      align-content: space-between;
+    }
+
+    .stat-card strong {
+      color: var(--teal-dark);
+      font-size: 2.35rem;
+      line-height: 1;
+    }
+
+    body.dark .stat-card strong {
+      color: #8ce5dc;
+    }
+
+    .signal-card {
+      min-height: 205px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      align-content: space-between;
+    }
+
+    .signal-card strong {
+      display: block;
+      color: var(--ink);
+      font-size: 1.18rem;
+      line-height: 1.18;
+    }
+
+    .signal-pill {
+      width: fit-content;
+      min-height: 28px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: color-mix(in srgb, var(--accent, var(--teal)) 14%, var(--paper));
+      color: var(--accent, var(--teal));
+      font-weight: 850;
+      font-size: .84rem;
+    }
+
+    .chart-card {
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .chart-title {
+      display: flex;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .tag {
+      min-width: max-content;
+      border: 1px solid color-mix(in srgb, var(--accent, var(--teal)) 28%, var(--line));
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: var(--accent, var(--teal));
+      background: color-mix(in srgb, var(--accent, var(--teal)) 9%, transparent);
+    }
+
+    .driver-card {
+      padding: 20px;
+      --accent: var(--teal);
+    }
+
+    .driver-card h3 {
+      min-height: 52px;
+    }
+
+    .driver-bars {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .driver-row,
+    .bar-row,
+    .mini-row {
+      display: grid;
+      grid-template-columns: minmax(110px, .68fr) minmax(0, 1fr) minmax(70px, auto);
+      gap: 12px;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+      transition: transform .2s ease;
+    }
+
+    .driver-row:hover,
+    .bar-row:hover,
+    .mini-row:hover {
+      transform: translateX(4px);
+    }
+
+    .driver-row:last-child,
+    .bar-row:last-child,
+    .mini-row:last-child {
+      border-bottom: 0;
+    }
+
+    .bar-name {
+      min-width: 0;
+      color: var(--ink);
+      font-weight: 850;
+      line-height: 1.18;
+    }
+
+    .bar-name span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .bar-track,
+    .mini-track,
+    .matrix-track {
+      height: 18px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--line) 68%, transparent);
+      overflow: hidden;
+    }
+
+    .bar-value {
+      color: var(--ink);
+      text-align: right;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .driver-gap {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--ink);
+      font-weight: 860;
+    }
+
+    .combo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .matrix-card {
+      min-height: 170px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--paper-soft) 50%, transparent);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .matrix-card:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--accent, var(--teal)) 48%, var(--line));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent, var(--teal)) 10%, var(--paper)), var(--paper));
+    }
+
+    .matrix-card strong {
+      display: block;
+      color: var(--ink);
+      font-size: 1.12rem;
+      line-height: 1.16;
+    }
+
+    .matrix-score {
+      margin: 14px 0 10px;
+      color: var(--accent, var(--teal));
+      font-size: 2.25rem;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .reading {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-left: 5px solid var(--accent, var(--teal));
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: color-mix(in srgb, var(--accent, var(--teal)) 8%, transparent);
+      color: var(--ink);
+      font-weight: 730;
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .reading:hover {
+      transform: translateX(4px);
+      background: color-mix(in srgb, var(--accent, var(--teal)) 12%, transparent);
+    }
+
+    .reading strong {
+      color: var(--ink);
+    }
+
+    .split-note {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      padding: 24px;
+      border: 1px solid color-mix(in srgb, var(--teal) 30%, var(--line));
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--teal) 10%, var(--paper)), var(--paper));
+      box-shadow: var(--shadow);
+    }
+
+    .split-note strong {
+      color: var(--ink);
+      font-size: 1.45rem;
+      line-height: 1.16;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .age-card {
+      padding: 18px;
+    }
+
+    .age-card h3 {
+      margin-bottom: 14px;
+    }
+
+    .age-metric {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .metric-label {
+      min-width: 78px;
+    }
+
+    .metric-value {
+      color: var(--ink);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .heatmap {
+      display: grid;
+      gap: 10px;
+    }
+
+    .heat-head,
+    .heat-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 190px) repeat(4, minmax(100px, 1fr));
+      gap: 10px;
+    }
+
+    .heat-head span {
+      color: var(--muted);
+      text-align: center;
+      font-size: .88rem;
+      font-weight: 850;
+    }
+
+    .heat-label {
+      display: grid;
+      align-content: center;
+      color: var(--ink);
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .heat-label span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 720;
+    }
+
+    .heat-cell {
+      min-height: 112px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--cell-color) var(--intensity), var(--paper));
+      transition: transform .2s ease, border-color .2s ease, filter .2s ease;
+    }
+
+    .heat-cell:hover {
+      transform: translateY(-3px);
+      filter: saturate(1.08);
+      border-color: color-mix(in srgb, var(--cell-color) 62%, var(--line));
+    }
+
+    .heat-cell.small {
+      border-style: dashed;
+      background:
+        repeating-linear-gradient(135deg, color-mix(in srgb, var(--cell-color) 11%, transparent) 0 8px, transparent 8px 16px),
+        var(--paper);
+    }
+
+    .heat-cell.empty {
+      opacity: .72;
+      background: color-mix(in srgb, var(--line) 34%, transparent);
+    }
+
+    .cell-score {
+      color: var(--ink);
+      font-size: 1.9rem;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .cell-count {
+      color: var(--muted);
+      font-size: .84rem;
+      font-weight: 740;
+    }
+
+    .final-grid {
+      display: grid;
+      grid-template-columns: 1.12fr .88fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .final-box {
+      position: relative;
+      padding: 34px;
+      border: 1px solid color-mix(in srgb, var(--teal) 34%, var(--line));
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--teal) 12%, var(--paper)), var(--paper));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .final-box::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 8px;
+      background: linear-gradient(180deg, var(--teal), var(--amber), var(--coral));
+    }
+
+    .final-sentence {
+      margin-bottom: 16px;
+      color: var(--ink);
+      font-size: 2.4rem;
+      line-height: 1.08;
+      font-weight: 950;
+    }
+
+    .takeaway {
+      padding: 18px;
+    }
+
+    .takeaway strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 1.08rem;
+    }
+
+    .authors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .authors span,
+    .authors a {
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: color-mix(in srgb, var(--paper-soft) 80%, transparent);
+      color: var(--muted);
+      font-size: .84rem;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .tooltip {
+      position: fixed;
+      z-index: 100;
+      max-width: 320px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--paper) 94%, transparent);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .15s ease, transform .15s ease;
+      font-size: .92rem;
+      font-weight: 720;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: opacity .55s ease, transform .55s ease;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .error {
+      padding: 16px;
+      border: 1px solid color-mix(in srgb, var(--coral) 44%, var(--line));
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--coral) 10%, var(--paper));
+      color: var(--ink);
+      font-weight: 780;
+    }
+
+    @keyframes fillIn {
+      from {
+        transform: scaleX(0);
+      }
+      to {
+        transform: scaleX(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media (max-width: 1020px) {
+      h1 {
+        font-size: 3.45rem;
+      }
+
+      h2 {
+        font-size: 2.35rem;
+      }
+
+      .nav-shell {
+        grid-template-columns: 1fr auto;
+        padding: 12px 0;
+      }
+
+      .nav-links {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-content: flex-start;
+      }
+
+      .hero-grid,
+      .two-col,
+      .final-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-grid,
+      .signal-grid,
+      .driver-grid,
+      .age-grid,
+      .takeaway-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .heat-head,
+      .heat-row {
+        grid-template-columns: minmax(130px, 170px) repeat(4, minmax(90px, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav-shell,
+      .container {
+        width: min(100% - 28px, 1180px);
+      }
+
+      .section {
+        padding: 64px 0;
+        scroll-margin-top: 140px;
+      }
+
+      .hero {
+        min-height: auto;
+        padding: 42px 0 58px;
+      }
+
+      h1 {
+        font-size: 2.52rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      h3 {
+        font-size: 1.18rem;
+      }
+
+      .lead {
+        font-size: 1.04rem;
+      }
+
+      .kpi-grid,
+      .signal-grid,
+      .driver-grid,
+      .age-grid,
+      .takeaway-grid,
+      .combo-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-card {
+        padding: 18px;
+      }
+
+      .chart-title {
+        display: grid;
+      }
+
+      .driver-row,
+      .bar-row,
+      .mini-row,
+      .age-metric {
+        grid-template-columns: 1fr auto;
+      }
+
+      .bar-track,
+      .mini-track,
+      .matrix-track {
+        grid-column: 1 / -1;
+        order: 3;
+      }
+
+      .heat-head {
+        display: none;
+      }
+
+      .heat-row {
+        grid-template-columns: 1fr;
+      }
+
+      .heat-label {
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .heat-cell::before {
+        content: attr(data-day);
+        color: var(--muted);
+        font-size: .82rem;
+        font-weight: 850;
+      }
+
+      .final-box {
+        padding: 26px 22px 26px 28px;
+      }
+
+      .final-sentence {
+        font-size: 1.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <header class="topbar">
+    <div class="nav-shell">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>Dieta e Treino</span></div>
+      <nav class="nav-links" aria-label="Navegação principal">
+        <a href="#resumo">Resumo</a>
+        <a href="#sinais">Sinais</a>
+        <a href="#habitos">Hábitos</a>
+        <a href="#rotina">Rotina</a>
+        <a href="#conclusao">Conclusão</a>
+      </nav>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">Tema</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="resumo">
+      <div class="container hero-grid">
+        <div class="reveal">
+          <p class="eyebrow">Pesquisa aplicada na UFV</p>
+          <h1>Dieta, treino e bem-estar: o que os dados contam?</h1>
+          <p class="lead">O dashboard transforma as respostas da turma em uma leitura simples: quais hábitos aparecem junto de melhor bem-estar e quais conclusões precisam de cautela.</p>
+          <p class="method-note">Leitura usada na análise: “treina” significa praticar exercício pelo menos 1 dia por semana. “Dieta alta” significa nota 4 ou 5 em adesão ao planejamento alimentar.</p>
+        </div>
+
+        <aside class="hero-visual reveal" aria-label="Resumo visual da pesquisa" id="heroStory"></aside>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Visão geral</p>
+          <h2>Primeiro, o tamanho da história</h2>
+          <p>Antes de comparar grupos, vale entender a base: quantas respostas foram analisadas, quantos estudantes praticam exercício e qual é o sinal mais forte no resumo.</p>
+        </div>
+        <div class="kpi-grid reveal" id="kpiGrid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="sinais">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Sinais principais</p>
+          <h2>As perguntas aparecem como pistas visuais</h2>
+          <p>Em vez de responder com frases soltas, cada card mostra uma pista dos dados. O leitor consegue perceber o caminho da análise antes de chegar aos gráficos detalhados.</p>
+        </div>
+        <div class="signal-grid reveal" id="signalGrid"></div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Bem-estar</p>
+          <h2>Quais hábitos mais se aproximam de bem-estar maior?</h2>
+          <p>As comparações abaixo mostram a média de bem-estar em grupos baixos e altos. É uma leitura exploratória: aponta associação, não prova causa e efeito.</p>
+        </div>
+        <div class="driver-grid reveal" id="driverGrid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="habitos">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Hábitos combinados</p>
+          <h2>Treino e dieta juntos: melhor média, mas não o único caminho</h2>
+          <p>Esta parte responde à pergunta mais prática do trabalho: quantas pessoas realmente treinam e seguem dieta, e como isso aparece no bem-estar médio.</p>
+        </div>
+
+        <div class="two-col">
+          <article class="chart-card reveal" style="--accent: var(--blue)">
+            <div class="chart-title">
+              <div>
+                <h3>Frequência de exercício e bem-estar</h3>
+                <p>Mais dias de treino tendem a acompanhar médias maiores.</p>
+              </div>
+              <span class="tag">0 a 5</span>
+            </div>
+            <div id="exerciseTrend"></div>
+            <div class="reading">A diferença mais visível aparece no grupo de 5 ou mais dias por semana, que tem a maior média de bem-estar.</div>
+          </article>
+
+          <article class="chart-card reveal" style="--accent: var(--green)">
+            <div class="chart-title">
+              <div>
+                <h3>Quem treina e segue dieta?</h3>
+                <p>Mapa com quantidade e bem-estar médio por combinação.</p>
+              </div>
+              <span class="tag">perfil</span>
+            </div>
+            <div class="combo-grid" id="comboGrid"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Melhora percebida</p>
+          <h2>Quem percebe melhora alta pratica mais hábitos?</h2>
+          <p>O grupo que deu nota 4 ou 5 para a melhora ao associar exercício e alimentação foi comparado por hábitos reais: prática de exercício, treino frequente, alimentação boa e dieta alta.</p>
+        </div>
+
+        <div class="two-col">
+          <article class="chart-card reveal" style="--accent: var(--teal)">
+            <div class="chart-title">
+              <div>
+                <h3>Hábitos entre quem percebe melhora alta</h3>
+                <p>Participação de cada hábito dentro desse grupo.</p>
+              </div>
+              <span class="tag">44 pessoas</span>
+            </div>
+            <div class="mini-list" id="improveHabits"></div>
+          </article>
+
+          <aside class="split-note reveal">
+            <strong>O sinal mais forte aqui é movimento, não dieta rígida.</strong>
+            <p id="improveText">Carregando análise...</p>
+            <div class="mini-list" id="foodDietBars"></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="rotina">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Sono e idade</p>
+          <h2>Nem toda variável explica o bem-estar da mesma forma</h2>
+          <p>Sono e idade ajudam a evitar conclusões apressadas. Nos dados, eles mostram padrões menos lineares do que exercício e alimentação.</p>
+        </div>
+
+        <div class="two-col">
+          <article class="chart-card reveal" style="--accent: var(--amber)">
+            <div class="chart-title">
+              <div>
+                <h3>Sono e bem-estar médio</h3>
+                <p>Dormir mais não apareceu como uma linha crescente na amostra.</p>
+              </div>
+              <span class="tag">sono</span>
+            </div>
+            <div id="sleepBars"></div>
+            <div class="reading">O grupo de 5 a 6 horas teve média maior que o de 7 a 8 horas. Isso sugere cautela: sono pode importar, mas esta base não mostrou uma relação simples.</div>
+          </article>
+
+          <article class="chart-card reveal" style="--accent: var(--violet)">
+            <div class="chart-title">
+              <div>
+                <h3>Idade, alimentação e treino</h3>
+                <p>Comparação das médias por faixa etária.</p>
+              </div>
+              <span class="tag">perfil</span>
+            </div>
+            <div class="age-grid" id="ageGrid"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Leitura cruzada</p>
+          <h2>Alimentação e exercício no mesmo mapa</h2>
+          <p>O mapa de calor cruza qualidade alimentar com frequência de exercício. Células com poucos casos aparecem marcadas para não passar uma certeza maior do que os dados permitem.</p>
+        </div>
+        <article class="chart-card reveal" style="--accent: var(--teal)">
+          <div class="chart-title">
+            <div>
+              <h3>Bem-estar médio por alimentação e dias de exercício</h3>
+              <p>Cores mais verdes indicam médias mais altas.</p>
+            </div>
+            <span class="tag">mapa de calor</span>
+          </div>
+          <div class="heatmap" id="heatmap"></div>
+          <div class="reading">A melhor leitura é procurar padrões com base suficiente. Quando há poucos estudantes em uma célula, o número serve como pista, não como conclusão.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="conclusao">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Conclusão</p>
+          <h2>O que dá para concluir com responsabilidade?</h2>
+          <p>A conclusão fecha o raciocínio do dashboard sem transformar associação em causa. O objetivo é comunicar bem os padrões e os limites da pesquisa.</p>
+        </div>
+
+        <div class="final-grid">
+          <div class="final-box reveal">
+            <p class="final-sentence">Treinar e comer melhor aparece associado a mais bem-estar, mas os dados não dizem que existe uma fórmula obrigatória.</p>
+            <p>Na amostra, exercício físico foi o sinal mais consistente, alimentação boa também acompanhou médias maiores e a combinação treino + dieta alta teve uma média melhor. Mesmo assim, apenas uma minoria combina treino com dieta alta, e muitos estudantes relatam melhora sem seguir dieta rígida.</p>
+            <div class="authors">
+              <a href="https://ava.ufv.br/user/view.php?id=58803&course=29583" target="_blank" rel="noreferrer">Caio Augusto Pereira Queiroz</a>
+              <a href="https://ava.ufv.br/user/view.php?id=60365&course=29583" target="_blank" rel="noreferrer">Igor Siqueira Alves</a>
+              <a href="https://ava.ufv.br/user/view.php?id=58804&course=29583" target="_blank" rel="noreferrer">Pedro Hashimoto Sanches Barbosa</a>
+              <span>Bernardo Tufi Mansur Gentil</span>
+              <span>Professor: Guaraci de Lima Requena</span>
+            </div>
+          </div>
+
+          <div class="takeaway-grid reveal">
+            <div class="takeaway" style="--accent: var(--teal)">
+              <strong>Associação forte</strong>
+              <p>Alimentação melhor avaliada e exercício aparecem com médias superiores de bem-estar.</p>
+            </div>
+            <div class="takeaway" style="--accent: var(--amber)">
+              <strong>Cuidado com sono e idade</strong>
+              <p>Essas variáveis não formaram uma linha simples; são úteis para mostrar limites da análise.</p>
+            </div>
+            <div class="takeaway" style="--accent: var(--coral)">
+              <strong>Não é regra universal</strong>
+              <p>Treino + dieta alta ajuda a média, mas não foi necessário para todos se sentirem bem.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+
+  <script>
+    const embeddedCsv = `days,food,diet,sleep,well,improve,age
+1 a 2 dias,4,0,5 a 6 horas,3,3,18 - 21
+1 a 2 dias,3,0,7 a 8 horas,3,4,22 - 25
+3 a 4 dias,2,0,7 a 8 horas,2,2,18 - 21
+1 a 2 dias,5,4,7 a 8 horas,4,5,22 - 25
+1 a 2 dias,4,3,5 a 6 horas,3,4,14 - 17
+5 ou mais dias,4,3,Menos de 5 horas,3,5,18 - 21
+0 dias,3,2,7 a 8 horas,3,3,18 - 21
+3 a 4 dias,3,3,7 a 8 horas,4,5,18 - 21
+1 a 2 dias,3,3,7 a 8 horas,4,5,18 - 21
+1 a 2 dias,4,0,7 a 8 horas,2,5,18 - 21
+0 dias,2,0,7 a 8 horas,2,5,18 - 21
+3 a 4 dias,3,3,5 a 6 horas,3,5,18 - 21
+5 ou mais dias,5,4,7 a 8 horas,4,5,14 - 17
+0 dias,1,0,7 a 8 horas,0,4,22 - 25
+1 a 2 dias,3,1,7 a 8 horas,3,5,18 - 21
+3 a 4 dias,4,1,7 a 8 horas,4,5,14 - 17
+0 dias,4,0,7 a 8 horas,3,4,18 - 21
+0 dias,4,3,5 a 6 horas,5,0,18 - 21
+1 a 2 dias,2,2,7 a 8 horas,1,4,22 - 25
+1 a 2 dias,4,0,7 a 8 horas,4,5,26 ou mais.
+5 ou mais dias,1,0,7 a 8 horas,4,4,18 - 21
+1 a 2 dias,3,2,7 a 8 horas,1,5,26 ou mais.
+0 dias,3,3,7 a 8 horas,3,4,18 - 21
+1 a 2 dias,0,0,7 a 8 horas,5,5,26 ou mais.
+5 ou mais dias,5,4,5 a 6 horas,5,5,26 ou mais.
+3 a 4 dias,2,1,5 a 6 horas,3,4,26 ou mais.
+3 a 4 dias,3,2,7 a 8 horas,4,5,18 - 21
+3 a 4 dias,4,4,5 a 6 horas,3,4,18 - 21
+0 dias,3,0,7 a 8 horas,3,5,18 - 21
+5 ou mais dias,4,4,5 a 6 horas,4,5,26 ou mais.
+1 a 2 dias,4,3,7 a 8 horas,4,5,18 - 21
+3 a 4 dias,3,2,7 a 8 horas,4,5,18 - 21
+5 ou mais dias,5,5,7 a 8 horas,2,4,18 - 21
+1 a 2 dias,3,0,5 a 6 horas,4,4,14 - 17
+1 a 2 dias,2,0,7 a 8 horas,3,4,18 - 21
+1 a 2 dias,3,4,5 a 6 horas,3,4,18 - 21
+0 dias,4,2,5 a 6 horas,4,5,22 - 25
+1 a 2 dias,2,1,7 a 8 horas,1,4,18 - 21
+3 a 4 dias,1,0,7 a 8 horas,0,1,18 - 21
+0 dias,2,0,5 a 6 horas,2,3,22 - 25
+3 a 4 dias,4,4,5 a 6 horas,4,3,18 - 21
+1 a 2 dias,4,3,5 a 6 horas,4,5,18 - 21
+1 a 2 dias,3,3,5 a 6 horas,4,5,18 - 21
+5 ou mais dias,4,4,5 a 6 horas,4,5,18 - 21
+1 a 2 dias,3,1,7 a 8 horas,3,4,22 - 25
+3 a 4 dias,4,4,5 a 6 horas,3,5,18 - 21
+1 a 2 dias,3,0,7 a 8 horas,2,3,18 - 21
+3 a 4 dias,3,2,5 a 6 horas,2,4,18 - 21
+0 dias,3,1,5 a 6 horas,3,3,18 - 21
+3 a 4 dias,4,2,7 a 8 horas,4,5,18 - 21
+0 dias,4,4,5 a 6 horas,2,5,22 - 25
+3 a 4 dias,4,3,5 a 6 horas,4,5,26 ou mais.
+0 dias,3,2,5 a 6 horas,4,4,18 - 21`;
+
+    const dayOrder = ["0 dias", "1 a 2 dias", "3 a 4 dias", "5 ou mais dias"];
+    const dayShort = {
+      "0 dias": "0 dias",
+      "1 a 2 dias": "1-2 dias",
+      "3 a 4 dias": "3-4 dias",
+      "5 ou mais dias": "5+ dias"
+    };
+    const dayScore = {
+      "0 dias": 0,
+      "1 a 2 dias": 1.5,
+      "3 a 4 dias": 3.5,
+      "5 ou mais dias": 5
+    };
+    const sleepOrder = ["Menos de 5 horas", "5 a 6 horas", "7 a 8 horas", "Mais de 8 horas"];
+    const sleepScore = {
+      "Menos de 5 horas": 4,
+      "5 a 6 horas": 5.5,
+      "7 a 8 horas": 7.5,
+      "Mais de 8 horas": 8.5
+    };
+    const ageOrder = ["14 - 17", "18 - 21", "22 - 25", "26 ou mais."];
+    const colors = {
+      teal: "#0f9f96",
+      blue: "#326fd1",
+      violet: "#7158c8",
+      amber: "#f2b84b",
+      coral: "#e85d55",
+      green: "#29a66a"
+    };
+    const fmt = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 });
+    const fmt1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let quoted = false;
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+        if (char === "\"") {
+          if (quoted && next === "\"") {
+            cell += "\"";
+            i++;
+          } else {
+            quoted = !quoted;
+          }
+        } else if (char === "," && !quoted) {
+          row.push(cell);
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !quoted) {
+          if (char === "\r" && next === "\n") i++;
+          row.push(cell);
+          if (row.some(value => String(value).trim() !== "")) rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += char;
+        }
+      }
+      row.push(cell);
+      if (row.some(value => String(value).trim() !== "")) rows.push(row);
+      return rows;
+    }
+
+    function toNum(value) {
+      const number = Number(String(value || "").replace(",", ".").trim());
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function cleanRows(rows) {
+      const header = rows[0] || [];
+      const originalCsv = String(header[0] || "").includes("Carimbo");
+      return rows.slice(1)
+        .filter(row => row.some(value => String(value || "").trim() !== ""))
+        .map((row, index) => {
+          if (originalCsv) {
+            return {
+              id: index + 1,
+              date: String(row[0] || "").trim(),
+              days: String(row[2] || "").trim(),
+              food: toNum(row[3]),
+              diet: toNum(row[4]),
+              sleep: String(row[5] || "").trim(),
+              well: toNum(row[6]),
+              improve: toNum(row[7]),
+              age: String(row[8] || "").trim()
+            };
+          }
+          return {
+            id: index + 1,
+            date: "",
+            days: String(row[0] || "").trim(),
+            food: toNum(row[1]),
+            diet: toNum(row[2]),
+            sleep: String(row[3] || "").trim(),
+            well: toNum(row[4]),
+            improve: toNum(row[5]),
+            age: String(row[6] || "").trim()
+          };
+        })
+        .filter(d => d.days && d.food !== null && d.diet !== null && d.sleep && d.well !== null && d.improve !== null && d.age);
+    }
+
+    async function loadData() {
+      if (location.protocol !== "file:") {
+        try {
+          const response = await fetch("dados.csv", { cache: "no-store" });
+          if (response.ok) {
+            const data = cleanRows(parseCSV(await response.text()));
+            if (data.length) return data;
+          }
+        } catch (error) {
+          console.warn("Usando dados embutidos:", error);
+        }
+      }
+      return cleanRows(parseCSV(embeddedCsv));
+    }
+
+    function mean(values) {
+      const numbers = values.filter(Number.isFinite);
+      return numbers.length ? numbers.reduce((sum, value) => sum + value, 0) / numbers.length : 0;
+    }
+
+    function pct(value, total) {
+      return total ? value / total * 100 : 0;
+    }
+
+    function pctText(value, total) {
+      return `${fmt1.format(pct(value, total))}%`;
+    }
+
+    function scoreText(value) {
+      return fmt1.format(value);
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    function groupStats(data, label, predicate, field = "well") {
+      const rows = data.filter(predicate);
+      return {
+        label,
+        rows,
+        n: rows.length,
+        mean: mean(rows.map(item => item[field]))
+      };
+    }
+
+    function active(d) {
+      return dayScore[d.days] > 0;
+    }
+
+    function dietHigh(d) {
+      return d.diet >= 4;
+    }
+
+    function goodFood(d) {
+      return d.food >= 4;
+    }
+
+    function cssPct(value, max = 5) {
+      return `${Math.max(2, Math.min(100, value / max * 100))}%`;
+    }
+
+    function barRow({ name, sub, value, max = 5, tip, start = colors.teal, end = colors.blue }) {
+      return `
+        <div class="bar-row" data-tip="${escapeHtml(tip)}">
+          <div class="bar-name">${escapeHtml(name)}${sub ? `<span>${escapeHtml(sub)}</span>` : ""}</div>
+          <div class="bar-track"><div class="bar-fill" style="--w:${cssPct(value, max)};--start:${start};--end:${end}"></div></div>
+          <div class="bar-value">${scoreText(value)}</div>
+        </div>
+      `;
+    }
+
+    function miniRow({ name, sub, value, total, tip, start = colors.teal, end = colors.blue }) {
+      return `
+        <div class="mini-row" data-tip="${escapeHtml(tip)}">
+          <div class="bar-name">${escapeHtml(name)}<span>${escapeHtml(sub)}</span></div>
+          <div class="mini-track"><div class="mini-fill" style="--w:${pct(value, total)}%;--start:${start};--end:${end}"></div></div>
+          <div class="bar-value">${pctText(value, total)}</div>
+        </div>
+      `;
+    }
+
+    function dateRange(data) {
+      const dates = data.map(item => {
+        const match = item.date.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+        return match ? new Date(`${match[3]}-${match[2]}-${match[1]}T00:00:00`) : null;
+      }).filter(Boolean).sort((a, b) => a - b);
+      if (!dates.length) return "25/04/2026 a 17/05/2026";
+      const format = date => date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+      return `${format(dates[0])} a ${format(dates[dates.length - 1])}`;
+    }
+
+    function renderHero(data) {
+      const total = data.length;
+      const activeCount = data.filter(active).length;
+      const highImprove = data.filter(d => d.improve >= 4).length;
+      const both = data.filter(d => active(d) && dietHigh(d)).length;
+      const items = [
+        {
+          label: "Amostra analisada",
+          value: `${total}`,
+          sub: `${dateRange(data)} · respostas válidas`,
+          width: 100,
+          color: colors.teal
+        },
+        {
+          label: "Praticam algum exercício",
+          value: pctText(activeCount, total),
+          sub: `${activeCount} de ${total} estudantes`,
+          width: pct(activeCount, total),
+          color: colors.blue
+        },
+        {
+          label: "Percebem melhora alta",
+          value: pctText(highImprove, total),
+          sub: "nota 4 ou 5 para melhora com dieta e treino",
+          width: pct(highImprove, total),
+          color: colors.green
+        },
+        {
+          label: "Treinam e seguem dieta alta",
+          value: pctText(both, total),
+          sub: `${both} estudantes combinam os dois hábitos`,
+          width: pct(both, total),
+          color: colors.coral
+        }
+      ];
+
+      document.getElementById("heroStory").innerHTML = items.map(item => `
+        <div class="hero-line" style="--accent:${item.color}" data-tip="${escapeHtml(item.sub)}">
+          <small>${escapeHtml(item.label)}</small>
+          <strong>${escapeHtml(item.value)}</strong>
+          <div class="hero-track"><div class="hero-fill" style="--w:${item.width}%;--start:${item.color};--end:${colors.amber}"></div></div>
+        </div>
+      `).join("");
+    }
+
+    function renderKpis(data) {
+      const total = data.length;
+      const activeCount = data.filter(active).length;
+      const highImprove = data.filter(d => d.improve >= 4).length;
+      const foodLow = groupStats(data, "alimentação baixa", d => d.food <= 2);
+      const foodHigh = groupStats(data, "alimentação boa", goodFood);
+      const gap = foodHigh.mean - foodLow.mean;
+      const wellbeing = mean(data.map(d => d.well));
+      const cards = [
+        { value: total, label: "respostas válidas", detail: "uma linha vazia foi removida da base", color: colors.teal },
+        { value: pctText(activeCount, total), label: "praticam exercício", detail: `${activeCount} estudantes treinam pelo menos 1 dia por semana`, color: colors.blue },
+        { value: pctText(highImprove, total), label: "percebem melhora alta", detail: `${highImprove} deram nota 4 ou 5 para melhora percebida`, color: colors.green },
+        { value: `+${scoreText(gap)}`, label: "ponto no bem-estar", detail: `diferença entre alimentação baixa e boa na escala 0 a 5`, color: colors.coral }
+      ];
+      document.getElementById("kpiGrid").innerHTML = cards.map(card => `
+        <div class="stat-card" style="--accent:${card.color}" data-tip="${escapeHtml(card.detail)}">
+          <small>${escapeHtml(card.label)}</small>
+          <strong>${escapeHtml(card.value)}</strong>
+          <p>${escapeHtml(card.detail)}</p>
+        </div>
+      `).join("");
+      return wellbeing;
+    }
+
+    function renderSignals(data) {
+      const total = data.length;
+      const activeMean = groupStats(data, "treina", active).mean;
+      const inactiveMean = groupStats(data, "não treina", d => !active(d)).mean;
+      const sleep56 = groupStats(data, "5 a 6 horas", d => d.sleep === "5 a 6 horas").mean;
+      const sleep78 = groupStats(data, "7 a 8 horas", d => d.sleep === "7 a 8 horas").mean;
+      const highImprove = data.filter(d => d.improve >= 4);
+      const highActive = highImprove.filter(active).length;
+      const highDiet = highImprove.filter(dietHigh).length;
+      const good = data.filter(goodFood);
+      const goodAndDiet = good.filter(dietHigh).length;
+      const young = data.filter(d => d.age === "14 - 17" || d.age === "18 - 21");
+      const older = data.filter(d => d.age === "22 - 25" || d.age === "26 ou mais.");
+      const both = data.filter(d => active(d) && dietHigh(d)).length;
+
+      const cards = [
+        {
+          title: "Exercício aparece com média maior",
+          text: `Quem treina ficou em ${scoreText(activeMean)}; quem não treina, ${scoreText(inactiveMean)}.`,
+          pill: `+${scoreText(activeMean - inactiveMean)}`,
+          color: colors.blue
+        },
+        {
+          title: "Sono não ficou linear",
+          text: `5 a 6 horas teve média ${scoreText(sleep56)}; 7 a 8 horas, ${scoreText(sleep78)}.`,
+          pill: "cautela",
+          color: colors.amber
+        },
+        {
+          title: "Melhora alta vem mais com movimento",
+          text: `${pctText(highActive, highImprove.length)} desse grupo treina; ${pctText(highDiet, highImprove.length)} segue dieta alta.`,
+          pill: `${highActive}/${highImprove.length}`,
+          color: colors.green
+        },
+        {
+          title: "Alimentação boa não é sempre dieta",
+          text: `${pctText(goodAndDiet, good.length)} de quem avalia a alimentação como boa também segue dieta alta.`,
+          pill: `${goodAndDiet}/${good.length}`,
+          color: colors.teal
+        },
+        {
+          title: "Jovens têm leve vantagem alimentar",
+          text: `14-21 anos: média ${scoreText(mean(young.map(d => d.food)))}; 22+ anos: ${scoreText(mean(older.map(d => d.food)))}.`,
+          pill: "idade",
+          color: colors.violet
+        },
+        {
+          title: "Jovens não explicam tudo no treino",
+          text: `22-25 treina pouco, mas 26+ aparece forte. A idade sozinha não fecha a história.`,
+          pill: "perfil",
+          color: colors.coral
+        },
+        {
+          title: "Treino + dieta alta é minoria",
+          text: `${both} de ${total} estudantes combinam os dois hábitos em nível alto.`,
+          pill: pctText(both, total),
+          color: colors.green
+        },
+        {
+          title: "Não existe fórmula obrigatória",
+          text: `A combinação ajuda a média, mas muitos percebem melhora sem seguir dieta rígida.`,
+          pill: "síntese",
+          color: colors.teal
+        }
+      ];
+
+      document.getElementById("signalGrid").innerHTML = cards.map(card => `
+        <article class="signal-card" style="--accent:${card.color}" data-tip="${escapeHtml(card.text)}">
+          <span class="signal-pill">${escapeHtml(card.pill)}</span>
+          <strong>${escapeHtml(card.title)}</strong>
+          <p>${escapeHtml(card.text)}</p>
+        </article>
+      `).join("");
+    }
+
+    function renderDrivers(data) {
+      const items = [
+        {
+          title: "Alimentação percebida",
+          low: groupStats(data, "Baixa", d => d.food <= 2),
+          high: groupStats(data, "Boa ou muito boa", goodFood),
+          lowSub: "notas 0 a 2",
+          highSub: "notas 4 e 5",
+          color: colors.teal
+        },
+        {
+          title: "Exercício físico",
+          low: groupStats(data, "Não treina", d => !active(d)),
+          high: groupStats(data, "Treina", active),
+          lowSub: "0 dias",
+          highSub: "1+ dia por semana",
+          color: colors.blue
+        },
+        {
+          title: "Adesão à dieta",
+          low: groupStats(data, "Dieta baixa", d => d.diet <= 1),
+          high: groupStats(data, "Dieta alta", dietHigh),
+          lowSub: "notas 0 e 1",
+          highSub: "notas 4 e 5",
+          color: colors.violet
+        }
+      ].sort((a, b) => (b.high.mean - b.low.mean) - (a.high.mean - a.low.mean));
+
+      document.getElementById("driverGrid").innerHTML = items.map((item, index) => {
+        const start = index === 0 ? colors.teal : index === 1 ? colors.blue : colors.violet;
+        const gap = item.high.mean - item.low.mean;
+        return `
+          <article class="driver-card" style="--accent:${item.color}">
+            <h3>${escapeHtml(item.title)}</h3>
+            <p>Comparação entre grupo baixo e grupo alto.</p>
+            <div class="driver-bars">
+              ${barRow({
+                name: item.low.label,
+                sub: `${item.lowSub} · n=${item.low.n}`,
+                value: item.low.mean,
+                tip: `${item.title}: ${item.low.label} tem média ${scoreText(item.low.mean)} de bem-estar.`,
+                start: colors.coral,
+                end: colors.amber
+              })}
+              ${barRow({
+                name: item.high.label,
+                sub: `${item.highSub} · n=${item.high.n}`,
+                value: item.high.mean,
+                tip: `${item.title}: ${item.high.label} tem média ${scoreText(item.high.mean)} de bem-estar.`,
+                start,
+                end: colors.green
+              })}
+            </div>
+            <div class="driver-gap">Diferença: +${scoreText(gap)} ponto na escala de 0 a 5.</div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderExercise(data) {
+      const groups = dayOrder.map(label => groupStats(data, label, d => d.days === label));
+      document.getElementById("exerciseTrend").innerHTML = groups.map((group, index) => {
+        const palette = index === 0
+          ? [colors.coral, colors.amber]
+          : index === groups.length - 1
+            ? [colors.blue, colors.teal]
+            : [colors.amber, colors.green];
+        return barRow({
+          name: dayShort[group.label],
+          sub: `${group.n} estudante${group.n === 1 ? "" : "s"}`,
+          value: group.mean,
+          tip: `${group.label}: bem-estar médio ${scoreText(group.mean)}; ${group.n} estudante(s).`,
+          start: palette[0],
+          end: palette[1]
+        });
+      }).join("");
+    }
+
+    function renderCombo(data) {
+      const total = data.length;
+      const cells = [
+        {
+          title: "Treina + dieta alta",
+          desc: "combina os dois hábitos",
+          color: colors.green,
+          pred: d => active(d) && dietHigh(d)
+        },
+        {
+          title: "Treina sem dieta alta",
+          desc: "movimento com dieta baixa/moderada",
+          color: colors.blue,
+          pred: d => active(d) && !dietHigh(d)
+        },
+        {
+          title: "Não treina + dieta alta",
+          desc: "dieta alta sem rotina ativa",
+          color: colors.amber,
+          pred: d => !active(d) && dietHigh(d)
+        },
+        {
+          title: "Sem treino e sem dieta alta",
+          desc: "nenhum dos dois hábitos em nível alto",
+          color: colors.coral,
+          pred: d => !active(d) && !dietHigh(d)
+        }
+      ].map(cell => {
+        const rows = data.filter(cell.pred);
+        return {
+          ...cell,
+          n: rows.length,
+          pct: pct(rows.length, total),
+          mean: mean(rows.map(d => d.well))
+        };
+      });
+
+      document.getElementById("comboGrid").innerHTML = cells.map(cell => `
+        <article class="matrix-card" style="--accent:${cell.color}" data-tip="${escapeHtml(`${cell.title}: ${cell.n} estudante(s), ${fmt1.format(cell.pct)}% da amostra; bem-estar médio ${scoreText(cell.mean)}.`)}">
+          <strong>${escapeHtml(cell.title)}</strong>
+          <p>${escapeHtml(cell.desc)}</p>
+          <div class="matrix-score">${scoreText(cell.mean)}</div>
+          <div class="matrix-track"><div class="matrix-fill" style="--w:${cell.pct}%;--start:${cell.color};--end:${colors.teal}"></div></div>
+          <p class="bar-meta">${cell.n} estudante${cell.n === 1 ? "" : "s"} · ${fmt1.format(cell.pct)}%</p>
+        </article>
+      `).join("");
+    }
+
+    function renderImprove(data) {
+      const high = data.filter(d => d.improve >= 4);
+      const highN = high.length;
+      const activeN = high.filter(active).length;
+      const train3 = high.filter(d => dayScore[d.days] >= 3.5).length;
+      const goodFoodN = high.filter(goodFood).length;
+      const dietN = high.filter(dietHigh).length;
+
+      document.getElementById("improveHabits").innerHTML = [
+        { name: "Pratica exercício", sub: `${activeN} de ${highN}`, value: activeN, total: highN, color: [colors.green, colors.teal] },
+        { name: "Treina 3+ dias", sub: `${train3} de ${highN}`, value: train3, total: highN, color: [colors.blue, colors.violet] },
+        { name: "Alimentação boa", sub: `${goodFoodN} de ${highN}`, value: goodFoodN, total: highN, color: [colors.teal, colors.green] },
+        { name: "Dieta alta", sub: `${dietN} de ${highN}`, value: dietN, total: highN, color: [colors.amber, colors.coral] }
+      ].map(item => miniRow({
+        name: item.name,
+        sub: item.sub,
+        value: item.value,
+        total: item.total,
+        start: item.color[0],
+        end: item.color[1],
+        tip: `${item.name}: ${pctText(item.value, item.total)} dentro do grupo com melhora alta.`
+      })).join("");
+
+      const good = data.filter(goodFood);
+      const notGood = data.filter(d => !goodFood(d));
+      const goodDiet = good.filter(dietHigh).length;
+      const notGoodDiet = notGood.filter(dietHigh).length;
+      document.getElementById("improveText").textContent = `Entre quem percebe melhora alta, exercício aparece ${fmt1.format(activeN / Math.max(1, dietN))} vezes mais que dieta alta. Isso indica que a melhora percebida está mais próxima de manter movimento do que de seguir dieta rígida.`;
+      document.getElementById("foodDietBars").innerHTML = [
+        { name: "Alimentação boa + dieta alta", sub: `${goodDiet} de ${good.length}`, value: goodDiet, total: good.length, color: [colors.teal, colors.green] },
+        { name: "Alimentação menor + dieta alta", sub: `${notGoodDiet} de ${notGood.length}`, value: notGoodDiet, total: notGood.length, color: [colors.amber, colors.coral] }
+      ].map(item => miniRow({
+        name: item.name,
+        sub: item.sub,
+        value: item.value,
+        total: item.total,
+        start: item.color[0],
+        end: item.color[1],
+        tip: `${item.name}: ${pctText(item.value, item.total)}.`
+      })).join("");
+    }
+
+    function renderSleep(data) {
+      const groups = sleepOrder.map(label => groupStats(data, label, d => d.sleep === label)).filter(group => group.n > 0);
+      document.getElementById("sleepBars").innerHTML = groups.map((group, index) => {
+        const palette = index === 0 ? [colors.coral, colors.amber] : index === 1 ? [colors.amber, colors.green] : [colors.blue, colors.teal];
+        return barRow({
+          name: group.label,
+          sub: `${group.n} estudante${group.n === 1 ? "" : "s"}`,
+          value: group.mean,
+          start: palette[0],
+          end: palette[1],
+          tip: `${group.label}: bem-estar médio ${scoreText(group.mean)} com ${group.n} resposta(s).`
+        });
+      }).join("");
+    }
+
+    function renderAge(data) {
+      const maxDays = 5;
+      document.getElementById("ageGrid").innerHTML = ageOrder.map(age => {
+        const rows = data.filter(d => d.age === age);
+        const food = mean(rows.map(d => d.food));
+        const days = mean(rows.map(d => dayScore[d.days]));
+        const label = age.replace(".", "");
+        return `
+          <article class="age-card" data-tip="${escapeHtml(`${label}: ${rows.length} estudante(s), alimentação média ${scoreText(food)} e frequência média ${scoreText(days)} dias/semana.`)}">
+            <h3>${escapeHtml(label)}</h3>
+            <p>${rows.length} estudante${rows.length === 1 ? "" : "s"}</p>
+            <div class="age-metric">
+              <span class="metric-label">Alimentação</span>
+              <div class="mini-track"><div class="mini-fill" style="--w:${cssPct(food)};--start:${colors.teal};--end:${colors.green}"></div></div>
+              <span class="metric-value">${scoreText(food)}</span>
+            </div>
+            <div class="age-metric">
+              <span class="metric-label">Treino</span>
+              <div class="mini-track"><div class="mini-fill" style="--w:${cssPct(days, maxDays)};--start:${colors.blue};--end:${colors.violet}"></div></div>
+              <span class="metric-value">${scoreText(days)}</span>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function heatColor(score) {
+      if (score >= 3.45) return colors.teal;
+      if (score >= 2.8) return colors.amber;
+      return colors.coral;
+    }
+
+    function renderHeatmap(data) {
+      const foodRows = [
+        { label: "Alimentação baixa", sub: "notas 0 a 2", pred: d => d.food <= 2 },
+        { label: "Intermediária", sub: "nota 3", pred: d => d.food === 3 },
+        { label: "Boa ou muito boa", sub: "notas 4 e 5", pred: goodFood }
+      ];
+      const header = `
+        <div class="heat-head" aria-hidden="true">
+          <span></span>
+          ${dayOrder.map(day => `<span>${escapeHtml(dayShort[day])}</span>`).join("")}
+        </div>
+      `;
+      const rows = foodRows.map(row => `
+        <div class="heat-row">
+          <div class="heat-label">${escapeHtml(row.label)}<span>${escapeHtml(row.sub)}</span></div>
+          ${dayOrder.map(day => {
+            const subset = data.filter(d => d.days === day && row.pred(d));
+            const score = mean(subset.map(d => d.well));
+            const isEmpty = subset.length === 0;
+            const isSmall = subset.length > 0 && subset.length < 3;
+            const color = isEmpty ? "var(--line)" : heatColor(score);
+            const intensity = isEmpty || isSmall ? 18 : Math.max(24, Math.min(74, score / 5 * 82));
+            const tip = isEmpty
+              ? `${row.label} + ${dayShort[day]}: sem respostas.`
+              : `${row.label} + ${dayShort[day]}: média ${scoreText(score)}; ${subset.length} estudante(s)${isSmall ? "; base pequena" : ""}.`;
+            return `
+              <div class="heat-cell ${isEmpty ? "empty" : ""} ${isSmall ? "small" : ""}" data-day="${escapeHtml(dayShort[day])}" data-tip="${escapeHtml(tip)}" style="--cell-color:${color};--intensity:${intensity}%">
+                <strong class="cell-score">${isEmpty ? "--" : scoreText(score)}</strong>
+                <span class="cell-count">${isEmpty ? "sem casos" : `${subset.length} estudante${subset.length === 1 ? "" : "s"}${isSmall ? " · cautela" : ""}`}</span>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `).join("");
+      document.getElementById("heatmap").innerHTML = header + rows;
+    }
+
+    function setupTooltip() {
+      const tooltip = document.getElementById("tooltip");
+      document.addEventListener("pointerover", event => {
+        const target = event.target.closest("[data-tip]");
+        if (!target) return;
+        tooltip.textContent = target.getAttribute("data-tip");
+        tooltip.classList.add("visible");
+      });
+      document.addEventListener("pointermove", event => {
+        if (!tooltip.classList.contains("visible")) return;
+        const pad = 18;
+        const left = Math.min(event.clientX + pad, window.innerWidth - tooltip.offsetWidth - pad);
+        const top = Math.min(event.clientY + pad, window.innerHeight - tooltip.offsetHeight - pad);
+        tooltip.style.left = `${Math.max(pad, left)}px`;
+        tooltip.style.top = `${Math.max(pad, top)}px`;
+      });
+      document.addEventListener("pointerout", event => {
+        if (event.target.closest("[data-tip]")) tooltip.classList.remove("visible");
+      });
+    }
+
+    function setupScroll() {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add("is-visible");
+        });
+      }, { threshold: .12 });
+      document.querySelectorAll(".reveal").forEach(element => observer.observe(element));
+
+      const sections = [...document.querySelectorAll("main section[id]")];
+      const links = [...document.querySelectorAll(".nav-links a")];
+      const update = () => {
+        const header = (document.querySelector(".topbar")?.offsetHeight || 80) + 32;
+        const scroll = window.scrollY + header;
+        let current = sections[0]?.id || "";
+        sections.forEach(section => {
+          if (section.offsetTop <= scroll) current = section.id;
+        });
+        links.forEach(link => link.classList.toggle("active", link.getAttribute("href") === `#${current}`));
+        const doc = document.documentElement;
+        const progress = doc.scrollTop / Math.max(1, doc.scrollHeight - doc.clientHeight) * 100;
+        document.getElementById("progress").style.width = `${progress}%`;
+      };
+      window.addEventListener("scroll", update, { passive: true });
+      window.addEventListener("resize", update);
+      update();
+    }
+
+    function setupTheme() {
+      const button = document.getElementById("themeToggle");
+      const stored = localStorage.getItem("diet-dashboard-theme");
+      if (stored === "dark") document.body.classList.add("dark");
+      button.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        localStorage.setItem("diet-dashboard-theme", document.body.classList.contains("dark") ? "dark" : "light");
+      });
+    }
+
+    async function init() {
+      setupTheme();
+      setupTooltip();
+      setupScroll();
+      try {
+        const data = await loadData();
+        if (!data.length) throw new Error("Nenhuma resposta válida encontrada.");
+        renderHero(data);
+        renderKpis(data);
+        renderSignals(data);
+        renderDrivers(data);
+        renderExercise(data);
+        renderCombo(data);
+        renderImprove(data);
+        renderSleep(data);
+        renderAge(data);
+        renderHeatmap(data);
+      } catch (error) {
+        document.querySelector("main").insertAdjacentHTML("afterbegin", `<div class="container section"><div class="error">Não foi possível carregar os dados. ${escapeHtml(error.message)}</div></div>`);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
