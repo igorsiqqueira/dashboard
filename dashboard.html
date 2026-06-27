@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dieta, treino e bem-estar | Leitura exploratória</title>
+  <title>Dieta, treino e bem-estar na UFV Florestal</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%230f9f96'/%3E%3Cpath d='M18 36c9-18 19-20 30-20-2 16-9 28-30 20Z' fill='%23ffffff'/%3E%3Cpath d='M19 38c8-2 17-7 26-18' stroke='%23f2b84b' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
   <style>
     :root {
@@ -69,8 +69,9 @@
     }
 
     h1 {
-      max-width: 820px;
-      font-size: 4.7rem;
+      max-width: 860px;
+      font-size: clamp(2.7rem, 5.2vw, 4rem);
+      line-height: 1.02;
     }
 
     h2 {
@@ -252,7 +253,7 @@
       border-radius: 0 var(--radius) var(--radius) 0;
       background: color-mix(in srgb, var(--amber) 13%, transparent);
       color: var(--ink);
-      font-weight: 760;
+      font-weight: 680;
     }
 
     .hero-visual {
@@ -534,8 +535,13 @@
 
     .combo-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      gap: 12px;
+    }
+
+    .habit-stack,
+    .routine-stack {
+      display: grid;
+      gap: 18px;
     }
 
     .matrix-card {
@@ -564,6 +570,92 @@
       margin: 14px 0 10px;
       color: var(--accent, var(--teal));
       font-size: 2.25rem;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .combo-row {
+      display: grid;
+      grid-template-columns: minmax(210px, .9fr) minmax(0, 1.35fr) minmax(90px, auto);
+      gap: 16px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--paper-soft) 48%, transparent);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .combo-row:hover {
+      transform: translateX(4px);
+      border-color: color-mix(in srgb, var(--accent, var(--teal)) 52%, var(--line));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent, var(--teal)) 9%, var(--paper)), var(--paper));
+    }
+
+    .combo-label strong,
+    .age-row-title strong {
+      display: block;
+      color: var(--ink);
+      font-size: 1.02rem;
+      line-height: 1.16;
+    }
+
+    .combo-label span,
+    .age-row-title span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 720;
+      line-height: 1.35;
+    }
+
+    .combo-bars {
+      display: grid;
+      gap: 8px;
+    }
+
+    .combo-bar-head,
+    .age-bar-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .combo-track,
+    .age-track {
+      height: 16px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--line) 70%, transparent);
+      overflow: hidden;
+    }
+
+    .combo-fill,
+    .age-fill {
+      width: var(--w);
+      height: 100%;
+      min-width: 4px;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--start), var(--end));
+      animation: fillIn .9s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .combo-mean {
+      display: grid;
+      justify-items: end;
+      gap: 4px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .combo-mean strong {
+      color: var(--accent, var(--teal));
+      font-size: 2rem;
       line-height: 1;
       font-weight: 950;
     }
@@ -634,6 +726,34 @@
       color: var(--ink);
       font-weight: 900;
       white-space: nowrap;
+    }
+
+    .age-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .age-row {
+      display: grid;
+      grid-template-columns: minmax(150px, .58fr) minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--paper-soft) 44%, transparent);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .age-row:hover {
+      transform: translateX(4px);
+      border-color: color-mix(in srgb, var(--violet) 44%, var(--line));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 7%, var(--paper)), var(--paper));
+    }
+
+    .age-bar {
+      display: grid;
+      gap: 6px;
     }
 
     .heatmap {
@@ -851,7 +971,7 @@
 
     @media (max-width: 1020px) {
       h1 {
-        font-size: 3.45rem;
+        font-size: 3.05rem;
       }
 
       h2 {
@@ -878,7 +998,6 @@
       .kpi-grid,
       .signal-grid,
       .driver-grid,
-      .age-grid,
       .takeaway-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -906,7 +1025,7 @@
       }
 
       h1 {
-        font-size: 2.52rem;
+        font-size: 2.22rem;
       }
 
       h2 {
@@ -924,10 +1043,19 @@
       .kpi-grid,
       .signal-grid,
       .driver-grid,
-      .age-grid,
       .takeaway-grid,
       .combo-grid {
         grid-template-columns: 1fr;
+      }
+
+      .combo-row,
+      .age-row {
+        grid-template-columns: 1fr;
+      }
+
+      .combo-mean {
+        justify-items: start;
+        text-align: left;
       }
 
       .chart-card {
@@ -1003,9 +1131,9 @@
       <div class="container hero-grid">
         <div class="reveal">
           <p class="eyebrow">Pesquisa aplicada na UFV - Campus Florestal</p>
-          <h1>Dieta, treino e bem-estar: uma leitura exploratória sobre hábitos estudantis</h1>
+          <h1>Dieta, treino e bem-estar na UFV Florestal</h1>
           <p class="lead">Esta pesquisa aplicada, realizada no campus da Universidade Federal de Viçosa, campus Florestal, investiga como hábitos relacionados à alimentação, prática de exercícios e rotina aparecem associados à percepção de bem-estar entre estudantes. O objetivo do dashboard é transformar as respostas coletadas em uma leitura visual clara, sem exagerar conclusões e sem confundir associação com causalidade.</p>
-          <p class="method-note">A análise considera informações autorrelatadas pelos participantes. Nesta leitura, “treina” significa praticar exercício físico pelo menos um dia por semana, e “dieta alta” corresponde às notas 4 ou 5 em adesão ao planejamento alimentar. As comparações utilizam médias e proporções para observar tendências entre grupos, sempre com cautela interpretativa.</p>
+          <p class="method-note">As respostas são autorrelatadas e foram agrupadas para tornar a leitura mais transparente. Consideramos como prática de exercício físico qualquer relato de pelo menos um dia de atividade por semana. A categoria “adesão alta à dieta” reúne notas 4 ou 5 no planejamento alimentar. Esses recortes ajudam a comparar grupos, mas não indicam causa e efeito.</p>
         </div>
 
         <aside class="hero-visual reveal" aria-label="Resumo visual da pesquisa" id="heroStory"></aside>
@@ -1049,11 +1177,11 @@
       <div class="container">
         <div class="section-head reveal">
           <p class="eyebrow">Hábitos combinados</p>
-          <h2>Treino e alimentação: quando os hábitos se encontram</h2>
+          <h2>Exercício e alimentação: quando os hábitos se encontram</h2>
           <p>A combinação entre exercício físico e alimentação planejada é uma das questões centrais da pesquisa. O objetivo aqui é observar se estudantes que acumulam esses hábitos apresentam médias diferentes de bem-estar em relação aos demais grupos. Essa leitura permite compreender não apenas quem adota os hábitos, mas também como esses perfis aparecem na percepção geral de bem-estar.</p>
         </div>
 
-        <div class="two-col">
+        <div class="habit-stack">
           <article class="chart-card reveal" style="--accent: var(--blue)">
             <div class="chart-title">
               <div>
@@ -1069,10 +1197,10 @@
           <article class="chart-card reveal" style="--accent: var(--green)">
             <div class="chart-title">
               <div>
-                <h3>Quem treina e segue dieta?</h3>
-                <p>Cruzamento entre quantidade de estudantes e bem-estar médio por perfil.</p>
+                <h3>Quem pratica exercício e segue dieta?</h3>
+                <p>Cruzamento entre quantidade de estudantes e bem-estar médio por grupo.</p>
               </div>
-              <span class="tag">perfil</span>
+              <span class="tag">grupos</span>
             </div>
             <div class="combo-grid" id="comboGrid"></div>
           </article>
@@ -1117,7 +1245,7 @@
           <p>Sono e idade foram incluídos para ampliar a leitura e evitar uma conclusão simplista. Diferentemente do exercício e da alimentação, essas variáveis não formaram uma tendência linear evidente na amostra. Isso reforça a importância de interpretar os dados com responsabilidade: algumas relações aparecem com clareza, enquanto outras exigem mais investigação.</p>
         </div>
 
-        <div class="two-col">
+        <div class="routine-stack">
           <article class="chart-card reveal" style="--accent: var(--amber)">
             <div class="chart-title">
               <div>
@@ -1133,10 +1261,10 @@
           <article class="chart-card reveal" style="--accent: var(--violet)">
             <div class="chart-title">
               <div>
-                <h3>Idade, alimentação e treino</h3>
+                <h3>Idade, alimentação e exercício</h3>
                 <p>Comparação exploratória das médias por faixa etária.</p>
               </div>
-              <span class="tag">perfil</span>
+              <span class="tag">idade</span>
             </div>
             <div class="age-grid" id="ageGrid"></div>
           </article>
@@ -1176,7 +1304,7 @@
         <div class="final-grid">
           <div class="final-box reveal">
             <p class="final-sentence">A pesquisa indica associação entre hábitos mais estruturados e melhores médias de bem-estar, mas não autoriza uma conclusão causal.</p>
-            <p>A prática de exercício físico aparece como o sinal mais consistente associado a maiores médias de bem-estar. A alimentação melhor avaliada também acompanha resultados positivos, especialmente quando observada em conjunto com a rotina de treino. No entanto, não é possível afirmar que treinar ou seguir dieta, por si só, produz automaticamente maior bem-estar.</p>
+            <p>A prática de exercício físico aparece como o sinal mais consistente associado a maiores médias de bem-estar. A alimentação melhor avaliada também acompanha resultados positivos, especialmente quando observada em conjunto com uma rotina de atividade física. No entanto, não é possível afirmar que praticar exercício ou seguir dieta, por si só, produza automaticamente maior bem-estar.</p>
             <p>O ponto mais relevante do dashboard está na combinação entre evidência e cautela. Os gráficos sugerem que estudantes com hábitos mais estruturados tendem a relatar melhor percepção de bem-estar, mas também mostram que a realidade não é uniforme: há pessoas que relatam melhora sem seguir uma dieta rígida, há variáveis que não apresentam tendência clara e há grupos pequenos que exigem leitura cuidadosa.</p>
             <p>Assim, a principal contribuição da pesquisa é mostrar que o bem-estar estudantil parece estar relacionado a um conjunto de práticas, especialmente movimento corporal e qualidade da rotina, mas não pode ser reduzido a uma fórmula única. Como estudo exploratório, o dashboard organiza os dados de forma visual, transparente e interpretável, permitindo que o leitor compreenda tanto os padrões encontrados quanto os limites da análise.</p>
             <div class="authors">
@@ -1199,7 +1327,7 @@
             </div>
             <div class="takeaway" style="--accent: var(--coral)">
               <strong>Sem fórmula universal</strong>
-              <p>A combinação entre treino e dieta alta sugere melhores médias, mas não explica sozinha toda a percepção de bem-estar.</p>
+              <p>A combinação entre exercício físico e adesão alta à dieta sugere melhores médias, mas não explica sozinha toda a percepção de bem-estar.</p>
             </div>
           </div>
         </div>
@@ -1495,7 +1623,7 @@
           color: colors.green
         },
         {
-          label: "Treinam e seguem dieta alta",
+          label: "Exercício + dieta alta",
           value: pctText(both, total),
           sub: `${both} estudantes combinam prática de exercício e adesão alta à dieta`,
           width: pct(both, total),
@@ -1538,8 +1666,8 @@
 
     function renderSignals(data) {
       const total = data.length;
-      const activeMean = groupStats(data, "treina", active).mean;
-      const inactiveMean = groupStats(data, "não treina", d => !active(d)).mean;
+      const activeMean = groupStats(data, "pratica exercício", active).mean;
+      const inactiveMean = groupStats(data, "não pratica exercício", d => !active(d)).mean;
       const sleep56 = groupStats(data, "5 a 6 horas", d => d.sleep === "5 a 6 horas").mean;
       const sleep78 = groupStats(data, "7 a 8 horas", d => d.sleep === "7 a 8 horas").mean;
       const highImprove = data.filter(d => d.improve >= 4);
@@ -1554,7 +1682,7 @@
       const cards = [
         {
           title: "Exercício aparece associado a maior média",
-          text: `Na amostra, quem declarou treinar teve média ${scoreText(activeMean)} de bem-estar; quem não treina teve média ${scoreText(inactiveMean)}.`,
+          text: `Na amostra, quem declarou praticar exercício teve média ${scoreText(activeMean)} de bem-estar; quem não pratica teve média ${scoreText(inactiveMean)}.`,
           pill: `+${scoreText(activeMean - inactiveMean)}`,
           color: colors.blue
         },
@@ -1566,7 +1694,7 @@
         },
         {
           title: "Melhora alta aparece mais próxima do movimento",
-          text: `Entre estudantes com melhora percebida alta, ${pctText(highActive, highImprove.length)} praticam exercício e ${pctText(highDiet, highImprove.length)} seguem dieta alta.`,
+          text: `Entre estudantes com melhora percebida alta, ${pctText(highActive, highImprove.length)} praticam exercício e ${pctText(highDiet, highImprove.length)} apresentam adesão alta à dieta.`,
           pill: `${highActive}/${highImprove.length}`,
           color: colors.green
         },
@@ -1583,13 +1711,13 @@
           color: colors.violet
         },
         {
-          title: "Idade não explica sozinha a prática de treino",
-          text: `As faixas etárias apresentam perfis distintos de treino, o que impede reduzir o resultado apenas à idade dos respondentes.`,
-          pill: "perfil",
+          title: "Idade não explica sozinha a prática de exercício",
+          text: `As faixas etárias apresentam perfis distintos de atividade física, o que impede reduzir o resultado apenas à idade dos respondentes.`,
+          pill: "idade",
           color: colors.coral
         },
         {
-          title: "Treino e dieta alta formam um grupo menor",
+          title: "Exercício e dieta alta formam um grupo menor",
           text: `${both} de ${total} estudantes combinam prática de exercício com adesão alta à dieta.`,
           pill: pctText(both, total),
           color: colors.green
@@ -1623,8 +1751,8 @@
         },
         {
           title: "Exercício físico",
-          low: groupStats(data, "Não treina", d => !active(d)),
-          high: groupStats(data, "Treina", active),
+          low: groupStats(data, "Não pratica", d => !active(d)),
+          high: groupStats(data, "Pratica", active),
           lowSub: "0 dias",
           highSub: "1+ dia por semana",
           color: colors.blue
@@ -1693,25 +1821,25 @@
       const total = data.length;
       const cells = [
         {
-          title: "Treina + dieta alta",
+          title: "Exercício + dieta alta",
           desc: "combina prática de exercício e adesão alta à dieta",
           color: colors.green,
           pred: d => active(d) && dietHigh(d)
         },
         {
-          title: "Treina sem dieta alta",
+          title: "Exercício sem dieta alta",
           desc: "prática de exercício com adesão alimentar baixa ou moderada",
           color: colors.blue,
           pred: d => active(d) && !dietHigh(d)
         },
         {
-          title: "Não treina + dieta alta",
+          title: "Sem exercício + dieta alta",
           desc: "adesão alta à dieta sem prática semanal de exercício",
           color: colors.amber,
           pred: d => !active(d) && dietHigh(d)
         },
         {
-          title: "Sem treino e sem dieta alta",
+          title: "Sem exercício e sem dieta alta",
           desc: "não combina exercício semanal com dieta alta",
           color: colors.coral,
           pred: d => !active(d) && !dietHigh(d)
@@ -1727,12 +1855,21 @@
       });
 
       document.getElementById("comboGrid").innerHTML = cells.map(cell => `
-        <article class="matrix-card" style="--accent:${cell.color}" data-tip="${escapeHtml(`${cell.title}: ${cell.n} estudante(s), ${fmt1.format(cell.pct)}% da amostra; bem-estar médio ${scoreText(cell.mean)}. Leia como associação entre perfil e média observada.`)}">
-          <strong>${escapeHtml(cell.title)}</strong>
-          <p>${escapeHtml(cell.desc)}</p>
-          <div class="matrix-score">${scoreText(cell.mean)}</div>
-          <div class="matrix-track"><div class="matrix-fill" style="--w:${cell.pct}%;--start:${cell.color};--end:${colors.teal}"></div></div>
-          <p class="bar-meta">${cell.n} estudante${cell.n === 1 ? "" : "s"} · ${fmt1.format(cell.pct)}%</p>
+        <article class="combo-row" style="--accent:${cell.color}" data-tip="${escapeHtml(`${cell.title}: ${cell.n} estudante(s), ${fmt1.format(cell.pct)}% da amostra; bem-estar médio ${scoreText(cell.mean)}. Leia como associação entre grupo e média observada.`)}">
+          <div class="combo-label">
+            <strong>${escapeHtml(cell.title)}</strong>
+            <span>${escapeHtml(cell.desc)}</span>
+          </div>
+          <div class="combo-bars">
+            <div class="combo-bar-head"><span>Participação na amostra</span><strong>${fmt1.format(cell.pct)}%</strong></div>
+            <div class="combo-track"><div class="combo-fill" style="--w:${cell.pct}%;--start:${cell.color};--end:${colors.teal}"></div></div>
+            <div class="bar-meta">${cell.n} estudante${cell.n === 1 ? "" : "s"} de ${total}</div>
+          </div>
+          <div class="combo-mean">
+            <span>bem-estar médio</span>
+            <strong>${scoreText(cell.mean)}</strong>
+            <span>escala 0 a 5</span>
+          </div>
         </article>
       `).join("");
     }
@@ -1747,7 +1884,7 @@
 
       document.getElementById("improveHabits").innerHTML = [
         { name: "Pratica exercício", sub: `${activeN} de ${highN}`, value: activeN, total: highN, color: [colors.green, colors.teal] },
-        { name: "Treina 3+ dias", sub: `${train3} de ${highN}`, value: train3, total: highN, color: [colors.blue, colors.violet] },
+        { name: "Exercício 3+ dias", sub: `${train3} de ${highN}`, value: train3, total: highN, color: [colors.blue, colors.violet] },
         { name: "Alimentação boa", sub: `${goodFoodN} de ${highN}`, value: goodFoodN, total: highN, color: [colors.teal, colors.green] },
         { name: "Dieta alta", sub: `${dietN} de ${highN}`, value: dietN, total: highN, color: [colors.amber, colors.coral] }
       ].map(item => miniRow({
@@ -1802,18 +1939,18 @@
         const days = mean(rows.map(d => dayScore[d.days]));
         const label = age.replace(".", "");
         return `
-          <article class="age-card" data-tip="${escapeHtml(`${label}: ${rows.length} estudante(s), alimentação média ${scoreText(food)} e frequência média ${scoreText(days)} dias/semana. Em grupos reduzidos, pequenas variações podem alterar médias.`)}">
-            <h3>${escapeHtml(label)}</h3>
-            <p>${rows.length} estudante${rows.length === 1 ? "" : "s"}</p>
-            <div class="age-metric">
-              <span class="metric-label">Alimentação</span>
-              <div class="mini-track"><div class="mini-fill" style="--w:${cssPct(food)};--start:${colors.teal};--end:${colors.green}"></div></div>
-              <span class="metric-value">${scoreText(food)}</span>
+          <article class="age-row" data-tip="${escapeHtml(`${label}: ${rows.length} estudante(s), alimentação média ${scoreText(food)} e frequência média ${scoreText(days)} dias/semana. Em grupos reduzidos, pequenas variações podem alterar médias.`)}">
+            <div class="age-row-title">
+              <strong>${escapeHtml(label)}</strong>
+              <span>${rows.length} estudante${rows.length === 1 ? "" : "s"} na amostra</span>
             </div>
-            <div class="age-metric">
-              <span class="metric-label">Treino</span>
-              <div class="mini-track"><div class="mini-fill" style="--w:${cssPct(days, maxDays)};--start:${colors.blue};--end:${colors.violet}"></div></div>
-              <span class="metric-value">${scoreText(days)}</span>
+            <div class="age-bar">
+              <div class="age-bar-head"><span>Alimentação média</span><strong>${scoreText(food)}</strong></div>
+              <div class="age-track"><div class="age-fill" style="--w:${cssPct(food)};--start:${colors.teal};--end:${colors.green}"></div></div>
+            </div>
+            <div class="age-bar">
+              <div class="age-bar-head"><span>Dias de exercício/semana</span><strong>${scoreText(days)}</strong></div>
+              <div class="age-track"><div class="age-fill" style="--w:${cssPct(days, maxDays)};--start:${colors.blue};--end:${colors.violet}"></div></div>
             </div>
           </article>
         `;
