@@ -3,12 +3,1575 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=dashboard.html">
-  <title>Trabalho Dieta e Treino</title>
-  <script>window.location.replace('dashboard.html');</script>
+  <title>Dieta e treino | Pesquisa UFV</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f8fb;
+      --paper: #ffffff;
+      --paper-soft: #edf6f4;
+      --ink: #14202a;
+      --muted: #60717f;
+      --line: #dbe8ea;
+      --teal: #109b92;
+      --teal-dark: #0b706c;
+      --blue: #3377d6;
+      --violet: #7558d1;
+      --amber: #f2b94f;
+      --coral: #e85d55;
+      --green: #27a66f;
+      --radius: 18px;
+      --shadow: 0 22px 54px rgba(24, 42, 58, .10);
+    }
+
+    .dark {
+      color-scheme: dark;
+      --bg: #101820;
+      --paper: #17222c;
+      --paper-soft: #1d2c36;
+      --ink: #f3f7f8;
+      --muted: #afbdc5;
+      --line: #31434c;
+      --shadow: 0 24px 58px rgba(0, 0, 0, .25);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--teal) 10%, transparent), transparent 30%),
+        radial-gradient(circle at 92% 4%, color-mix(in srgb, var(--amber) 12%, transparent), transparent 28%),
+        var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    h1, h2, h3, h4, p { margin: 0; }
+
+    p { color: var(--muted); }
+
+    .progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      z-index: 80;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--coral));
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 70;
+      background: color-mix(in srgb, var(--paper) 90%, transparent);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav-wrap {
+      width: min(1220px, calc(100% - 32px));
+      min-height: 72px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--teal-dark);
+      font-weight: 950;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 27px;
+      height: 27px;
+      border-radius: 999px;
+      background: conic-gradient(var(--teal), var(--blue), var(--violet), var(--amber), var(--coral), var(--teal));
+      box-shadow: inset 0 0 0 7px color-mix(in srgb, var(--paper) 56%, transparent);
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    nav::-webkit-scrollbar { display: none; }
+
+    nav a {
+      flex: 0 0 auto;
+      padding: 9px 13px;
+      border-radius: 999px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .94rem;
+      font-weight: 860;
+      transition: background .2s ease, color .2s ease, transform .2s ease;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background: color-mix(in srgb, var(--teal) 15%, transparent);
+      color: var(--teal-dark);
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle {
+      width: 46px;
+      height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      font-size: 1.08rem;
+      font-weight: 950;
+      transition: transform .2s ease, border-color .2s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-2px) rotate(8deg);
+      border-color: color-mix(in srgb, var(--teal) 55%, var(--line));
+    }
+
+    .section {
+      padding: clamp(66px, 8vw, 108px) 20px;
+      scroll-margin-top: 92px;
+    }
+
+    .section.alt {
+      background: color-mix(in srgb, var(--paper-soft) 62%, transparent);
+    }
+
+    .inner {
+      width: min(1220px, 100%);
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: calc(100vh - 72px);
+      display: grid;
+      align-items: center;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(330px, .9fr);
+      gap: clamp(26px, 5vw, 58px);
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      color: var(--teal-dark);
+      font-size: .78rem;
+      font-weight: 950;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--coral));
+    }
+
+    h1 {
+      max-width: 880px;
+      font-size: clamp(3rem, 8vw, 7rem);
+      line-height: .94;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      max-width: 920px;
+      margin-bottom: 12px;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: clamp(1.25rem, 2vw, 1.75rem);
+      line-height: 1.12;
+    }
+
+    .lead {
+      max-width: 820px;
+      margin-top: 24px;
+      font-size: clamp(1.08rem, 2vw, 1.42rem);
+    }
+
+    .hero-question {
+      margin-top: 26px;
+      padding: clamp(18px, 3vw, 26px);
+      border: 1px solid color-mix(in srgb, var(--teal) 32%, var(--line));
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--teal) 18%, var(--paper)), color-mix(in srgb, var(--blue) 5%, var(--paper))),
+        var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-question span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--teal-dark);
+      font-size: .78rem;
+      font-weight: 950;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .hero-question strong {
+      display: block;
+      max-width: 760px;
+      color: var(--ink);
+      font-size: clamp(1.55rem, 3.2vw, 2.8rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-left: 5px solid var(--amber);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: color-mix(in srgb, var(--amber) 13%, transparent);
+      color: var(--ink);
+      font-weight: 850;
+    }
+
+    .hero-panel,
+    .card,
+    .chart-card,
+    .story-card,
+    .mini-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel {
+      padding: clamp(20px, 3vw, 30px);
+    }
+
+    .stat-stack {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--stat-color, var(--teal)) 10%, var(--paper)), var(--paper));
+      transition: transform .2s ease, border-color .2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--stat-color, var(--teal)) 48%, var(--line));
+    }
+
+    .stat-card strong {
+      display: block;
+      color: var(--stat-color, var(--teal-dark));
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .stat-card span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-weight: 830;
+    }
+
+    .section-head {
+      max-width: 920px;
+      margin-bottom: 30px;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .story-card {
+      padding: 20px;
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--card-color, var(--teal)) 12%, var(--paper)), var(--paper));
+      transition: transform .2s ease, border-color .2s ease;
+    }
+
+    .story-card:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--card-color, var(--teal)) 42%, var(--line));
+    }
+
+    .story-card small,
+    .micro-label,
+    .bar-meta,
+    .cell-count {
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 850;
+    }
+
+    .story-card strong {
+      display: block;
+      margin: 8px 0;
+      color: var(--ink);
+      font-size: clamp(1.35rem, 2.5vw, 2rem);
+      line-height: 1.05;
+      font-weight: 950;
+    }
+
+    .results-stack {
+      display: grid;
+      gap: 24px;
+    }
+
+    .chart-card {
+      padding: clamp(20px, 3vw, 32px);
+      overflow: hidden;
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+    .chart-card:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--teal) 38%, var(--line));
+      box-shadow: 0 28px 64px rgba(24, 42, 58, .13);
+    }
+
+    .chart-note {
+      max-width: 860px;
+      margin: 6px 0 22px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .split .mini-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .mini-card {
+      padding: 16px;
+      background: color-mix(in srgb, var(--paper-soft) 55%, transparent);
+    }
+
+    .mini-card strong {
+      display: block;
+      color: var(--mini-color, var(--teal-dark));
+      font-size: clamp(1.6rem, 3.3vw, 2.7rem);
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .mini-card span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-weight: 820;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(140px, 210px) 1fr minmax(94px, auto);
+      gap: 14px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .bar-row:last-child { border-bottom: 0; }
+
+    .bar-name {
+      color: var(--ink);
+      font-weight: 930;
+      line-height: 1.14;
+    }
+
+    .bar-value {
+      color: var(--ink);
+      text-align: right;
+      font-size: 1.2rem;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .track {
+      height: 18px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--line) 68%, transparent);
+      overflow: hidden;
+    }
+
+    .fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--bar-start, var(--teal)), var(--bar-end, var(--teal-dark)));
+      transition: width 1.15s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .reveal.is-visible .fill {
+      width: var(--w);
+    }
+
+    .scale-caption {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 830;
+    }
+
+    .reading {
+      margin-top: 20px;
+      padding: 16px;
+      border-left: 5px solid var(--teal);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: color-mix(in srgb, var(--teal) 8%, transparent);
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .reading:hover {
+      transform: translateX(3px);
+      background: color-mix(in srgb, var(--teal) 12%, transparent);
+    }
+
+    .reading strong {
+      color: var(--ink);
+    }
+
+    .stacked {
+      display: grid;
+      gap: 14px;
+    }
+
+    .stack-bar {
+      display: flex;
+      height: 34px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--line) 64%, transparent);
+    }
+
+    .segment {
+      width: 0;
+      min-width: 2px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: #fff;
+      font-size: .85rem;
+      font-weight: 950;
+      white-space: nowrap;
+      background: linear-gradient(90deg, var(--seg-start), var(--seg-end));
+      transition: width 1.15s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .reveal.is-visible .segment {
+      width: var(--w);
+    }
+
+    .legend-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-weight: 820;
+    }
+
+    .legend-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .legend-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--dot-color);
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .profile-card {
+      position: relative;
+      min-height: 190px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--profile-color) 28%, transparent) 0 42px, transparent 43px),
+        linear-gradient(135deg, color-mix(in srgb, var(--profile-color) 10%, var(--paper)), var(--paper));
+      overflow: hidden;
+      transition: transform .2s ease, border-color .2s ease;
+    }
+
+    .profile-card:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--profile-color) 48%, var(--line));
+    }
+
+    .profile-card h4 {
+      max-width: 210px;
+      color: var(--ink);
+      font-size: 1.05rem;
+      line-height: 1.15;
+    }
+
+    .profile-card strong {
+      display: block;
+      margin-top: 24px;
+      color: var(--profile-color);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .profile-card p {
+      margin-top: 6px;
+      font-weight: 820;
+    }
+
+    .question-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .question-pill {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--paper-soft) 70%, transparent);
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .final-box {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .final-statement {
+      position: relative;
+      padding: clamp(24px, 4vw, 40px);
+      border: 1px solid color-mix(in srgb, var(--teal) 34%, var(--line));
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--teal) 16%, var(--paper)), var(--paper)),
+        var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .final-statement::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 8px;
+      background: linear-gradient(180deg, var(--teal), var(--amber), var(--coral));
+    }
+
+    .final-statement strong {
+      display: block;
+      margin-bottom: 16px;
+      color: var(--ink);
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+      line-height: 1.05;
+      font-weight: 950;
+    }
+
+    .takeaways {
+      display: grid;
+      gap: 12px;
+    }
+
+    .takeaway {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    .takeaway strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 5px;
+    }
+
+    .authors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .authors a,
+    .authors span {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 11px;
+      background: color-mix(in srgb, var(--paper-soft) 86%, transparent);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .84rem;
+      font-weight: 800;
+    }
+
+    .tooltip {
+      position: fixed;
+      z-index: 100;
+      max-width: 280px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--paper) 96%, transparent);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      font-size: .86rem;
+      font-weight: 760;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .15s ease, transform .15s ease;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .error {
+      padding: 14px;
+      border: 1px solid color-mix(in srgb, var(--coral) 45%, var(--line));
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--coral) 10%, var(--paper));
+      color: var(--ink);
+      font-weight: 850;
+    }
+
+    @media (max-width: 1020px) {
+      .nav-wrap { grid-template-columns: 1fr auto; }
+      .brand { grid-column: 1; grid-row: 1; min-width: 0; }
+      .theme-toggle { grid-column: 2; grid-row: 1; }
+      nav { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; }
+      .hero-grid,
+      .split,
+      .final-box { grid-template-columns: 1fr; }
+      .story-grid,
+      .mini-grid,
+      .profile-grid,
+      .question-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .section { padding: 56px 16px; scroll-margin-top: 142px; }
+      .hero { min-height: auto; padding-top: 36px; }
+      .nav-wrap { padding: 12px 0; }
+      .brand { font-size: .88rem; }
+      nav { gap: 5px; }
+      nav a { padding: 8px 9px; font-size: .82rem; }
+      h1 { font-size: clamp(3rem, 16vw, 4.25rem); }
+      .story-grid,
+      .mini-grid,
+      .profile-grid,
+      .question-strip { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 1fr; gap: 8px; }
+      .bar-value { text-align: left; }
+      .stack-bar { height: 30px; }
+      .segment { font-size: .78rem; }
+      .legend-item { align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *,
+      *::before,
+      *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+      .reveal,
+      .reveal.is-visible {
+        opacity: 1;
+        transform: none;
+      }
+      .fill,
+      .segment { width: var(--w); }
+    }
+  </style>
 </head>
 <body>
-  <p>Redirecionando para o dashboard...</p>
-  <p><a href="dashboard.html">Abrir dashboard</a></p>
+  <div class="progress" id="progress"></div>
+  <div class="tooltip" id="tooltip"></div>
+
+  <header class="topbar">
+    <div class="nav-wrap">
+      <div class="brand"><span class="brand-mark"></span>Dieta e treino</div>
+      <nav aria-label="Navegação principal">
+        <a href="#inicio">Início</a>
+        <a href="#alimentacao">Alimentação</a>
+        <a href="#exercicios">Exercícios</a>
+        <a href="#rotina">Rotina</a>
+        <a href="#idade-sono">Idade e sono</a>
+        <a href="#conclusao">Conclusão</a>
+      </nav>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="section hero" id="inicio">
+      <div class="inner hero-grid">
+        <div class="reveal">
+          <p class="eyebrow">Pesquisa aplicada na UFV</p>
+          <h1>Quando hábito vira bem-estar?</h1>
+          <p class="lead">Uma leitura visual de 53 respostas de estudantes da Universidade Federal de Viçosa sobre exercício, alimentação, dieta, sono, idade e bem-estar percebido.</p>
+          <div class="hero-question">
+            <span>Ideia central</span>
+            <strong>O bem-estar aparece mais alto quando alimentação e movimento caminham juntos, mas os dados não contam uma história de regra absoluta.</strong>
+          </div>
+          <p class="note">A pesquisa mostra associações dentro desta amostra. Ela ajuda a enxergar padrões, mas não prova causa e efeito.</p>
+        </div>
+
+        <aside class="hero-panel reveal" aria-label="Resumo da amostra">
+          <h2 style="font-size:1.55rem;margin-bottom:0">A história em quatro números</h2>
+          <div class="stat-stack" id="heroStats">
+            <div class="stat-card" style="--stat-color:var(--teal)">
+              <strong>53</strong>
+              <span>respostas válidas</span>
+            </div>
+            <div class="stat-card" style="--stat-color:var(--blue)">
+              <strong>0 a 10</strong>
+              <span>escala de leitura dos gráficos</span>
+            </div>
+            <div class="stat-card" style="--stat-color:var(--green)">
+              <strong>UFV</strong>
+              <span>estudantes participantes</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section alt" id="pesquisa">
+      <div class="inner">
+        <div class="section-head reveal">
+          <p class="eyebrow">Como ler</p>
+          <h2>A leitura acontece por comparação</h2>
+          <p>Em vez de listar perguntas uma por uma, cada bloco compara grupos e deixa a leitura principal aparecer no título, no número e na legenda curta.</p>
+        </div>
+
+        <div class="story-grid reveal">
+          <article class="story-card" style="--card-color:var(--teal)">
+            <small>Escala</small>
+            <strong>0 a 10</strong>
+            <p>As notas originais de 0 a 5 foram convertidas para 0 a 10 para facilitar a leitura.</p>
+          </article>
+          <article class="story-card" style="--card-color:var(--blue)">
+            <small>Leitura</small>
+            <strong>Média do grupo</strong>
+            <p>As barras mostram a média de bem-estar dos estudantes em cada recorte.</p>
+          </article>
+          <article class="story-card" style="--card-color:var(--amber)">
+            <small>Cuidado</small>
+            <strong>Base pequena</strong>
+            <p>Quando há poucos estudantes em um grupo, o gráfico mostra o padrão, mas a conclusão precisa ser mais cautelosa.</p>
+          </article>
+        </div>
+
+        <div class="question-strip reveal" aria-label="Perguntas respondidas indiretamente">
+          <div class="question-pill">Quem treina se sente melhor?</div>
+          <div class="question-pill">Sono maior sempre ajuda?</div>
+          <div class="question-pill">Dieta rígida é obrigatória?</div>
+          <div class="question-pill">Jovens têm hábitos melhores?</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="alimentacao">
+      <div class="inner results-stack">
+        <div class="section-head reveal">
+          <p class="eyebrow">Alimentação</p>
+          <h2>A alimentação é o sinal mais forte da amostra</h2>
+          <p>A primeira comparação agrupa estudantes pela qualidade da alimentação e observa como muda o bem-estar médio.</p>
+        </div>
+
+        <article class="chart-card reveal">
+          <h3>Quanto melhor a alimentação percebida, maior o bem-estar médio</h3>
+          <p class="chart-note">A barra mostra a nota média de bem-estar em escala de 0 a 10. O número de estudantes aparece como contexto.</p>
+          <div class="bar-list" id="foodBars"></div>
+          <div class="reading">
+            <strong>Leitura principal:</strong>
+            estudantes que avaliam a alimentação como boa ou muito boa têm média de bem-estar visivelmente maior do que quem avalia a alimentação como baixa.
+          </div>
+        </article>
+
+        <article class="chart-card reveal">
+          <h3>Alimentação boa não significa, necessariamente, dieta rígida</h3>
+          <p class="chart-note">Entre quem considera a alimentação boa ou muito boa, a adesão à dieta aparece dividida: parte segue com frequência, parte segue só parcialmente ou pouco.</p>
+          <div class="split">
+            <div>
+              <div class="mini-grid" id="goodFoodDietStats"></div>
+            </div>
+            <div class="stacked">
+              <div class="stack-bar" id="goodFoodDietBar"></div>
+              <div class="legend-list" id="goodFoodDietLegend"></div>
+            </div>
+          </div>
+          <div class="reading">
+            <strong>Leitura principal:</strong>
+            a pesquisa sugere que comer melhor pode passar por rotina e escolhas, não apenas por seguir um plano alimentar rígido.
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section alt" id="exercicios">
+      <div class="inner results-stack">
+        <div class="section-head reveal">
+          <p class="eyebrow">Exercícios</p>
+          <h2>O treino aparece associado a mais bem-estar, principalmente quando é frequente</h2>
+          <p>O efeito visual mais claro não está só em treinar ou não treinar, mas na frequência semanal.</p>
+        </div>
+
+        <article class="chart-card reveal">
+          <h3>Mais dias de exercício acompanham médias maiores</h3>
+          <p class="chart-note">A leitura é progressiva: 0 dias, 1-2 dias, 3-4 dias e 5+ dias por semana.</p>
+          <div class="bar-list" id="exerciseBars"></div>
+          <div class="reading">
+            <strong>Leitura principal:</strong>
+            quem treina cinco dias ou mais aparece com a maior média de bem-estar. O padrão existe, mas o grupo é menor.
+          </div>
+        </article>
+
+        <article class="chart-card reveal">
+          <h3>Quem percebe melhora realmente pratica mais, mas nem sempre com rotina intensa</h3>
+          <p class="chart-note">Aqui entram apenas os estudantes que deram nota 4 ou 5 para a melhora percebida ao associar exercício físico e alimentação equilibrada.</p>
+          <div class="mini-grid" id="improveStats"></div>
+          <div class="reading">
+            <strong>Leitura principal:</strong>
+            a maioria desse grupo pratica exercício, mas menos da metade treina três dias ou mais por semana. A percepção positiva é forte; a rotina ainda é irregular.
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="rotina">
+      <div class="inner results-stack">
+        <div class="section-head reveal">
+          <p class="eyebrow">Rotina combinada</p>
+          <h2>O melhor cenário aparece quando os hábitos se encontram</h2>
+          <p>Esta é a parte que responde a pergunta maior: é preciso treinar e fazer dieta para se sentir bem? Os dados apontam vantagem para a combinação, mas com cuidado na interpretação.</p>
+        </div>
+
+        <article class="chart-card reveal">
+          <h3>Treino + alimentação boa formam o grupo com maior bem-estar</h3>
+          <p class="chart-note">A comparação junta todos que praticam exercício e avaliam a alimentação como boa ou muito boa contra os demais perfis.</p>
+          <div class="bar-list" id="comboBars"></div>
+          <div class="reading">
+            <strong>Leitura principal:</strong>
+            não é uma regra individual, mas na amostra o grupo com os dois hábitos apresentou uma média maior.
+          </div>
+        </article>
+
+        <article class="chart-card reveal">
+          <h3>Quantas pessoas combinam treino e dieta?</h3>
+          <p class="chart-note">A dieta aqui é entendida como seguir algum plano alimentar em qualquer nível, e o perfil forte exige treino em 3+ dias e dieta parcial ou maior.</p>
+          <div class="profile-grid" id="profileCards"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section alt" id="idade-sono">
+      <div class="inner results-stack">
+        <div class="section-head reveal">
+          <p class="eyebrow">Idade e sono</p>
+          <h2>Idade mostra leve diferença; sono pede mais cuidado</h2>
+          <p>Aqui a leitura fica mais interessante: os mais jovens aparecem um pouco à frente nos hábitos, mas o sono não se comporta como uma linha reta.</p>
+        </div>
+
+        <article class="chart-card reveal">
+          <h3>Estudantes mais jovens têm leve vantagem nos hábitos</h3>
+          <p class="chart-note">As faixas foram agrupadas para evitar grupos muito pequenos: 14 a 21 anos e 22 anos ou mais.</p>
+          <div class="split">
+            <div>
+              <h4>Alimentação média</h4>
+              <div class="bar-list" id="ageFoodBars"></div>
+            </div>
+            <div>
+              <h4>Dias de exercício por semana</h4>
+              <div class="bar-list" id="ageExerciseBars"></div>
+            </div>
+          </div>
+          <div class="reading">
+            <strong>Leitura principal:</strong>
+            os estudantes de 14 a 21 anos aparecem ligeiramente melhor em alimentação e frequência de exercício, mas a diferença não é enorme.
+          </div>
+        </article>
+
+        <article class="chart-card reveal">
+          <h3>Dormir mais não apareceu automaticamente ligado a maior bem-estar</h3>
+          <p class="chart-note">O grupo de 5 a 6 horas teve a maior média no banco, enquanto 7 a 8 horas ficou abaixo. Isso não deve virar recomendação de sono; é um padrão da amostra.</p>
+          <div class="bar-list" id="sleepBars"></div>
+          <div class="reading">
+            <strong>Leitura principal:</strong>
+            sono é uma variável sensível. O resultado pode refletir rotina, estresse, carga de estudo ou características do grupo, não apenas quantidade de horas.
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="conclusao">
+      <div class="inner">
+        <div class="section-head reveal">
+          <p class="eyebrow">Conclusão</p>
+          <h2>O que a pesquisa sugere?</h2>
+        </div>
+
+        <div class="final-box">
+          <div class="final-statement reveal">
+            <strong>Bem-estar parece menos ligado a um único hábito e mais à consistência da rotina.</strong>
+            <p>Na amostra analisada, estudantes com alimentação melhor percebida e maior frequência de exercício tenderam a relatar maior bem-estar. A combinação dos hábitos aparece como o melhor cenário, mas os resultados indicam associação, não causa e efeito.</p>
+            <div class="authors">
+              <a href="https://ava.ufv.br/user/view.php?id=58803&course=29583" target="_blank" rel="noreferrer">Caio Augusto Pereira Queiroz</a>
+              <a href="https://ava.ufv.br/user/view.php?id=60365&course=29583" target="_blank" rel="noreferrer">Igor Siqueira Alves</a>
+              <a href="https://ava.ufv.br/user/view.php?id=58804&course=29583" target="_blank" rel="noreferrer">Pedro Hashimoto Sanches Barbosa</a>
+              <span>Bernardo Tufi Mansur Gentil</span>
+              <span>Professor: Guaraci de Lima Requena</span>
+            </div>
+          </div>
+
+          <div class="takeaways reveal">
+            <div class="takeaway">
+              <strong>1. Alimentação foi o contraste mais claro.</strong>
+              <p>Quem avaliou melhor a alimentação também relatou maior bem-estar médio.</p>
+            </div>
+            <div class="takeaway">
+              <strong>2. Exercício ajudou na leitura.</strong>
+              <p>Mais dias de treino acompanharam maiores médias, especialmente no grupo de 5+ dias.</p>
+            </div>
+            <div class="takeaway">
+              <strong>3. A combinação foi o melhor cenário.</strong>
+              <p>Treinar e alimentar-se bem apareceu melhor do que olhar um hábito isolado.</p>
+            </div>
+            <div class="takeaway">
+              <strong>4. Sono e idade pedem cautela.</strong>
+              <p>São padrões interessantes, mas não permitem conclusões definitivas.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // 1. Dados da pesquisa
+    const csvUrl = "dados.csv";
+    const dayOrder = ["0 dias", "1 a 2 dias", "3 a 4 dias", "5 ou mais dias"];
+    const dayShort = {
+      "0 dias": "0 dias",
+      "1 a 2 dias": "1-2 dias",
+      "3 a 4 dias": "3-4 dias",
+      "5 ou mais dias": "5+ dias"
+    };
+    const sleepOrder = ["Menos de 5 horas", "5 a 6 horas", "7 a 8 horas", "Mais de 8 horas"];
+    const colors = {
+      teal: "#109b92",
+      tealDark: "#0b706c",
+      blue: "#3377d6",
+      violet: "#7558d1",
+      amber: "#f2b94f",
+      coral: "#e85d55",
+      green: "#27a66f"
+    };
+
+    const fmt0 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+    const fmt1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let quote = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+
+        if (ch === '"' && quote && next === '"') {
+          cell += '"';
+          i++;
+        } else if (ch === '"') {
+          quote = !quote;
+        } else if (ch === "," && !quote) {
+          row.push(cell);
+          cell = "";
+        } else if ((ch === "\n" || ch === "\r") && !quote) {
+          if (ch === "\r" && next === "\n") i++;
+          row.push(cell);
+          if (row.some(value => String(value || "").trim() !== "")) rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += ch;
+        }
+      }
+
+      row.push(cell);
+      if (row.some(value => String(value || "").trim() !== "")) rows.push(row);
+      return rows;
+    }
+
+    function toNumber(value) {
+      const number = Number(String(value || "").replace(",", ".").trim());
+      return Number.isFinite(number) ? number : null;
+    }
+
+    // 2. Organização dos dados
+    function cleanRows(rows) {
+      return rows.slice(1)
+        .filter(row => row.some(value => String(value || "").trim() !== ""))
+        .map((row, index) => ({
+          id: index + 1,
+          date: String(row[0] || "").trim(),
+          days: String(row[2] || "").trim(),
+          food: toNumber(row[3]),
+          diet: toNumber(row[4]),
+          sleep: String(row[5] || "").trim(),
+          well: toNumber(row[6]),
+          improve: toNumber(row[7]),
+          age: String(row[8] || "").trim()
+        }))
+        .filter(row =>
+          row.days &&
+          row.food !== null &&
+          row.diet !== null &&
+          row.sleep &&
+          row.well !== null &&
+          row.improve !== null &&
+          row.age
+        );
+    }
+
+    function dayScore(days) {
+      return {
+        "0 dias": 0,
+        "1 a 2 dias": 1.5,
+        "3 a 4 dias": 3.5,
+        "5 ou mais dias": 5
+      }[days] ?? 0;
+    }
+
+    function ageGroup(age) {
+      return age === "22 - 25" || age === "26 ou mais." ? "22 ou mais" : "14 a 21";
+    }
+
+    // 3. Cálculo das médias
+    function mean(values) {
+      const nums = values.filter(Number.isFinite);
+      return nums.length ? nums.reduce((sum, value) => sum + value, 0) / nums.length : 0;
+    }
+
+    function pct(part, total) {
+      return total ? part / total * 100 : 0;
+    }
+
+    function pctText(part, total) {
+      return `${fmt1.format(pct(part, total))}%`;
+    }
+
+    function score10(value) {
+      return value * 2;
+    }
+
+    function scoreText(value) {
+      return `${fmt1.format(value)}/10`;
+    }
+
+    function countText(total) {
+      return total === 1 ? "1 estudante" : `${total} estudantes`;
+    }
+
+    function groupStats(data, label, predicate, valueGetter = row => row.well) {
+      const rows = data.filter(predicate);
+      return {
+        label,
+        rows,
+        count: rows.length,
+        mean: mean(rows.map(valueGetter))
+      };
+    }
+
+    function parseDateBR(value) {
+      const match = String(value || "").match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+      return match ? new Date(`${match[3]}-${match[2]}-${match[1]}T00:00:00`) : null;
+    }
+
+    function dateRange(data) {
+      const dates = data.map(row => parseDateBR(row.date)).filter(Boolean).sort((a, b) => a - b);
+      if (!dates.length) return "período não informado";
+      const format = date => date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+      return `${format(dates[0])} a ${format(dates[dates.length - 1])}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, ch => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[ch]));
+    }
+
+    // 4. Criação dos gráficos
+    function barRow({ label, meta, value, max = 10, start, end, tip, valueLabel = scoreText(value), minLabel = "0", maxLabel = "10" }) {
+      const width = Math.max(0, Math.min(100, value / max * 100));
+      return `
+        <div class="bar-row" data-tip="${escapeHtml(tip || "")}">
+          <div>
+            <div class="bar-name">${escapeHtml(label)}</div>
+            <div class="bar-meta">${escapeHtml(meta || "")}</div>
+          </div>
+          <div>
+            <div class="track"><div class="fill" style="--w:${width}%;--bar-start:${start};--bar-end:${end}"></div></div>
+            <div class="scale-caption"><span>${escapeHtml(minLabel)}</span><span>${escapeHtml(maxLabel)}</span></div>
+          </div>
+          <div class="bar-value">${escapeHtml(valueLabel)}</div>
+        </div>
+      `;
+    }
+
+    function miniCard({ value, label, color, tip }) {
+      return `
+        <div class="mini-card" style="--mini-color:${color}" data-tip="${escapeHtml(tip || "")}">
+          <strong>${escapeHtml(value)}</strong>
+          <span>${escapeHtml(label)}</span>
+        </div>
+      `;
+    }
+
+    function renderHero(data) {
+      const highImprove = data.filter(row => row.improve >= 4).length;
+      const active = data.filter(row => dayScore(row.days) > 0).length;
+      const combo = data.filter(row => dayScore(row.days) > 0 && row.food >= 4).length;
+
+      document.getElementById("heroStats").innerHTML = `
+        <div class="stat-card" style="--stat-color:var(--teal)" data-tip="Total de respostas válidas usadas nos gráficos.">
+          <strong>${data.length}</strong>
+          <span>respostas válidas</span>
+        </div>
+        <div class="stat-card" style="--stat-color:var(--blue)" data-tip="${dateRange(data)}">
+          <strong>25/04 a 17/05</strong>
+          <span>período de coleta em 2026</span>
+        </div>
+        <div class="stat-card" style="--stat-color:var(--green)" data-tip="${highImprove} estudantes deram nota 4 ou 5 para a melhora percebida.">
+          <strong>${pctText(highImprove, data.length)}</strong>
+          <span>percebem melhora alta ao combinar exercício e alimentação</span>
+        </div>
+        <div class="stat-card" style="--stat-color:var(--amber)" data-tip="${combo} estudantes treinam e avaliam a alimentação como boa ou muito boa.">
+          <strong>${pctText(combo, data.length)}</strong>
+          <span>treinam e avaliam bem a alimentação</span>
+        </div>
+      `;
+    }
+
+    function renderFood(data) {
+      const groups = [
+        groupStats(data, "Alimentação baixa", row => row.food <= 2),
+        groupStats(data, "Alimentação regular", row => row.food === 3),
+        groupStats(data, "Boa ou muito boa", row => row.food >= 4)
+      ];
+
+      document.getElementById("foodBars").innerHTML = groups.map((group, index) => {
+        const score = score10(group.mean);
+        const palette = [
+          { start: "#ff958b", end: colors.coral },
+          { start: "#ffdc80", end: colors.amber },
+          { start: "#39d9cc", end: colors.teal }
+        ][index];
+        return barRow({
+          label: group.label,
+          meta: countText(group.count),
+          value: score,
+          start: palette.start,
+          end: palette.end,
+          tip: `${group.label}: bem-estar médio ${scoreText(score)} com ${countText(group.count)}.`
+        });
+      }).join("");
+
+      const goodFood = data.filter(row => row.food >= 4);
+      const segments = [
+        { label: "Segue quase sempre", count: goodFood.filter(row => row.diet >= 4).length, start: "#35d8ca", end: colors.teal },
+        { label: "Segue parcialmente", count: goodFood.filter(row => row.diet === 3).length, start: "#6ea4ef", end: colors.blue },
+        { label: "Segue pouco ou não segue", count: goodFood.filter(row => row.diet <= 2).length, start: "#ffae62", end: colors.coral }
+      ];
+
+      document.getElementById("goodFoodDietStats").innerHTML = [
+        miniCard({ value: countText(goodFood.length), label: "avaliam alimentação como boa ou muito boa", color: colors.teal }),
+        miniCard({ value: pctText(segments[0].count, goodFood.length), label: "seguem dieta quase sempre", color: colors.green }),
+        miniCard({ value: pctText(segments[2].count, goodFood.length), label: "seguem pouco ou não seguem", color: colors.coral })
+      ].join("");
+
+      document.getElementById("goodFoodDietBar").innerHTML = segments.map(segment => `
+        <div class="segment" style="--w:${pct(segment.count, goodFood.length)}%;--seg-start:${segment.start};--seg-end:${segment.end}" data-tip="${escapeHtml(`${segment.label}: ${segment.count} de ${goodFood.length} estudantes.`)}">
+          ${segment.count ? fmt0.format(pct(segment.count, goodFood.length)) + "%" : ""}
+        </div>
+      `).join("");
+
+      document.getElementById("goodFoodDietLegend").innerHTML = segments.map(segment => `
+        <div class="legend-item">
+          <span class="legend-left"><span class="dot" style="--dot-color:${segment.end}"></span>${escapeHtml(segment.label)}</span>
+          <strong>${segment.count} | ${pctText(segment.count, goodFood.length)}</strong>
+        </div>
+      `).join("");
+    }
+
+    function renderExercise(data) {
+      const groups = dayOrder.map(label => groupStats(data, label, row => row.days === label));
+
+      document.getElementById("exerciseBars").innerHTML = groups.map((group, index) => {
+        const score = score10(group.mean);
+        const palette = index === 0
+          ? { start: "#ff958b", end: colors.coral }
+          : index === groups.length - 1
+            ? { start: "#39d9cc", end: colors.teal }
+            : { start: "#ffdc80", end: colors.amber };
+        return barRow({
+          label: dayShort[group.label],
+          meta: countText(group.count),
+          value: score,
+          start: palette.start,
+          end: palette.end,
+          tip: `${group.label}: bem-estar médio ${scoreText(score)}.`
+        });
+      }).join("");
+
+      const highImprove = data.filter(row => row.improve >= 4);
+      const improveItems = [
+        { value: pctText(highImprove.filter(row => dayScore(row.days) > 0).length, highImprove.length), label: "praticam exercício", color: colors.teal },
+        { value: pctText(highImprove.filter(row => dayScore(row.days) >= 3).length, highImprove.length), label: "treinam 3+ dias", color: colors.blue },
+        { value: pctText(highImprove.filter(row => row.food >= 4).length, highImprove.length), label: "avaliam alimentação como boa", color: colors.green },
+        { value: pctText(highImprove.filter(row => row.diet >= 3).length, highImprove.length), label: "seguem dieta ao menos parcialmente", color: colors.violet },
+        { value: countText(highImprove.length), label: "percebem melhora alta", color: colors.amber },
+        { value: `${fmt1.format(mean(highImprove.map(row => row.improve)) * 2)}/10`, label: "média da melhora percebida", color: colors.coral }
+      ];
+      document.getElementById("improveStats").innerHTML = improveItems.map(miniCard).join("");
+    }
+
+    function renderRoutine(data) {
+      const combo = groupStats(data, "Treina + alimentação boa", row => dayScore(row.days) > 0 && row.food >= 4);
+      const others = groupStats(data, "Demais perfis", row => !(dayScore(row.days) > 0 && row.food >= 4));
+
+      document.getElementById("comboBars").innerHTML = [
+        barRow({
+          label: combo.label,
+          meta: countText(combo.count),
+          value: score10(combo.mean),
+          start: "#39d9cc",
+          end: colors.teal,
+          tip: `${combo.label}: ${countText(combo.count)}.`
+        }),
+        barRow({
+          label: others.label,
+          meta: countText(others.count),
+          value: score10(others.mean),
+          start: "#ffdc80",
+          end: colors.amber,
+          tip: `${others.label}: ${countText(others.count)}.`
+        })
+      ].join("");
+
+      const cards = [
+        {
+          title: "Treino + alguma dieta",
+          count: data.filter(row => dayScore(row.days) > 0 && row.diet > 0).length,
+          desc: "combinam exercício e algum nível de plano alimentar",
+          color: colors.teal
+        },
+        {
+          title: "Perfil mais forte",
+          count: data.filter(row => dayScore(row.days) >= 3 && row.diet >= 3).length,
+          desc: "treinam 3+ dias e seguem dieta ao menos parcialmente",
+          color: colors.blue
+        },
+        {
+          title: "Treino + alimentação boa",
+          count: combo.count,
+          desc: "praticam exercício e avaliam bem a alimentação",
+          color: colors.green
+        },
+        {
+          title: "Sem treino e sem dieta",
+          count: data.filter(row => dayScore(row.days) === 0 && row.diet === 0).length,
+          desc: "não praticam exercício e não seguem dieta",
+          color: colors.coral
+        }
+      ];
+
+      document.getElementById("profileCards").innerHTML = cards.map(card => `
+        <article class="profile-card" style="--profile-color:${card.color}" data-tip="${escapeHtml(`${card.title}: ${card.count} de ${data.length} estudantes, ${pctText(card.count, data.length)}.`)}">
+          <h4>${escapeHtml(card.title)}</h4>
+          <strong>${pctText(card.count, data.length)}</strong>
+          <p>${escapeHtml(card.desc)}</p>
+          <p>${countText(card.count)}</p>
+        </article>
+      `).join("");
+    }
+
+    function renderAgeSleep(data) {
+      const ageGroups = ["14 a 21", "22 ou mais"].map(label => {
+        const rows = data.filter(row => ageGroup(row.age) === label);
+        return {
+          label,
+          count: rows.length,
+          food: mean(rows.map(row => row.food)),
+          days: mean(rows.map(row => dayScore(row.days))),
+          active: rows.filter(row => dayScore(row.days) > 0).length
+        };
+      });
+
+      document.getElementById("ageFoodBars").innerHTML = ageGroups.map((group, index) => barRow({
+        label: group.label,
+        meta: `${countText(group.count)} | ${pctText(group.active, group.count)} ativos`,
+        value: score10(group.food),
+        start: index === 0 ? "#39d9cc" : "#a88cf0",
+        end: index === 0 ? colors.teal : colors.violet,
+        tip: `${group.label}: alimentação média ${scoreText(score10(group.food))}.`
+      })).join("");
+
+      document.getElementById("ageExerciseBars").innerHTML = ageGroups.map((group, index) => {
+        return barRow({
+          label: group.label,
+          meta: `${fmt1.format(group.days)} dias por semana`,
+          value: group.days,
+          max: 5,
+          valueLabel: `${fmt1.format(group.days)} dias`,
+          minLabel: "0",
+          maxLabel: "5 dias",
+          start: index === 0 ? "#39d9cc" : "#a88cf0",
+          end: index === 0 ? colors.teal : colors.violet,
+          tip: `${group.label}: média aproximada de ${fmt1.format(group.days)} dias de exercício por semana.`
+        });
+      }).join("");
+
+      const sleepGroups = sleepOrder
+        .map(label => groupStats(data, label, row => row.sleep === label))
+        .filter(group => group.count > 0);
+
+      document.getElementById("sleepBars").innerHTML = sleepGroups.map((group, index) => {
+        const score = score10(group.mean);
+        const isSmall = group.count < 5;
+        const palette = index === 0
+          ? { start: "#a88cf0", end: colors.violet }
+          : group.label === "5 a 6 horas"
+            ? { start: "#39d9cc", end: colors.teal }
+            : { start: "#ffdc80", end: colors.amber };
+        return barRow({
+          label: group.label,
+          meta: isSmall ? "base pequena" : countText(group.count),
+          value: score,
+          start: palette.start,
+          end: palette.end,
+          tip: `${group.label}: bem-estar médio ${scoreText(score)} com ${countText(group.count)}.`
+        });
+      }).join("");
+    }
+
+    // 5. Textos de interpretação e interações
+    function setupTooltip() {
+      const tooltip = document.getElementById("tooltip");
+      document.addEventListener("pointerover", event => {
+        const target = event.target.closest("[data-tip]");
+        if (!target || !target.getAttribute("data-tip")) return;
+        tooltip.textContent = target.getAttribute("data-tip");
+        tooltip.classList.add("visible");
+      });
+      document.addEventListener("pointermove", event => {
+        if (!tooltip.classList.contains("visible")) return;
+        const pad = 18;
+        const x = Math.min(event.clientX + pad, window.innerWidth - tooltip.offsetWidth - pad);
+        const y = Math.min(event.clientY + pad, window.innerHeight - tooltip.offsetHeight - pad);
+        tooltip.style.left = `${x}px`;
+        tooltip.style.top = `${y}px`;
+      });
+      document.addEventListener("pointerout", event => {
+        if (event.target.closest("[data-tip]")) tooltip.classList.remove("visible");
+      });
+    }
+
+    function setupTheme() {
+      const stored = localStorage.getItem("ufv-dashboard-theme");
+      if (stored === "dark") document.body.classList.add("dark");
+
+      const button = document.getElementById("themeToggle");
+      const update = () => {
+        button.textContent = document.body.classList.contains("dark") ? "☀" : "☾";
+      };
+
+      button.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        localStorage.setItem("ufv-dashboard-theme", document.body.classList.contains("dark") ? "dark" : "light");
+        update();
+      });
+
+      update();
+    }
+
+    function setupScroll() {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add("is-visible");
+        });
+      }, { threshold: .12 });
+      document.querySelectorAll(".reveal").forEach(element => observer.observe(element));
+
+      const sections = [...document.querySelectorAll("main section[id]")];
+      const links = [...document.querySelectorAll("nav a")];
+
+      const update = () => {
+        const header = (document.querySelector(".topbar")?.offsetHeight || 80) + 46;
+        const scroll = window.scrollY + header;
+        let current = sections[0].id;
+
+        sections.forEach(section => {
+          if (section.offsetTop <= scroll) current = section.id;
+        });
+
+        links.forEach(link => {
+          link.classList.toggle("active", link.getAttribute("href") === `#${current}`);
+        });
+
+        const doc = document.documentElement;
+        const progress = doc.scrollTop / Math.max(1, doc.scrollHeight - doc.clientHeight) * 100;
+        document.getElementById("progress").style.width = `${progress}%`;
+      };
+
+      window.addEventListener("scroll", update, { passive: true });
+      update();
+    }
+
+    async function init() {
+      setupTheme();
+      setupTooltip();
+
+      try {
+        const response = await fetch(csvUrl, { cache: "no-store" });
+        if (!response.ok) throw new Error("dados.csv não encontrado");
+        const data = cleanRows(parseCSV(await response.text()));
+        if (!data.length) throw new Error("nenhuma resposta válida encontrada");
+
+        renderHero(data);
+        renderFood(data);
+        renderExercise(data);
+        renderRoutine(data);
+        renderAgeSleep(data);
+        setupScroll();
+
+        if (location.hash) {
+          const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+          if (target) {
+            const header = (document.querySelector(".topbar")?.offsetHeight || 80) + 18;
+            requestAnimationFrame(() => {
+              window.scrollTo(0, Math.max(0, target.getBoundingClientRect().top + window.scrollY - header));
+              window.dispatchEvent(new Event("scroll"));
+            });
+          }
+        }
+      } catch (error) {
+        document.getElementById("heroStats").innerHTML = `<div class="error">Não foi possível carregar os dados. ${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    init();
+  </script>
 </body>
 </html>
